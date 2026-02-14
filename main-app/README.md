@@ -1,16 +1,27 @@
-# React + Vite
+# ECO - Energy Costs Observer ⚡
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ECO ist eine moderne Webanwendung zur Erfassung, Analyse und Prognose des häuslichen Energieverbrauchs (Strom). Das Ziel der Anwendung ist es, Nutzern durch detaillierte Visualisierungen und Kosten-Vorausberechnungen einen Überblick über ihren Stromverbrauch zu geben.
 
-Currently, two official plugins are available:
+Die Anwendung wurde als **Single Page Application (SPA)** mit **React 19** entwickelt und kommuniziert mit einem **Spring Boot Backend**.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## React Compiler
+*   **Benutzerverwaltung:** Sichere Authentifizierung via JWT (JSON Web Tokens) mit automatischem Session-Refresh.
+*   **Rollenbasiertes System:** Unterscheidung zwischen Standard-Usern (Verbrauchserfassung) und Administratoren (User-Management).
+*   **Tracking:** Erfassung von Zählerständen und automatische Berechnung des Verbrauchs.
+*   **Visualisierung:** Interaktive Diagramme zur Darstellung von Verbrauchsverläufen und Kostentrends.
+*   **Kostenüberblick:** Algorithmen zur Vorausberechnung der erwarteten Jahreskosten basierend auf dem aktuellen Nutzungsverhalten.
+*   **Responsive Design:** Optimiert für Desktop, Tablet und Smartphone.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠 Tech Stack
 
-## Expanding the ESLint configuration
+Dieses Projekt setzt auf moderne Web-Standards und eine typsichere Entwicklungsumgebung.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+| **Frontend Framework** | React 19 | Library für User Interfaces |
+| **Sprache** | TypeScript | Statisch typisiertes JavaScript |
+| **Build Tool** | Vite | Schnelles Tooling für moderne Web-Projekte |
+| **Styling** | SCSS (Modules) | Präprozessor für modulares CSS |
+| **State Management** | Context API | Verwaltung globaler Zustände |
+| **HTTP Client** | Axios | Promise-basierter HTTP-Client |
+| **Routing** | React Router 6+ | Client-side Routing |
+| **Backend** | Java 21 / Spring Boot | REST API & Business Logic (separates Repo) 
