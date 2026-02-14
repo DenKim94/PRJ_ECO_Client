@@ -1,12 +1,12 @@
-@use '../abstracts/variables' as v; // Zugriff auf Variablen
+@use '../abstracts/variables' as var; // Zugriff auf Variablen
 
 :root {
-  font-family: v.$font-family-base;
+  font-family: var.$font-family-base;
   line-height: 1.5;
   font-weight: 400;
 
-  color: v.$color-text-main;
-  background-color: v.$color-background;
+  color: var.$color-text-main;
+  background-color: var.$color-background;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
