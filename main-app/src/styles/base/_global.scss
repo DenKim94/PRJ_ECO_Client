@@ -1,0 +1,21 @@
+@use '../abstracts/variables' as v; // Zugriff auf Variablen
+
+:root {
+  font-family: v.$font-family-base;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color: v.$color-text-main;
+  background-color: v.$color-background;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
