@@ -17,11 +17,11 @@ Die Anwendung wurde als **Single Page Application (SPA)** mit **React 19** entwi
 
 Dieses Projekt setzt auf moderne Web-Standards und eine typsichere Entwicklungsumgebung.
 
-| **Frontend Framework** | React 19 | Library für User Interfaces |
-| **Sprache** | TypeScript | Statisch typisiertes JavaScript |
-| **Build Tool** | Vite | Schnelles Tooling für moderne Web-Projekte |
-| **Styling** | SCSS (Modules) | Präprozessor für modulares CSS |
-| **State Management** | Context API | Verwaltung globaler Zustände |
-| **HTTP Client** | Axios | Promise-basierter HTTP-Client |
-| **Routing** | React Router 6+ | Client-side Routing |
-| **Backend** | Java 21 / Spring Boot | REST API & Business Logic (separates Repo) 
+*   **Frontend Framework:** React 19 | Library für User Interfaces |
+*   **Sprache:** TypeScript | Statisch typisiertes JavaScript |
+*   **Build Tool:** Vite | Schnelles Tooling für moderne Web-Projekte |
+*   **Styling:** SCSS (Modules) | Präprozessor für modulares CSS |
+*   **State Management:** Context API | Verwaltung globaler Zustände |
+*   **HTTP Client:** Axios | Promise-basierter HTTP-Client |
+*   **Routing:** React Router 6+ | Client-side Routing |
+*   **Backend:** Java 21 / Spring Boot | REST API & Business Logic (separates Repo) 
