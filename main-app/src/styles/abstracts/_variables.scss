@@ -1,11 +1,23 @@
 // Farben (Primary, Secondary, Backgrounds)
-$color-primary: #007bff;
-$color-primary-hover: #0056b3;
-$color-background: #000000;
-$color-surface: #333;
-$color-text-main: rgba(255, 255, 255, 0.87);
-$color-text-muted: rgba(255, 255, 255, 0.6);
-$color-error: #dc3545;
+$color-primary-light: #5FC8DE;
+$color-primary-light-hover: #669DF6;
+$color-background-light: #ebebeb;
+$color-surface-light: #ffffff;
+$color-text-main-light: #000000;
+$color-text-muted-light: #666666;
+$color-error-light: #d72222;
+$color-warning-light: #EA7C30;
+$color-success-light: #28A745;
+
+$color-primary-dark: #669DF6;
+$color-primary-dark-hover: #427FE8;
+$color-background-dark: #151820;
+$color-surface-dark: #324F56;
+$color-text-main-dark: #ffffff;
+$color-text-muted-dark: rgba(255, 255, 255, 0.8);
+$color-error-dark: #ec0000;
+$color-warning-dark: #f8802b;
+$color-success-dark: #62BF61;
 
 // Schriftarten
 $font-family-base: 'Inter Variable', system-ui, -apple-system, sans-serif;
@@ -27,3 +39,4 @@ $spacing-xl: 4rem;
 // Border Radius
 $radius-sm: 4px;
 $radius-md: 8px;
+$radius-lg: 16px;

@@ -23,7 +23,7 @@ export class Logger {
 
   public debug(message: string, data?: unknown): void {
     if (IS_DEBUG) {
-      const style = 'color: #4caf50; font-weight: bold;';
+      const style = 'color: #dfe229; font-weight: normal;';
       console.groupCollapsed(`%cDEBUG ${this.formatMessage(message)}`, style);
       if (data !== undefined) {
         console.log(data);
@@ -33,17 +33,17 @@ export class Logger {
   }
 
   public info(message: string, data?: unknown): void {
-    const style = 'color: #2196f3; font-weight: bold;';
+    const style = 'color: #2196f3; font-weight: normal;';
     console.info(`%cINFO  ${this.formatMessage(message)}`, style, data ?? '');
   }
 
   public warn(message: string, data?: unknown): void {
-    const style = 'color: #ff9800; font-weight: bold;';
+    const style = 'color: #ff9800; font-weight: normal;';
     console.warn(`%cWARN  ${this.formatMessage(message)}`, style, data ?? '');
   }
 
   public error(message: string, error?: unknown): void {
-    const style = 'color: #f44336; font-weight: bold;';
+    const style = 'color: #f44336; font-weight: normal;';
     console.error(`%cERROR ${this.formatMessage(message)}`, style);
     if (error) {
       console.error(error); // Stack Trace wird hier ausgegeben

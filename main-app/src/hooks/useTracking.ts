@@ -7,6 +7,5 @@ export const useTracking = () : TrackingContextType => {
   if (!context) { 
     throw new Error('useTracking must be used within a TrackingProvider!'); 
   };
-
   return context;
 };

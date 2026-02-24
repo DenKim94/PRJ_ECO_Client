@@ -1,6 +1,4 @@
 // 1. Abstracts (Variablen, Mixins, Functions)
-// Diese erzeugen keinen Output, müssen aber VOR allem anderen geladen werden,
-// damit nachfolgende Dateien darauf zugreifen können.
 @use 'abstracts/variables';
 
 // 2. Base (Grundlegende Styles für HTML-Tags)

@@ -1,21 +1,57 @@
-@use '../abstracts/variables' as var; // Zugriff auf Variablen
+@use '../abstracts/variables' as var;
 
+// Definition der globalen CSS Custom Properties (Light Mode als Default)
 :root {
-  font-family: var.$font-family-base;
+  // Farben (Mapping aus SCSS-Variablen auf CSS-Variablen)
+  --color-primary: #{var.$color-primary-light};
+  --color-primary-hover: #{var.$color-primary-light-hover};
+  --color-background: #{var.$color-background-light};
+  --color-surface: #{var.$color-surface-light};
+  --color-text-main: #{var.$color-text-main-light};
+  --color-text-muted: #{var.$color-text-muted-light};
+  --color-error: #{var.$color-error-light};
+  --color-warning: #{var.$color-warning-light};
+  --color-success: #{var.$color-success-light};
+
+  // Typografie & Spacing
+  --font-family-base: #{var.$font-family-base};
+}
+
+// Dark Mode Override
+// Wird aktiviert, wenn das Attribut data-theme="dark" auf <html> oder <body> gesetzt ist
+:root[data-theme='dark'] {
+  --color-primary: #{var.$color-primary-dark};
+  --color-primary-hover: #{var.$color-primary-dark-hover};
+  --color-background: #{var.$color-background-dark};
+  --color-surface: #{var.$color-surface-dark};
+  --color-text-main: #{var.$color-text-main-dark};
+  --color-text-muted: #{var.$color-text-muted-dark};
+  --color-error: #{var.$color-error-dark};
+  --color-warning: #{var.$color-warning-dark};
+  --color-success: #{var.$color-success-dark};
+}
+
+body {
+  font-family: var(--font-family-base);
   line-height: 1.5;
   font-weight: 400;
 
-  color: var.$color-text-main;
-  background-color: var.$color-background;
+  color: var(--color-text-main);
+  background-color: var(--color-background);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
 }
 
-body {
-  min-height: 100vh;
+#root {
+  flex: 1;
   display: flex;
   flex-direction: column;
 }
