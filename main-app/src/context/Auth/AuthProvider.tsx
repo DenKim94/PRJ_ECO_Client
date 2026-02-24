@@ -134,36 +134,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, []); 
 
     const login = async (request: LogInRequest): Promise<AuthResponseModel | null> => {
-
-        await loginApi.fetchData({ method: 'POST', url: 'api/auth/login', data: request });
-
-        if ((!loginApi.payload) || !loginApi.isLoading && loginApi.errorMsg) { 
-            setErrorMessage(loginApi.errorMsg); 
+        const response = await loginApi.fetchData({ method: 'POST', url: 'api/auth/login', data: request });
+        if (!response) {
+            setErrorMessage("[Login failed]: " + loginApi.errorMsg);  
             return null;
         }
-
-        setJWT(loginApi.payload.token, loginApi.payload.expiresIn);
-        return loginApi.payload;
+        setJWT(response.token, response.expiresIn);
+        return response;
     };
 
     const register = async (request: RegisterRequest): Promise<ApiResponseMap | null> => {
-       await registerApi.fetchData({ method: 'POST', url: 'api/auth/register', data: request });
-       if ((!registerApi.payload) || !registerApi.isLoading && registerApi.errorMsg) { 
-        setErrorMessage(registerApi.errorMsg); 
-        return null;
+        const response = await registerApi.fetchData({ method: 'POST', url: 'api/auth/register', data: request });
+       if (!response) { 
+            setErrorMessage("[Register failed]: " + registerApi.errorMsg); 
+            return null;
        }
-       return registerApi.payload; 
+       return response; 
     };
 
     const logout = async (): Promise<ApiMessageMap> => {
-        await logoutApi.fetchData({ method: 'POST', url: 'api/auth/logout' });
+        const response = await logoutApi.fetchData({ method: 'POST', url: 'api/auth/logout' });
 
-        if ((!logoutApi.payload) || !logoutApi.isLoading && logoutApi.errorMsg) { 
-            setErrorMessage(logoutApi.errorMsg); 
+        if (!response) { 
+            setErrorMessage("[Logout failed]: " + logoutApi.errorMsg); 
             return { message: logoutApi.errorMsg  ?? 'Logout failed' };
         }
         clearSession();
-        return logoutApi.payload;
+        return response;
     };
 
     return (

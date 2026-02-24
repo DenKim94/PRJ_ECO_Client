@@ -7,7 +7,7 @@ interface UseApiResponse<T> {
     payload: T | null;
     isLoading: boolean;
     errorMsg: string | undefined;
-    fetchData: (config: AxiosRequestConfig) => Promise<void>;
+    fetchData: (config: AxiosRequestConfig) => Promise<T | null>;
     resetStates: () => void;
 }
 
@@ -37,14 +37,15 @@ export function useApiCall<T = unknown>(): UseApiResponse<T> {
         const response = await apiClient.request<T>(config);
         setPayload(response.data);
         logger.info('Request successful. ', { url: config.url, status: response.status });
+        return response.data;
 
     } catch (err) {
         const axiosError = err as AxiosError<{ message?: string }>;
-        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-        const errorMessage = axiosError.response?.data?.message || axiosError.message || 'Unknown Error';
+        const errorMessage = axiosError.response?.data?.message ?? axiosError.message ?? 'Unknown Error';
         setErrorMessage(errorMessage);
         setPayload(null);
         logger.error('Request failed! ', { url: config.url, error: errorMessage });
+        return null;
 
     } finally {
         setIsLoading(false);
