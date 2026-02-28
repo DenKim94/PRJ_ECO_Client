@@ -17,5 +17,20 @@ export interface LogInRequest {
 export interface AuthResponseModel {
   token: string;
   expiresIn: number;
-  errMsg?: string;
+  userName: string;
+  role: string;
+}
+
+export type UserRoles = 'USER' | 'ADMIN';
+
+export interface User {
+  name: string;
+  role: UserRoles;
+  hasValidStatus: boolean;
+}
+
+export interface UserDataResponseModel extends User {
+  id: string;
+  email: string;
+  createdAt: string;
 }

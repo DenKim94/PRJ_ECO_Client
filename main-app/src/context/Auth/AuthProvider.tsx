@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback, ReactNode } from 'react';
+import { useState, useEffect, useCallback, ReactNode, use } from 'react';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { Logger } from '../../utils/logger';
-import { ApiMessageMap, ApiResponseMap, AuthContext, User, UserRoles } from './AuthContext';
+import { ApiMessageMap, ApiResponseMap, AuthContext } from './AuthContext';
 import { useApiCall } from '../../hooks/useApiCall';
-import { LogInRequest, RegisterRequest, PasswordResetRequest, AuthResponseModel } from '../../types/AuthTypes'; 
+import { LogInRequest, RegisterRequest, PasswordResetRequest, AuthResponseModel, User, UserRoles, UserDataResponseModel } from '../../types/AuthTypes'; 
 
 
 export interface CustomJwtPayload extends JwtPayload {
@@ -74,18 +74,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // --- API Hooks für jede Aktion ---
     const loginApi = useApiCall<AuthResponseModel>();
+    const userApi = useApiCall<UserDataResponseModel>();
     const registerApi = useApiCall<ApiResponseMap>();
     const logoutApi = useApiCall<ApiMessageMap>();
     const refreshApi = useApiCall<AuthResponseModel>();
     const deleteApi = useApiCall<ApiMessageMap>();
     const verifyEmailApi = useApiCall<ApiMessageMap>();
     const resendEmailApi = useApiCall<ApiMessageMap>();
-    const resetPassApi = useApiCall<ApiMessageMap>();
+    const resetPasswordApi = useApiCall<ApiMessageMap>();
 
     const isAnyLoading : boolean = 
         loginApi.isLoading || registerApi.isLoading || logoutApi.isLoading || 
         refreshApi.isLoading || deleteApi.isLoading || verifyEmailApi.isLoading || 
-        resendEmailApi.isLoading || resetPassApi.isLoading;
+        resendEmailApi.isLoading || resetPasswordApi.isLoading;
 
     const startWarningTimer = useCallback((expiresInMs: number) => {
         if (warningTimer){ clearTimeout(warningTimer) };
@@ -110,8 +111,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, [warningTimer]);
 
     const clearSession = useCallback(() => {
-        if (warningTimer) { clearTimeout(warningTimer); } 
+        if (warningTimer) { 
+            clearTimeout(warningTimer); 
+        } 
+
         localStorage.removeItem('token');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userRole');
         setToken(null);
         setUser(null);
         setShowSessionWarning(false);
@@ -133,30 +139,64 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); 
 
+    useEffect(() => {
+        if (token && user) {
+            localStorage.setItem('userName', user.name);
+            localStorage.setItem('userRole', user.role);
+            localStorage.setItem('hasValidStatus', JSON.stringify(user.hasValidStatus));
+        }
+    }, [user, token]);
+
     const login = async (request: LogInRequest): Promise<AuthResponseModel | null> => {
         const response = await loginApi.fetchData({ method: 'POST', url: 'api/auth/login', data: request });
         if (!response) {
-            setErrorMessage("[Login failed]: " + loginApi.errorMsg);  
+            setErrorMessage("Login failed: " + loginApi.errorMsg);  
             return null;
         }
+        
+        const userData = await getUserData();
+        if (userData) {
+            setUser({
+                name: userData.name,
+                role: userData.role,
+                hasValidStatus: userData.hasValidStatus
+            });
+        }
+
+        if (!userData || userApi.errorMsg){
+            logger.error('Login succeeded but failed to retrieve user data. ', userApi.errorMsg);
+            setErrorMessage("Failed to retrieve user data after login. " + userApi.errorMsg);
+            return null;
+        }
+        
         setJWT(response.token, response.expiresIn);
+
         return response;
     };
 
     const register = async (request: RegisterRequest): Promise<ApiResponseMap | null> => {
         const response = await registerApi.fetchData({ method: 'POST', url: 'api/auth/register', data: request });
        if (!response) { 
-            setErrorMessage("[Register failed]: " + registerApi.errorMsg); 
+            setErrorMessage("Register failed: " + registerApi.errorMsg); 
             return null;
        }
        return response; 
+    };
+
+    const getUserData = async (): Promise<UserDataResponseModel | null> => {
+        const response = await userApi.fetchData({ method: 'GET', url: 'api/auth/user/get-info' });
+        if (!response) {
+            setErrorMessage("Get user data failed: " + userApi.errorMsg);  
+            return null;
+        }
+        return response;
     };
 
     const logout = async (): Promise<ApiMessageMap> => {
         const response = await logoutApi.fetchData({ method: 'POST', url: 'api/auth/logout' });
 
         if (!response) { 
-            setErrorMessage("[Logout failed]: " + logoutApi.errorMsg); 
+            setErrorMessage("Logout failed: " + logoutApi.errorMsg); 
             return { message: logoutApi.errorMsg  ?? 'Logout failed' };
         }
         clearSession();
@@ -173,6 +213,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             login,
             logout,
             register,
+            getUserData,
             // refreshToken,
             // deleteAccount,
             // verifyEmail,

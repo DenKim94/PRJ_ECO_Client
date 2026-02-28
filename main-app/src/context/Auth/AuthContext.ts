@@ -1,13 +1,6 @@
 import { createContext } from 'react';
-import { LogInRequest, RegisterRequest, PasswordResetRequest, AuthResponseModel } from '../../types/AuthTypes'; 
+import { LogInRequest, RegisterRequest, PasswordResetRequest, AuthResponseModel, User, UserDataResponseModel } from '../../types/AuthTypes'; 
 
-export type UserRoles = 'USER' | 'ADMIN';
-
-export interface User {
-  name: string;
-  role: UserRoles;
-  hasValidStatus: boolean;
-}
 
 export type ApiResponseMap = Record<string, object>; 
 export type ApiMessageMap = Record<string, string>;
@@ -21,6 +14,7 @@ export interface AuthContextType {
   login: (request: LogInRequest) => Promise<AuthResponseModel | null>;
   logout: () => Promise<ApiMessageMap>;
   register: (request: RegisterRequest) => Promise<ApiResponseMap | null>;
+  getUserData: () => Promise<UserDataResponseModel | null>;
   // refreshToken: () => Promise<AuthResponseModel>;
   // deleteAccount: () => Promise<ApiMessageMap>;
   // verifyEmail: (tfaCode: string) => Promise<ApiMessageMap>;
