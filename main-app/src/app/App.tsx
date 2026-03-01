@@ -1,13 +1,12 @@
 import styles from './App.module.scss';
-import { useAuth } from '../hooks/useAuth';
+import { Outlet } from 'react-router-dom';
 
 function App() {
-  const authApi = useAuth();
   
   return (
-    <div className={styles.appContainer}> 
-      <p>Placeholder</p>
-    </div>
+    <main className={styles.appContainer}>
+      <Outlet />
+    </main>
   );
 }
 
