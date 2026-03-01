@@ -43,6 +43,23 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     setThemeState((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
   };
 
+    useEffect(() => {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      
+      const handleChange = (e: MediaQueryListEvent) => {
+        const newSystemTheme = e.matches ? 'dark' : 'light';
+        setThemeState(newSystemTheme);
+        logger.debug(`System theme change detected: '${newSystemTheme}'`);
+      };
+
+        mediaQuery.addEventListener('change', handleChange);
+
+      // Cleanup beim Unmount
+      return () => {
+        mediaQuery.removeEventListener('change', handleChange);
+      };
+  }, []);
+
   // Funktion zum expliziten Setzen
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);

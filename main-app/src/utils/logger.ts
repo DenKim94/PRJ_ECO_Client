@@ -23,7 +23,7 @@ export class Logger {
 
   public debug(message: string, data?: unknown): void {
     if (IS_DEBUG) {
-      const style = 'color: #dfe229; font-weight: normal;';
+      const style = 'color: #299be2; font-weight: normal;';
       console.groupCollapsed(`%cDEBUG ${this.formatMessage(message)}`, style);
       if (data !== undefined) {
         console.log(data);
@@ -33,7 +33,7 @@ export class Logger {
   }
 
   public info(message: string, data?: unknown): void {
-    const style = 'color: #2196f3; font-weight: normal;';
+    const style = 'color: #21f352; font-weight: normal;';
     console.info(`%cINFO  ${this.formatMessage(message)}`, style, data ?? '');
   }
 
