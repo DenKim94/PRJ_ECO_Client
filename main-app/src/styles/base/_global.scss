@@ -1,5 +1,10 @@
 @use '../abstracts/variables' as var;
 
+html,
+body {
+  height: 100%;
+}
+
 // Definition der globalen CSS Custom Properties (Light Mode als Default)
 :root {
   // Farben (Mapping aus SCSS-Variablen auf CSS-Variablen)
@@ -8,13 +13,20 @@
   --color-background: #{var.$color-background-light};
   --color-surface: #{var.$color-surface-light};
   --color-text-main: #{var.$color-text-main-light};
+  --color-button-text: #{var.$color-surface-light};
   --color-text-muted: #{var.$color-text-muted-light};
   --color-error: #{var.$color-error-light};
   --color-warning: #{var.$color-warning-light};
   --color-success: #{var.$color-success-light};
+  --color-border: #{var.$color-border-light};
 
   // Typografie & Spacing
   --font-family-base: #{var.$font-family-base};
+
+  --app-background-image: none;
+
+  --shadow-border-glow: 0 0 0 1px var(--color-border),
+                      0 0 18px rgba(95, 200, 222, 0.25); /* leichtes Aqua-Glow */
 }
 
 // Dark Mode Override
@@ -25,10 +37,22 @@
   --color-background: #{var.$color-background-dark};
   --color-surface: #{var.$color-surface-dark};
   --color-text-main: #{var.$color-text-main-dark};
+  --color-button-text: #{var.$color-surface-light};
   --color-text-muted: #{var.$color-text-muted-dark};
   --color-error: #{var.$color-error-dark};
   --color-warning: #{var.$color-warning-dark};
   --color-success: #{var.$color-success-dark};
+  --color-border: #{var.$color-border-dark};
+
+  --app-background-image: linear-gradient(
+    180deg,
+    var(--color-background) 0%,
+    var(--color-surface) 100%
+  );
+
+  --shadow-border-glow: 0 0 0 1px var(--color-border),
+                        0 0 22px rgba(102, 157, 246, 0.28); /* leichtes Blau-Glow */
+
 }
 
 body {
@@ -38,20 +62,22 @@ body {
 
   color: var(--color-text-main);
   background-color: var(--color-background);
-
+  background-image: var(--app-background-image);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   margin: 0;
 }
 
 #root {
-  flex: 1;
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-height: 100%;
+  margin: 0;
 }
