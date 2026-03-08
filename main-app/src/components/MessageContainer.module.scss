@@ -1,0 +1,23 @@
+@use '../styles/abstracts/variables' as var;
+
+.messageContainer {
+    margin: var.$spacing-md 0;
+    padding: var.$spacing-sm;
+    background-color: transparent;
+    border-radius: var.$radius-sm;
+    font-family: inherit;
+    font-weight: 400;
+    text-align: center;
+}
+
+.error {
+    color: var(--color-error);
+}
+
+.success {
+  color: var(--color-success);
+}
+
+.info {
+  color: var(--color-text-main);
+}

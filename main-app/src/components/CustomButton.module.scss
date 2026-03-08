@@ -1,0 +1,21 @@
+@use '../styles/abstracts/variables' as var;
+
+.customButton {
+    padding: var.$spacing-sm;
+    border: none;
+    text-align: center;
+    margin: var.$spacing-md 0;
+    border-radius: var.$radius-sm;
+    font-size: var.$font-size-md;
+    font-weight: var.$font-weight-medium;
+    font-family: var.$font-family-base;
+    background-color: var(--color-primary);
+    color: var(--color-button-text);
+    cursor: pointer;
+    
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    &:hover{
+        background-color: var(--color-primary-hover);
+        box-shadow: var(--shadow-border-glow);
+    }
+}
