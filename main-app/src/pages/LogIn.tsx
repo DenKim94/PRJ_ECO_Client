@@ -3,7 +3,12 @@ import { useAuth } from "../hooks/useAuth";
 import { useEffect, useState } from "react";
 import { LogInRequest } from "../types/AuthTypes";
 import styles from "./LogIn.module.scss";
+import { AppLogo } from "../components/AppLogo";
+import { Logger } from "../utils/logger";
 import { useTheme } from "../hooks/useTheme";
+import { CustomButton } from "../components/CustomButton";
+import { MessageContainer } from "../components/MessageContainer";
+
 
 export default function Login() {
     const navigate = useNavigate();
@@ -11,9 +16,11 @@ export default function Login() {
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
     const [submitting, setSubmitting] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const themeObject = useTheme();
+    const logger = new Logger('Login');
 
-    const theme = useTheme();
 
     const onSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -32,16 +39,19 @@ export default function Login() {
 
             if (!result) {
                 setError("Login fehlgeschlagen. Bitte prüfe deine Eingaben.");
+                logger.debug(`Login fehlgeschlagen für User: ${trimmedName}`);
                 return;
             }
 
             if (auth.errorMsg){
                 setError("Login fehlgeschlagen: " + auth.errorMsg);
+                logger.debug(`Login fehlgeschlagen: ${auth.errorMsg} für User: ${trimmedName}`);
                 return;
             }
 
         } catch (err) {
             setError("Ein Fehler ist aufgetreten: " + (err instanceof Error ? err.message : "Unbekannter Fehler"));
+            logger.debug(`Ein Fehler ist aufgetreten: ${err instanceof Error ? err.message : "Unbekannter Fehler"} für User: ${trimmedName}`);
             return;
 
         } finally {
@@ -57,13 +67,14 @@ export default function Login() {
 
     return (
         <div className={styles.pageContainer}>
+            <AppLogo src="/eco_app_v2.png" alt="ECO App Logo" size="xl"/>
 
             <form onSubmit={(e) => void onSubmit(e)} className={styles.formContainer}>
                 <input
                     id="name"
                     name="name"
                     type="text"
-                    className={styles.input}
+                    className={styles.inputName}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     autoComplete="username"
@@ -73,24 +84,46 @@ export default function Login() {
                     minLength={2}
                     disabled={submitting}
                 />
-
-                <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    className={styles.input}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    autoComplete="current-password"
-                    placeholder="Passwort"
-                    required={true}
-                    minLength={6}
-                    disabled={submitting}
-                />
-
-                <button className={styles.primaryBtn} type="submit" disabled={submitting}>
-                    {submitting ? "Anmelden..." : "Anmelden"}
-                </button>
+                <div className={styles.passwordField}>
+                    <input
+                        id="password"
+                        name="password"
+                        type={showPassword ? 'text' : 'password'}
+                        className={styles.inputPassword}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        autoComplete="current-password"
+                        placeholder="Passwort"
+                        required={true}
+                        minLength={6}
+                        disabled={submitting}
+                    />
+                      <button
+                            type="button"
+                            className={styles.togglePasswordBtn}
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            aria-label={showPassword ? 'Passwort verbergen' : 'Passwort anzeigen'}
+                            aria-pressed={showPassword}
+                            disabled={submitting}
+                        >
+                            {showPassword ? 
+                                    <img
+                                        src={themeObject.theme === 'light' ? '/visibility_on_dark.png' : '/visibility_on_light.png'}
+                                        alt={'Button für Passwort anzeigen'}
+                                        width={24}
+                                        height={24}
+                                        className={styles.toggleIcon}
+                                    /> 
+                                : <img
+                                        src={themeObject.theme === 'light' ? '/visibility_off_dark.png' : '/visibility_off_light.png'}
+                                        alt={'Button für Passwort verbergen'}
+                                        width={24}
+                                        height={24}
+                                        className={styles.toggleIcon}
+                                    /> }
+                        </button>
+                </div>
+                <CustomButton title={submitting ? "Anmelden..." : "Anmelden"} type="submit" isDisabled={submitting} />
             </form>
 
             <div className={styles.links}>
@@ -98,12 +131,7 @@ export default function Login() {
                 <Link to="/register">Registrieren</Link>
             </div>
 
-            {error && (
-                <div className={styles.error} role="alert">
-                    {error}
-                </div>
-            )}
-
+            <MessageContainer message={error ?? ""} type="error" isVisible={error !== null} />
         </div>
     );
 }

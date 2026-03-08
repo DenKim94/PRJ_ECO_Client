@@ -3,7 +3,8 @@
 .pageContainer {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
+    gap: 20px;
     align-items: center;
     min-height: 50vh;
     min-width: calc(var.$breakpoint-sm - (2.65 * var.$spacing-lg));
@@ -19,6 +20,12 @@
         width: 100%;
         max-width: var.$max-width-content; 
     }
+
+    @media (max-width: var.$breakpoint-md) {
+        width: 80%;
+        padding: 0 var.$spacing-lg;
+        max-width: var.$max-width-content; 
+    }
 }
 
 .formContainer{
@@ -29,7 +36,7 @@
     width: 100%;
 }
 
-.input {
+.inputName {
     padding: var.$spacing-sm;
     border: 1px solid var(--color-border);
     border-radius: var.$radius-sm;
@@ -37,6 +44,27 @@
     font-family: var.$font-family-base;
     background-color: transparent;
     color: var(--color-text-main);
+}
+
+.inputName:focus {
+    outline: none;
+    box-shadow: none;
+    border-color: var(--color-primary);
+}
+
+.inputPassword {
+    padding: var.$spacing-sm;
+    border: none;
+    width: 100%;
+    font-size: var.$font-size-md;
+    font-family: var.$font-family-base;
+    background-color: transparent;
+    color: var(--color-text-main);
+}
+
+.inputPassword:focus {
+  outline: none;
+  box-shadow: none;
 }
 
 .primaryBtn{
@@ -78,4 +106,29 @@
             color: var(--color-primary-hover);
         }
     }
+}
+
+.passwordField{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 5px;
+    align-items: center;
+    gap: var.$spacing-sm;
+    border: 1px solid var(--color-border);
+    border-radius: var.$radius-sm;
+}
+
+.passwordField:focus-within {
+  border-color: var(--color-primary);
+}
+
+.togglePasswordBtn{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0px 15px;
+    border: none;
+    background-color: transparent;
 }
