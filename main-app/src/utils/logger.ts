@@ -26,7 +26,7 @@ export class Logger {
       const style = 'color: #299be2; font-weight: normal;';
       console.groupCollapsed(`%cDEBUG ${this.formatMessage(message)}`, style);
       if (data !== undefined) {
-        console.log(data);
+        console.log(`%c${JSON.stringify(data)}`, style);
       }
       console.groupEnd();
     }
