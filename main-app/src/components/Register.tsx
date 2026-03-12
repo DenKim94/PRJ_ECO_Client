@@ -1,0 +1,140 @@
+import { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
+import { AppLogo } from "./AppLogo";
+import styles from "./Register.module.scss";
+import { Logger } from "../utils/logger";
+import { RegisterRequest } from "../types/AuthTypes";
+import { CustomButton } from "./CustomButton";
+import { MessageContainer } from "./MessageContainer";
+
+export default function Register() {
+
+    const auth = useAuth();
+    const [name, setName] = useState("");
+    const [password, setPassword] = useState("");
+    const [eMail, setEMail] = useState("");
+    const [submitting, setSubmitting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
+    const logger = new Logger('Register');
+    
+    const onSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setError(null);
+
+        const trimmedName = name.trim();
+        if (!trimmedName || !password) {
+            setError("Bitte Name und Passwort ausfüllen.");
+            return;
+        }
+
+        if (!isValidEmail(eMail)) {
+            setError("Bitte eine gültige E-Mail-Adresse eingeben.");
+            return;
+        }
+
+        setSubmitting(true);
+        try {
+            const request: RegisterRequest = { username: trimmedName, password, email: eMail };
+            const result = await auth.register(request);
+
+            if (!result) {
+                setError('Registrierung fehlgeschlagen. Bitte prüfe deine Eingaben.');
+                logger.debug(`Registrierung fehlgeschlagen für User: ${trimmedName}`);
+                return;
+            }
+
+            if (auth.errorMsg){
+                setError("Registrierung fehlgeschlagen: " + auth.errorMsg);
+                logger.debug(`Registrierung fehlgeschlagen: ${auth.errorMsg} für User: ${trimmedName}`);
+                return;
+            }
+
+        } catch (err) {
+            setError("Ein Fehler ist aufgetreten: " + (err instanceof Error ? err.message : "Unbekannter Fehler"));
+            logger.debug(`Ein Fehler ist aufgetreten: ${err instanceof Error ? err.message : "Unbekannter Fehler"} für User: ${trimmedName}`);
+            return;
+
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+   return (
+        <div className={styles.pageContainer}>
+            <AppLogo src="/eco_app_v2.png" alt="ECO App Logo" size="xl"/>
+            
+            <form onSubmit={(e) => void onSubmit(e)} className={styles.formContainer}>
+                <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    className={styles.inputName}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    autoComplete="username"
+                    inputMode="text"
+                    placeholder="Name"
+                    required={true}
+                    minLength={2}
+                    disabled={submitting}
+                />
+                <input
+                    id="password-register"
+                    name="password-register"
+                    type='text'
+                    className={styles.inputPassword}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="current-password"
+                    placeholder="Passwort"
+                    required={true}
+                    minLength={6}
+                    disabled={submitting}
+                />
+                <input
+                    id="email-register"
+                    name="email-register"
+                    type='text'
+                    className={styles.inputEmail}
+                    value={eMail}
+                    onChange={(e) => setEMail(e.target.value)}
+                    autoComplete="email"
+                    placeholder="E-Mail"
+                    required={true}
+                    disabled={submitting}
+                />
+                <div className={styles.privacyContainer}>
+                    <input
+                        id="privacy"
+                        name="privacy"
+                        type="checkbox"
+                        checked={acceptedPrivacy}
+                        onChange={(e) => setAcceptedPrivacy(e.target.checked)}
+                        required
+                        disabled={submitting}
+                    />
+                    <span>
+                        Ich stimme den&nbsp;
+                        <a href="/datenschutz" target="_blank" rel="noreferrer">
+                            Datenschutzbestimmungen
+                        </a>
+                        &nbsp;zu.
+                    </span>
+                </div>
+                <CustomButton 
+                    title={submitting ? "Registrieren..." : "Registrieren"} 
+                    type="submit" 
+                    isDisabled={submitting} 
+                />
+            </form>
+
+            <MessageContainer message={error ?? ""} type="error" isVisible={error !== null} />
+        </div>
+    );
+}
+
+function isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}

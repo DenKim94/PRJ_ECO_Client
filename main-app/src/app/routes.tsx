@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import App from './App';
 import LogIn from '../pages/LogIn';
+import Register from '../components/Register';
 // import Dashboard from '../pages/Dashboard';
 // import ProtectedRoute from '../components/ProtectedRoute'; // Bauen wir in Schritt 3
 
@@ -16,10 +17,14 @@ export const router = createBrowserRouter([
             index: true, 
             element: <Navigate to="/login" replace />, 
         },
-        {
-            path: 'login',
-            element: <LogIn />,
-        },
+          {
+              path: 'login',
+              element: <LogIn />,
+          },
+          {
+              path: 'register',
+              element: <Register />,
+          },
     //   {
     //     // Geschützter Bereich (nur für eingeloggte User)
     //     element: <ProtectedRoute />,

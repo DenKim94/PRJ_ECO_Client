@@ -21,7 +21,6 @@ export default function Login() {
     const themeObject = useTheme();
     const logger = new Logger('Login');
 
-
     const onSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError(null);
@@ -69,6 +68,8 @@ export default function Login() {
         <div className={styles.pageContainer}>
             <AppLogo src="/eco_app_v2.png" alt="ECO App Logo" size="xl"/>
 
+            <h2 className={styles.title}>Willkommen!</h2>
+            
             <form onSubmit={(e) => void onSubmit(e)} className={styles.formContainer}>
                 <input
                     id="name"
