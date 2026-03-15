@@ -4,7 +4,12 @@ import axios, { InternalAxiosRequestConfig } from 'axios';
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 // Öffentliche Routen, die keinen Token benötigen
-const PUBLIC_ROUTES = ['api/auth/login', 'api/auth/register'];
+const PUBLIC_ROUTES = [
+  'api/auth/login', 
+  'api/auth/register', 
+  'api/auth/user-password/request', 
+  'api/auth/user-password/reset'
+];
 
 const isPublicRoute = (url?: string): boolean =>
   PUBLIC_ROUTES.some((route) => url?.includes(route));

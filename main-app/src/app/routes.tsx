@@ -2,8 +2,9 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import App from './App';
 import LogIn from '../pages/LogIn';
 import Register from '../components/Register';
-// import Dashboard from '../pages/Dashboard';
-// import ProtectedRoute from '../components/ProtectedRoute'; // Bauen wir in Schritt 3
+import PasswordReset from '../components/PasswordReset';
+import Dashboard from '../pages/Dashboard';
+import ProtectedRoute from '../components/ProtectedRoute'; // Bauen wir in Schritt 3
 
 // Hier definieren wir den Router als Baumstruktur
 export const router = createBrowserRouter([
@@ -15,7 +16,7 @@ export const router = createBrowserRouter([
     children: [
         {
             index: true, 
-            element: <Navigate to="/login" replace />, 
+            element: <Navigate to="/dashboard" replace />, 
         },
           {
               path: 'login',
@@ -25,19 +26,23 @@ export const router = createBrowserRouter([
               path: 'register',
               element: <Register />,
           },
-    //   {
-    //     // Geschützter Bereich (nur für eingeloggte User)
-    //     element: <ProtectedRoute />,
-    //     children: [
-    //       {
-    //         index: true, // Das entspricht dem Pfad "/" innerhalb des ProtectedRoutes
-    //         element: <Dashboard />,
-    //       },
-    //       // Hier können weitere geschützte Routen hin:
-    //       // { path: 'settings', element: <Settings /> },
-    //       // { path: 'analytics', element: <Analytics /> },
-    //     ],
-    //   },
+          {
+              path: 'password-reset',
+              element: <PasswordReset />,
+          },
+      {
+        // Geschützter Bereich (nur für eingeloggte User)
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: 'dashboard', 
+            element: <Dashboard />,
+          },
+          // Hier können weitere geschützte Routen hin:
+          // { path: 'settings', element: <Settings /> },
+          // { path: 'analytics', element: <Analytics /> },
+        ],
+      },
     ],
   },
 ]);

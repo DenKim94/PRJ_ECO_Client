@@ -19,6 +19,7 @@ export interface AuthResponseModel {
   expiresIn: number;
   userName: string;
   role: string;
+  hasValidStatus: boolean;
 }
 
 export type UserRoles = 'USER' | 'ADMIN';

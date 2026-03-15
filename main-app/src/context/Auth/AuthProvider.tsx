@@ -13,6 +13,7 @@ export interface CustomJwtPayload extends JwtPayload {
 }
 
 const logger = new Logger('AuthProvider');
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const getInitialAuthData = (): { token: string | null; user: User | null; remainingTimeMs: number | null } => {
   const storedToken = localStorage.getItem('token');
@@ -143,61 +144,46 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (token && user) {
             localStorage.setItem('userName', user.name);
             localStorage.setItem('userRole', user.role);
-            localStorage.setItem('hasValidStatus', JSON.stringify(user.hasValidStatus));
         }
     }, [user, token]);
 
     const login = async (request: LogInRequest): Promise<AuthResponseModel | null> => {
-        const response = await loginApi.fetchData({ method: 'POST', url: 'api/auth/login', data: request });
+        const response = await loginApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/login`, data: request });
         if (!response) {
-            setErrorMessage("Login failed: " + loginApi.errorMsg);  
-            return null;
-        }
-        
-        const userData = await getUserData();
-        if (userData) {
-            setUser({
-                name: userData.name,
-                role: userData.role,
-                hasValidStatus: userData.hasValidStatus
-            });
-        }
-
-        if (!userData || userApi.errorMsg){
-            logger.error('Login succeeded but failed to retrieve user data. ', userApi.errorMsg);
-            setErrorMessage("Failed to retrieve user data after login. " + userApi.errorMsg);
+            setErrorMessage(loginApi.errorMsg);  
             return null;
         }
         
         setJWT(response.token, response.expiresIn);
+        setUser({ name: response.userName, role: response.role as UserRoles, hasValidStatus: response.hasValidStatus });
 
         return response;
     };
 
     const register = async (request: RegisterRequest): Promise<ApiResponseMap | null> => {
-        const response = await registerApi.fetchData({ method: 'POST', url: 'api/auth/register', data: request });
+        const response = await registerApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/register`, data: request });
        if (!response) { 
-            setErrorMessage("Register failed: " + registerApi.errorMsg); 
+            setErrorMessage(registerApi.errorMsg); 
             return null;
        }
        return response; 
     };
 
     const getUserData = async (): Promise<UserDataResponseModel | null> => {
-        const response = await userApi.fetchData({ method: 'GET', url: 'api/auth/user/get-info' });
+        const response = await userApi.fetchData({ method: 'GET', url: `${API_BASE_URL}/api/auth/user/get-info` });
         if (!response) {
-            setErrorMessage("Get user data failed: " + userApi.errorMsg);  
+            setErrorMessage(userApi.errorMsg);  
             return null;
         }
         return response;
     };
 
     const logout = async (): Promise<ApiMessageMap> => {
-        const response = await logoutApi.fetchData({ method: 'POST', url: 'api/auth/logout' });
+        const response = await logoutApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/logout` });
 
         if (!response) { 
-            setErrorMessage("Logout failed: " + logoutApi.errorMsg); 
-            return { message: logoutApi.errorMsg  ?? 'Logout failed' };
+            setErrorMessage(logoutApi.errorMsg); 
+            return { message: logoutApi.errorMsg  ?? 'Logout failed.' };
         }
         clearSession();
         return response;

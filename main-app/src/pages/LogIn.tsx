@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { LogInRequest } from "../types/AuthTypes";
 import styles from "./LogIn.module.scss";
 import { AppLogo } from "../components/AppLogo";
@@ -47,6 +47,10 @@ export default function Login() {
                 logger.debug(`Login fehlgeschlagen: ${auth.errorMsg} für User: ${trimmedName}`);
                 return;
             }
+            if (auth.isAuthenticated) {
+                logger.debug(`Login erfolgreich für User: ${trimmedName}`);
+                void navigate("/dashboard", { replace: true });
+            }
 
         } catch (err) {
             setError("Ein Fehler ist aufgetreten: " + (err instanceof Error ? err.message : "Unbekannter Fehler"));
@@ -57,12 +61,6 @@ export default function Login() {
             setSubmitting(false);
         }
     };
-
-    useEffect(() => {
-        if (auth.isAuthenticated && !error) {
-            void navigate("/dashboard");
-        }
-    }, [auth.isAuthenticated, error, navigate]);
 
     return (
         <div className={styles.pageContainer}>
@@ -128,7 +126,7 @@ export default function Login() {
             </form>
 
             <div className={styles.links}>
-                <Link to="/forgot-password">Passwort vergessen?</Link>
+                <Link to="/password-reset">Passwort vergessen?</Link>
                 <Link to="/register">Registrieren</Link>
             </div>
 
