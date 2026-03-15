@@ -1,21 +1,27 @@
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
+import { HelperClass } from "../utils/helper";
 import { AppLogo } from "./AppLogo";
 import styles from "./Register.module.scss";
 import { Logger } from "../utils/logger";
 import { RegisterRequest } from "../types/AuthTypes";
 import { CustomButton } from "./CustomButton";
 import { MessageContainer } from "./MessageContainer";
+import { useNavigate } from "react-router-dom";
+import { useTheme } from "../hooks/useTheme";
 
 export default function Register() {
 
     const auth = useAuth();
+    const navigate = useNavigate();
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
     const [eMail, setEMail] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
+    const themeObject = useTheme();
     const logger = new Logger('Register');
     
     const onSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
@@ -28,7 +34,7 @@ export default function Register() {
             return;
         }
 
-        if (!isValidEmail(eMail)) {
+        if (!HelperClass.isValidEmail(eMail)) {
             setError("Bitte eine gültige E-Mail-Adresse eingeben.");
             return;
         }
@@ -49,6 +55,14 @@ export default function Register() {
                 logger.debug(`Registrierung fehlgeschlagen: ${auth.errorMsg} für User: ${trimmedName}`);
                 return;
             }
+
+            // Formular leeren und zur Login-Seite navigieren
+            setName("");
+            setPassword("");
+            setEMail("");
+            setAcceptedPrivacy(false);
+
+            void navigate("/login", { replace: true });
 
         } catch (err) {
             setError("Ein Fehler ist aufgetreten: " + (err instanceof Error ? err.message : "Unbekannter Fehler"));
@@ -79,19 +93,45 @@ export default function Register() {
                     minLength={2}
                     disabled={submitting}
                 />
-                <input
-                    id="password-register"
-                    name="password-register"
-                    type='text'
-                    className={styles.inputPassword}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    autoComplete="current-password"
-                    placeholder="Passwort"
-                    required={true}
-                    minLength={6}
-                    disabled={submitting}
-                />
+                <div className={styles.passwordField}>
+                    <input
+                        id="password"
+                        name="password"
+                        type={showPassword ? 'text' : 'password'}
+                        className={styles.inputPassword}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        autoComplete="current-password"
+                        placeholder="Passwort"
+                        required={true}
+                        minLength={6}
+                        disabled={submitting}
+                    />
+                      <button
+                            type="button"
+                            className={styles.togglePasswordBtn}
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            aria-label={showPassword ? 'Passwort verbergen' : 'Passwort anzeigen'}
+                            aria-pressed={showPassword}
+                            disabled={submitting}
+                        >
+                            {showPassword ? 
+                                    <img
+                                        src={themeObject.theme === 'light' ? '/visibility_on_dark.png' : '/visibility_on_light.png'}
+                                        alt={'Button für Passwort anzeigen'}
+                                        width={24}
+                                        height={24}
+                                        className={styles.toggleIcon}
+                                    /> 
+                                : <img
+                                        src={themeObject.theme === 'light' ? '/visibility_off_dark.png' : '/visibility_off_light.png'}
+                                        alt={'Button für Passwort verbergen'}
+                                        width={24}
+                                        height={24}
+                                        className={styles.toggleIcon}
+                                    /> }
+                        </button>
+                </div>
                 <input
                     id="email-register"
                     name="email-register"
@@ -132,9 +172,4 @@ export default function Register() {
             <MessageContainer message={error ?? ""} type="error" isVisible={error !== null} />
         </div>
     );
-}
-
-function isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
 }

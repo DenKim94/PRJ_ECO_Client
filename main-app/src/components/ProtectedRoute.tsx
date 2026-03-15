@@ -2,11 +2,11 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 export default function ProtectedRoute() {
-  const { user } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   // Wenn kein User existiert, leite sofort zum Login um.
   // "replace" ersetzt den Verlauf, damit der "Zurück"-Button nicht wieder auf die blockierte Seite führt.
-  if (!user) {
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 

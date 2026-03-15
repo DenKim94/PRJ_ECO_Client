@@ -5,6 +5,7 @@ export interface RegisterRequest {
 }
 
 export interface PasswordResetRequest {
+  email: string;
   newPassword: string;
   tfaCode: string;
 }
@@ -30,8 +31,11 @@ export interface User {
   hasValidStatus: boolean;
 }
 
-export interface UserDataResponseModel extends User {
-  id: string;
+export interface UserDataResponseModel{
+  name: string;
+  role: UserRoles;
   email: string;
   createdAt: string;
+  isEnabled: boolean;
+  isValidatedEmail: boolean;
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, ReactNode } from 'react';
+import { useState, useEffect, useCallback, ReactNode, useRef } from 'react';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { Logger } from '../../utils/logger';
 import { ApiMessageMap, ApiResponseMap, AuthContext } from './AuthContext';
@@ -62,32 +62,46 @@ const getInitialAuthData = (): { token: string | null; user: User | null; remain
  * * refreshToken: () => Promise<Map<string, object>>;
  * * deleteAccount: () => Promise<Map<string, string>>;
  * * verifyEmail: (tfaCode: string) => Promise<Map<string, string>>;
- * * resendVerificationEmail: () => Promise<Map<string, string>>;
+ * * sendVerificationEmail: (request: {email: string}) => Promise<Map<string, string>>;
  * * resetPassword: (request: PasswordResetRequest) => Promise<Map<string, string>>;
  */
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [initialAuthData] = useState(getInitialAuthData);
-    const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
-    const [user, setUser] = useState<User | null>(null);
+    const [token, setToken] = useState<string | null>(() => {
+        return localStorage.getItem('token');
+    });
+    const [user, setUser] = useState<User | null>(() => {
+        const savedName = localStorage.getItem('userName');
+        const savedRole = localStorage.getItem('userRole');
+        const savedStatus = localStorage.getItem('hasValidStatus');
+
+        if (savedName && savedRole) {
+            return {
+                name: savedName,
+                role: savedRole as UserRoles,
+                hasValidStatus: savedStatus === 'true',
+            };
+        }
+        return null;
+    });
+
     const [showSessionWarning, setShowSessionWarning] = useState(false);
     const [warningTimer, setWarningTimer] = useState<NodeJS.Timeout | null>(null);
-    const [errorMsg, setErrorMessage] = useState<string | undefined>(undefined);
+    const errorMsg = useRef<string | undefined>(undefined);
 
     // --- API Hooks für jede Aktion ---
-    const loginApi = useApiCall<AuthResponseModel>();
+    const authApi = useApiCall<AuthResponseModel>(); // Für Login und Token Refresh
     const userApi = useApiCall<UserDataResponseModel>();
     const registerApi = useApiCall<ApiResponseMap>();
-    const logoutApi = useApiCall<ApiMessageMap>();
-    const refreshApi = useApiCall<AuthResponseModel>();
-    const deleteApi = useApiCall<ApiMessageMap>();
-    const verifyEmailApi = useApiCall<ApiMessageMap>();
-    const resendEmailApi = useApiCall<ApiMessageMap>();
-    const resetPasswordApi = useApiCall<ApiMessageMap>();
+    const accountApi = useApiCall<ApiMessageMap>(); // Für Logout, Delete Account, Reset Password
+    const emailApi = useApiCall<ApiMessageMap>();   // Für Verifizierungs-E-Mail senden
 
-    const isAnyLoading : boolean = 
-        loginApi.isLoading || registerApi.isLoading || logoutApi.isLoading || 
-        refreshApi.isLoading || deleteApi.isLoading || verifyEmailApi.isLoading || 
-        resendEmailApi.isLoading || resetPasswordApi.isLoading;
+    const isLoadingSevice : boolean = 
+        authApi.isLoading || 
+        registerApi.isLoading || 
+        accountApi.isLoading || 
+        emailApi.isLoading || 
+        userApi.isLoading;
 
     const startWarningTimer = useCallback((expiresInMs: number) => {
         if (warningTimer){ clearTimeout(warningTimer) };
@@ -148,9 +162,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, [user, token]);
 
     const login = async (request: LogInRequest): Promise<AuthResponseModel | null> => {
-        const response = await loginApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/login`, data: request });
+        const response = await authApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/login`, data: request });
         if (!response) {
-            setErrorMessage(loginApi.errorMsg);  
+            errorMsg.current = authApi.errorMsg;
             return null;
         }
         
@@ -163,7 +177,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const register = async (request: RegisterRequest): Promise<ApiResponseMap | null> => {
         const response = await registerApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/register`, data: request });
        if (!response) { 
-            setErrorMessage(registerApi.errorMsg); 
+            errorMsg.current = registerApi.errorMsg;
             return null;
        }
        return response; 
@@ -172,39 +186,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const getUserData = async (): Promise<UserDataResponseModel | null> => {
         const response = await userApi.fetchData({ method: 'GET', url: `${API_BASE_URL}/api/auth/user/get-info` });
         if (!response) {
-            setErrorMessage(userApi.errorMsg);  
+            errorMsg.current = userApi.errorMsg;
             return null;
         }
         return response;
     };
 
     const logout = async (): Promise<ApiMessageMap> => {
-        const response = await logoutApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/logout` });
+        const response = await accountApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/logout` });
 
         if (!response) { 
-            setErrorMessage(logoutApi.errorMsg); 
-            return { message: logoutApi.errorMsg  ?? 'Logout failed.' };
+            errorMsg.current = accountApi.errorMsg; 
+            return { message: accountApi.errorMsg  ?? 'Logout failed.' };
         }
         clearSession();
+        return response;
+    };
+
+    const sendVerificationEmail = async (request: {email: string}): Promise<ApiMessageMap> => {
+        const response = await emailApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/user-password/request`, data: request });
+
+        if (!response) { 
+            errorMsg.current = emailApi.errorMsg; 
+            return { message: emailApi.errorMsg  ?? 'Request failed.' };
+        }
         return response;
     };
 
     return (
         <AuthContext.Provider value={{ 
             user, 
-            isAuthenticated: !!token, 
+            isAuthenticated: !!token && !!user, 
             showSessionWarning,
-            isLoading: isAnyLoading,
-            errorMsg, 
+            isLoading: isLoadingSevice,
+            errorMsg: errorMsg.current, 
             login,
             logout,
             register,
             getUserData,
+            sendVerificationEmail,
+            // resetPassword,
             // refreshToken,
             // deleteAccount,
             // verifyEmail,
-            // resendVerificationEmail,
-            // resetPassword
          }}>
 
             {children}

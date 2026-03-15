@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { apiClient } from '../lib/axios-client';
 import { AxiosError, AxiosRequestConfig } from 'axios';
 import { Logger } from '../utils/logger';
@@ -25,11 +25,10 @@ const logger = new Logger('useApiCall');
 export function useApiCall<T = unknown>(): UseApiResponse<T> {
   const [payload, setPayload] = useState<T | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [errorMsg, setErrorMessage] = useState<string | undefined>(undefined);
+  const errorMsg = useRef<string | undefined>(undefined);
 
   const fetchData = useCallback(async (config: AxiosRequestConfig) => {
     setIsLoading(true);
-    setErrorMessage(undefined);
     
     logger.debug('Sending API Request... ', config);
 
@@ -42,7 +41,7 @@ export function useApiCall<T = unknown>(): UseApiResponse<T> {
     } catch (err) {
         const axiosError = err as AxiosError<{ message?: string }>;
         const errorMessage = axiosError.response?.data?.message ?? axiosError.message ?? 'Unknown Error';
-        setErrorMessage(errorMessage);
+        errorMsg.current = errorMessage;
         setPayload(null);
         logger.error('Request failed! ', { url: config.url, error: errorMessage });
         return null;
@@ -54,10 +53,10 @@ export function useApiCall<T = unknown>(): UseApiResponse<T> {
 
   const resetStates = useCallback(() => {
     setPayload(null);
-    setErrorMessage(undefined);
+    errorMsg.current = undefined;
     setIsLoading(false);
     logger.debug('API call state has been reset.');
   }, []);
 
-  return { payload, isLoading, errorMsg, fetchData, resetStates };
+  return { payload, isLoading, errorMsg: errorMsg.current, fetchData, resetStates };
 };

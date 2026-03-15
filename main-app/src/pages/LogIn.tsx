@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useState } from "react";
 import { LogInRequest } from "../types/AuthTypes";
@@ -20,6 +20,11 @@ export default function Login() {
     const [error, setError] = useState<string | null>(null);
     const themeObject = useTheme();
     const logger = new Logger('Login');
+
+    if (auth.isAuthenticated) {
+        logger.debug(`User ${auth.user?.name} ist eingeloggt, leite zum Dashboard weiter.`);
+        return <Navigate to="/dashboard" replace />;
+    }
 
     const onSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -47,10 +52,9 @@ export default function Login() {
                 logger.debug(`Login fehlgeschlagen: ${auth.errorMsg} für User: ${trimmedName}`);
                 return;
             }
-            if (auth.isAuthenticated) {
-                logger.debug(`Login erfolgreich für User: ${trimmedName}`);
-                void navigate("/dashboard", { replace: true });
-            }
+
+            setName("");
+            setPassword("");
 
         } catch (err) {
             setError("Ein Fehler ist aufgetreten: " + (err instanceof Error ? err.message : "Unbekannter Fehler"));
@@ -58,7 +62,12 @@ export default function Login() {
             return;
 
         } finally {
+
             setSubmitting(false);
+            if (auth.isAuthenticated) {
+                logger.debug(`Login erfolgreich für User: ${trimmedName}`);
+                void navigate("/dashboard", { replace: true });
+            }
         }
     };
 
