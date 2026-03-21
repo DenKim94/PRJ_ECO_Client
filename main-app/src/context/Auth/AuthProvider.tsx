@@ -28,7 +28,7 @@ const getInitialAuthData = (): { token: string | null; user: User | null; remain
 
     // Wenn Token abgelaufen ist: Sofort aus localStorage löschen und null zurückgeben
     if (decoded.exp && decoded.exp < currentTime) {
-      logger.warn('Initial token is already expired. Clearing storage.');
+      logger.warn('Initialer Token ist abgelaufen. Entferne ungültigen Token aus localStorage.');
       localStorage.removeItem('token');
       return { token: null, user: null, remainingTimeMs: null };
     }
@@ -44,7 +44,7 @@ const getInitialAuthData = (): { token: string | null; user: User | null; remain
     return { token: storedToken, user, remainingTimeMs };
 
   } catch (err) {
-    logger.error('Failed to parse initial token. Clearing storage.', err);
+    logger.error('Fehler beim Initialisieren des Tokens', err);
     localStorage.removeItem('token');
     return { token: null, user: null, remainingTimeMs: null };
   }
@@ -111,7 +111,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const warningTime = expiresInMs - 60000;
 
         if (warningTime < 0) {
-            logger.debug('Token expiration time is less than 60 seconds! Showing session warning immediately.');
+            logger.debug('Token läuft in weniger als 60 Sekunden ab. Zeige sofort die Warnung an.');
             setShowSessionWarning(true);
             return;
         }
@@ -197,7 +197,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         if (!response) { 
             errorMsgRef.current = accountApi.errorMsg.current; 
-            return { message: accountApi.errorMsg.current?.message  ?? 'Logout failed.' };
+            return { message: accountApi.errorMsg.current?.message  ?? 'Logout ist fehlgeschlagen.' };
         }
         clearSession();
         return response;
@@ -208,7 +208,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         if (!response) { 
             errorMsgRef.current = emailApi.errorMsg.current; 
-            return { message: emailApi.errorMsg.current?.message  ?? 'Request failed.' };
+            return { message: emailApi.errorMsg.current?.message  ?? 'Anfrage ist fehlgeschlagen.' };
         }
         return response;
     };
@@ -218,7 +218,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         
         if (!response) { 
             errorMsgRef.current = accountApi.errorMsg.current; 
-            return { message: accountApi.errorMsg.current?.message  ?? 'Request failed.' };
+            return { message: accountApi.errorMsg.current?.message  ?? 'Anfrage ist fehlgeschlagen.' };
         }
         return response;
     }

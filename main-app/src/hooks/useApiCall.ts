@@ -30,24 +30,24 @@ export function useApiCall<T = unknown>(): UseApiResponse<T> {
   const fetchData = useCallback(async (config: AxiosRequestConfig) => {
     setIsLoading(true);
     
-    logger.debug('Sending API Request... ', config);
+    logger.debug('Sende API-Anfrage...', config);
 
     try {
         const response = await apiClient.request<T>(config);
         setPayload(response.data);
-        logger.info('Request successful. ', { url: config.url, status: response.status });
+        logger.info('Anfrage erfolgreich.', { url: config.url, status: response.status });
         return response.data;
 
     } catch (err) {
         const axiosError = err as AxiosError<{ message?: string }>;
-        const errorMessage = axiosError.response?.data?.message ?? axiosError.message ?? 'Unknown Error';
+        const errorMessage = axiosError.response?.data?.message ?? axiosError.message ?? 'Unbekannter Fehler ist aufgetreten.';
         errorMsg.current = { 
           code: axiosError.response?.status, 
-          message: axiosError.response?.data?.message ?? axiosError.message ?? 'Unknown Error' 
+          message: axiosError.response?.data?.message ?? axiosError.message ?? 'Unbekannter Fehler ist aufgetreten.' 
         };
         
         setPayload(null);
-        logger.error('Request failed! ', { url: config.url, error: errorMessage });
+        logger.error('Anfrage fehlgeschlagen.', { url: config.url, error: errorMessage });
         return null;
 
     } finally {
@@ -59,7 +59,7 @@ export function useApiCall<T = unknown>(): UseApiResponse<T> {
     setPayload(null);
     errorMsg.current = undefined;
     setIsLoading(false);
-    logger.debug('API call state has been reset.');
+    logger.debug('Zustände zurückgesetzt.');
   }, []);
 
   return { payload, isLoading, errorMsg: errorMsg, fetchData, resetStates };
