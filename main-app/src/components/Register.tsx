@@ -50,9 +50,9 @@ export default function Register() {
                 return;
             }
 
-            if (auth.errorMsg){
-                setError("Registrierung fehlgeschlagen: " + auth.errorMsg);
-                logger.debug(`Registrierung fehlgeschlagen: ${auth.errorMsg} für User: ${trimmedName}`);
+            if (auth.errorMsgRef.current?.message) {
+                setError(auth.errorMsgRef.current.message);
+                logger.debug(`Registrierung fehlgeschlagen: ${auth.errorMsgRef.current.message} für User: ${trimmedName}`);
                 return;
             }
 
@@ -121,14 +121,12 @@ export default function Register() {
                                         alt={'Button für Passwort anzeigen'}
                                         width={24}
                                         height={24}
-                                        className={styles.toggleIcon}
                                     /> 
                                 : <img
                                         src={themeObject.theme === 'light' ? '/visibility_off_dark.png' : '/visibility_off_light.png'}
                                         alt={'Button für Passwort verbergen'}
                                         width={24}
                                         height={24}
-                                        className={styles.toggleIcon}
                                     /> }
                         </button>
                 </div>

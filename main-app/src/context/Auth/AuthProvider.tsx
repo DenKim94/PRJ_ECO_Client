@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const [showSessionWarning, setShowSessionWarning] = useState(false);
     const [warningTimer, setWarningTimer] = useState<NodeJS.Timeout | null>(null);
-    const errorMsg = useRef<string | undefined>(undefined);
+    const errorMsgRef = useRef<{ code?: number; message: string } | undefined>(undefined);
 
     // --- API Hooks für jede Aktion ---
     const authApi = useApiCall<AuthResponseModel>(); // Für Login und Token Refresh
@@ -164,7 +164,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const login = async (request: LogInRequest): Promise<AuthResponseModel | null> => {
         const response = await authApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/login`, data: request });
         if (!response) {
-            errorMsg.current = authApi.errorMsg;
+            errorMsgRef.current = authApi.errorMsg.current;
             return null;
         }
         
@@ -177,7 +177,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const register = async (request: RegisterRequest): Promise<ApiResponseMap | null> => {
         const response = await registerApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/register`, data: request });
        if (!response) { 
-            errorMsg.current = registerApi.errorMsg;
+            errorMsgRef.current = registerApi.errorMsg.current;
             return null;
        }
        return response; 
@@ -186,7 +186,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const getUserData = async (): Promise<UserDataResponseModel | null> => {
         const response = await userApi.fetchData({ method: 'GET', url: `${API_BASE_URL}/api/auth/user/get-info` });
         if (!response) {
-            errorMsg.current = userApi.errorMsg;
+            errorMsgRef.current = userApi.errorMsg.current;
             return null;
         }
         return response;
@@ -196,8 +196,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const response = await accountApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/logout` });
 
         if (!response) { 
-            errorMsg.current = accountApi.errorMsg; 
-            return { message: accountApi.errorMsg  ?? 'Logout failed.' };
+            errorMsgRef.current = accountApi.errorMsg.current; 
+            return { message: accountApi.errorMsg.current?.message  ?? 'Logout failed.' };
         }
         clearSession();
         return response;
@@ -207,11 +207,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const response = await emailApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/user-password/request`, data: request });
 
         if (!response) { 
-            errorMsg.current = emailApi.errorMsg; 
-            return { message: emailApi.errorMsg  ?? 'Request failed.' };
+            errorMsgRef.current = emailApi.errorMsg.current; 
+            return { message: emailApi.errorMsg.current?.message  ?? 'Request failed.' };
         }
         return response;
     };
+
+    const resetPassword = async (request: PasswordResetRequest): Promise<ApiMessageMap> => {
+        const response = await accountApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/user-password/reset`, data: request });
+        
+        if (!response) { 
+            errorMsgRef.current = accountApi.errorMsg.current; 
+            return { message: accountApi.errorMsg.current?.message  ?? 'Request failed.' };
+        }
+        return response;
+    }
 
     return (
         <AuthContext.Provider value={{ 
@@ -219,13 +229,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             isAuthenticated: !!token && !!user, 
             showSessionWarning,
             isLoading: isLoadingSevice,
-            errorMsg: errorMsg.current, 
+            errorMsgRef: errorMsgRef, 
             login,
             logout,
             register,
             getUserData,
             sendVerificationEmail,
-            // resetPassword,
+            resetPassword,
             // refreshToken,
             // deleteAccount,
             // verifyEmail,

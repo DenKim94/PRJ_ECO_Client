@@ -6,12 +6,14 @@ import { HelperClass } from "../utils/helper";
 import { AppLogo } from "./AppLogo";
 import { MessageContainer } from "./MessageContainer";
 import { CustomButton } from "./CustomButton";
+import PasswordResetInput from "./PasswordResetInput";
 
 export default function PasswordReset() {
     const auth = useAuth();
     const [eMail, setEMail] = useState("");
     const [submitting, setSubmitting] = useState(false);
     const [message, setMessage] = useState<string | null>(null);
+    const [eMailSent, setEmailSent] = useState(false);
     const logger = new Logger('PasswordReset');
     
     const onSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
@@ -28,18 +30,18 @@ export default function PasswordReset() {
             const request: { email: string } = { email: eMail };
             const result = await auth.sendVerificationEmail(request);
 
-            if (!result || auth.errorMsg) {
-                setMessage('Anfrage ist fehlgeschlagen. Bitte prüfe deine Eingabe.');
-                logger.debug(auth.errorMsg ? `${auth.errorMsg}` : `Anfrage fehlgeschlagen für E-Mail: ${eMail}`);
+            if (auth.errorMsgRef.current?.message) {
+                setMessage('Anfrage ist fehlgeschlagen. Bitte überprüfe deine Eingabe.');
+                logger.error(`${auth.errorMsgRef.current.message}`);
                 return;
             }
-            // TODO: Fehlerhandling verbessern, da API auch bei ungültiger E-Mail-Adresse mit 200 antwortet.
-            setMessage("Verifizierungscode wurde gesendet. Bitte überprüfe dein Postfach.");
-            setEMail("");
+            setMessage(`${result.message} Bitte überprüfe dein Postfach.`);
+            setEmailSent(true);
 
         } catch (err) {
+            setEMail("");
             setMessage((err instanceof Error ? err.message : "Unbekannter Fehler ist aufgetreten."));
-            logger.debug(`Ein Fehler ist aufgetreten: ${err instanceof Error ? err.message : "Unbekannter Fehler ist aufgetreten."}`);
+            logger.error(`Ein Fehler ist aufgetreten: ${err instanceof Error ? err.message : "Unbekannter Fehler ist aufgetreten."}`);
             return;
 
         } finally {
@@ -50,33 +52,36 @@ export default function PasswordReset() {
    return (
         <div className={styles.pageContainer}>
             <AppLogo src="/eco_app_v2.png" alt="ECO App Logo" size="xl"/>
-            
-            <span className={styles.infoText}>
-                Bitte gib deine hinterlegte E-Mail-Adresse ein, um das Passwort zurücksetzen zu können. <br/>
-                Du erhältst anschließend einen Verifizierungscode per E-Mails.
-            </span>
+            {!eMailSent ? (
+                <>
+                    <span className={styles.infoText}>
+                        Bitte gib deine hinterlegte E-Mail-Adresse ein, um das Passwort zurücksetzen zu können. <br/>
+                        Du erhältst anschließend einen Verifizierungscode per E-Mail.
+                    </span>
 
-            <form onSubmit={(e) => void onSubmit(e)} className={styles.formContainer}>
-                <input
-                    id="email-register"
-                    name="email-register"
-                    type='text'
-                    className={styles.inputEmail}
-                    value={eMail}
-                    onChange={(e) => setEMail(e.target.value)}
-                    autoComplete="email"
-                    placeholder="E-Mail"
-                    required={true}
-                    disabled={submitting}
-                />
-                <CustomButton 
-                    title={submitting ? "Code senden..." : "Bestätigen"} 
-                    type="submit" 
-                    isDisabled={submitting} 
-                />
-            </form>
+                    <form onSubmit={(e) => void onSubmit(e)} className={styles.formContainer}>
+                        <input
+                            id="email-register"
+                            name="email-register"
+                            type='text'
+                            className={styles.inputEmail}
+                            value={eMail}
+                            onChange={(e) => setEMail(e.target.value)}
+                            autoComplete="email"
+                            placeholder="E-Mail"
+                            required={true}
+                            disabled={submitting}
+                        />
+                        <CustomButton 
+                            title={submitting ? "Code senden..." : "Bestätigen"} 
+                            type="submit" 
+                            isDisabled={submitting} 
+                        />
+                    </form>
+                </> 
+            ) : <PasswordResetInput eMail={eMail} setMessage={setMessage} />}
 
-            <MessageContainer message={message ?? ""} type="info" isVisible={message !== null} />
+            <MessageContainer message={message ?? ""} type={auth.errorMsgRef.current?.message ? "error" : "info"} isVisible={message !== null} />
         </div>
     );
 }

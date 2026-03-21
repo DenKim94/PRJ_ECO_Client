@@ -2,7 +2,7 @@ import styles from './MessageContainer.module.scss';
 
 interface MessageContainerProps {
   message: string;
-  type?: 'error' | 'success' | 'info';
+  type?: 'error' | 'success' | 'info' | 'warning';
   isVisible?: boolean;
 }
 

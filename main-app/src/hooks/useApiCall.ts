@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, RefObject } from 'react';
 import { apiClient } from '../lib/axios-client';
 import { AxiosError, AxiosRequestConfig } from 'axios';
 import { Logger } from '../utils/logger';
@@ -6,7 +6,7 @@ import { Logger } from '../utils/logger';
 interface UseApiResponse<T> {
     payload: T | null;
     isLoading: boolean;
-    errorMsg: string | undefined;
+    errorMsg: RefObject<{ code?: number; message: string } | undefined>;
     fetchData: (config: AxiosRequestConfig) => Promise<T | null>;
     resetStates: () => void;
 }
@@ -25,7 +25,7 @@ const logger = new Logger('useApiCall');
 export function useApiCall<T = unknown>(): UseApiResponse<T> {
   const [payload, setPayload] = useState<T | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const errorMsg = useRef<string | undefined>(undefined);
+  const errorMsg = useRef<{ code?: number; message: string } | undefined>(undefined);
 
   const fetchData = useCallback(async (config: AxiosRequestConfig) => {
     setIsLoading(true);
@@ -41,7 +41,11 @@ export function useApiCall<T = unknown>(): UseApiResponse<T> {
     } catch (err) {
         const axiosError = err as AxiosError<{ message?: string }>;
         const errorMessage = axiosError.response?.data?.message ?? axiosError.message ?? 'Unknown Error';
-        errorMsg.current = errorMessage;
+        errorMsg.current = { 
+          code: axiosError.response?.status, 
+          message: axiosError.response?.data?.message ?? axiosError.message ?? 'Unknown Error' 
+        };
+        
         setPayload(null);
         logger.error('Request failed! ', { url: config.url, error: errorMessage });
         return null;
@@ -58,5 +62,5 @@ export function useApiCall<T = unknown>(): UseApiResponse<T> {
     logger.debug('API call state has been reset.');
   }, []);
 
-  return { payload, isLoading, errorMsg: errorMsg.current, fetchData, resetStates };
+  return { payload, isLoading, errorMsg: errorMsg, fetchData, resetStates };
 };

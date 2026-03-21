@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createContext, RefObject } from 'react';
 import { LogInRequest, RegisterRequest, PasswordResetRequest, AuthResponseModel, User, UserDataResponseModel } from '../../types/AuthTypes'; 
 
 
@@ -10,7 +10,7 @@ export interface AuthContextType {
   isAuthenticated: boolean;
   showSessionWarning: boolean;
   isLoading: boolean;
-  errorMsg: string | undefined;
+  errorMsgRef: RefObject<{ code?: number; message: string } | undefined>;
   login: (request: LogInRequest) => Promise<AuthResponseModel | null>;
   logout: () => Promise<ApiMessageMap>;
   register: (request: RegisterRequest) => Promise<ApiResponseMap | null>;
@@ -19,7 +19,7 @@ export interface AuthContextType {
   // deleteAccount: () => Promise<ApiMessageMap>;
   // verifyEmail: (tfaCode: string) => Promise<ApiMessageMap>;
   sendVerificationEmail: (request: {email: string}) => Promise<ApiMessageMap>;
-  // resetPassword: (request: PasswordResetRequest) => Promise<ApiMessageMap>;
+  resetPassword: (request: PasswordResetRequest) => Promise<ApiMessageMap>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
