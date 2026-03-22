@@ -6,10 +6,12 @@ import { Logger } from "../utils/logger";
 import { HelperClass } from "../utils/helper";
 import { useTheme } from "../hooks/useTheme";
 import { PasswordResetRequest } from "../types/AuthTypes";
+import { useNavigate } from "react-router-dom";
 
 export default function PasswordResetInput({ eMail, setMessage }: { eMail: string; setMessage: (message: string | null) => void }) {
         const auth = useAuth();
         const [code, setCode] = useState("");
+         const navigate = useNavigate();
         const [submitting, setSubmitting] = useState(false);
         const [password, setPassword] = useState("");
         const [approvePassword, setApprovePassword] = useState("");
@@ -37,6 +39,9 @@ export default function PasswordResetInput({ eMail, setMessage }: { eMail: strin
                     return;
                 }
                 setMessage(result.message);
+                setTimeout(() => {
+                    void navigate("/login", { replace: true });
+                }, 2500);
     
             } catch (err) {
                 setMessage((err instanceof Error ? err.message : "Unbekannter Fehler ist aufgetreten."));
@@ -76,7 +81,7 @@ export default function PasswordResetInput({ eMail, setMessage }: { eMail: strin
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         autoComplete="new-password"
-                        placeholder="Passwort"
+                        placeholder="Neues Passwort"
                         required={true}
                         minLength={6}
                         disabled={submitting}
@@ -113,7 +118,7 @@ export default function PasswordResetInput({ eMail, setMessage }: { eMail: strin
                         value={approvePassword}
                         onChange={(e) => setApprovePassword(e.target.value)}
                         autoComplete="new-password"
-                        placeholder="Passwort wiederholen"
+                        placeholder="Neues Passwort wiederholen"
                         required={true}
                         minLength={6}
                         disabled={submitting}

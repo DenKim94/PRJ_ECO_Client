@@ -61,7 +61,6 @@ export default function Register() {
             setPassword("");
             setEMail("");
             setAcceptedPrivacy(false);
-
             void navigate("/login", { replace: true });
 
         } catch (err) {
@@ -166,7 +165,6 @@ export default function Register() {
                     isDisabled={submitting} 
                 />
             </form>
-
             <MessageContainer message={error ?? ""} type="error" isVisible={error !== null} />
         </div>
     );

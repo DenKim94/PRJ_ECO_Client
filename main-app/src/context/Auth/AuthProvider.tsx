@@ -203,7 +203,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return response;
     };
 
-    const sendVerificationEmail = async (request: {email: string}): Promise<ApiMessageMap> => {
+    const sendPasswordVerificationEmail = async (request: {email: string}): Promise<ApiMessageMap> => {
         const response = await emailApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/user-password/request`, data: request });
 
         if (!response) { 
@@ -234,7 +234,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             logout,
             register,
             getUserData,
-            sendVerificationEmail,
+            sendPasswordVerificationEmail,
             resetPassword,
             // refreshToken,
             // deleteAccount,

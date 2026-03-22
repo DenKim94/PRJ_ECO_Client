@@ -28,7 +28,7 @@ export default function PasswordReset() {
         setSubmitting(true);
         try {
             const request: { email: string } = { email: eMail };
-            const result = await auth.sendVerificationEmail(request);
+            const result = await auth.sendPasswordVerificationEmail(request);
 
             if (auth.errorMsgRef.current?.message) {
                 setMessage('Anfrage ist fehlgeschlagen. Bitte überprüfe deine Eingabe.');

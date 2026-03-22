@@ -18,7 +18,7 @@ export interface AuthContextType {
   // refreshToken: () => Promise<AuthResponseModel>;
   // deleteAccount: () => Promise<ApiMessageMap>;
   // verifyEmail: (tfaCode: string) => Promise<ApiMessageMap>;
-  sendVerificationEmail: (request: {email: string}) => Promise<ApiMessageMap>;
+  sendPasswordVerificationEmail: (request: {email: string}) => Promise<ApiMessageMap>;
   resetPassword: (request: PasswordResetRequest) => Promise<ApiMessageMap>;
 }
 
