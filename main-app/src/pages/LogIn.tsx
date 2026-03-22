@@ -47,9 +47,9 @@ export default function Login() {
                 return;
             }
 
-            if (auth.errorMsg){
-                setError("Login fehlgeschlagen: " + auth.errorMsg);
-                logger.debug(`Login fehlgeschlagen: ${auth.errorMsg} für User: ${trimmedName}`);
+            if (auth.errorMsgRef.current?.message) {
+                setError("Login fehlgeschlagen: " + auth.errorMsgRef.current.message);
+                logger.debug(`Login fehlgeschlagen: ${auth.errorMsgRef.current.message} für User: ${trimmedName}`);
                 return;
             }
 

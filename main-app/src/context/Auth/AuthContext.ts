@@ -7,6 +7,7 @@ export type ApiMessageMap = Record<string, string>;
 
 export interface AuthContextType {
   user: User | null;
+  userDetailedData: UserDataResponseModel | null;
   isAuthenticated: boolean;
   showSessionWarning: boolean;
   isLoading: boolean;

@@ -35,7 +35,7 @@ export function useApiCall<T = unknown>(): UseApiResponse<T> {
     try {
         const response = await apiClient.request<T>(config);
         setPayload(response.data);
-        logger.info('Anfrage erfolgreich.', { url: config.url, status: response.status });
+        logger.debug('Anfrage erfolgreich.', { url: config.url, status: response.status });
         return response.data;
 
     } catch (err) {

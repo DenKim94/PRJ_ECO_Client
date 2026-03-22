@@ -16,6 +16,13 @@
     background-color: var.$color-surface-light;
     box-shadow: var(--shadow-border-glow);
     
+    @media (max-width: 360px) {
+        padding: 0;
+        min-width: var.$min-width-input;
+        max-width: 350px;
+        width: 100%;
+    }
+
     @media (min-width: var.$breakpoint-md) {
         width: 100%;
         max-width: var.$max-width-content; 
