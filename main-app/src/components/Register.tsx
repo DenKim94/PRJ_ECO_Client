@@ -46,13 +46,13 @@ export default function Register() {
 
             if (!result) {
                 setError('Registrierung fehlgeschlagen. Bitte prüfe deine Eingaben.');
-                logger.debug(`Registrierung fehlgeschlagen für User: ${trimmedName}`);
+                logger.error(`Registrierung fehlgeschlagen für User: ${trimmedName}`);
                 return;
             }
 
             if (auth.errorMsgRef.current?.message) {
                 setError(auth.errorMsgRef.current.message);
-                logger.debug(`Registrierung fehlgeschlagen: ${auth.errorMsgRef.current.message} für User: ${trimmedName}`);
+                logger.error(`Registrierung fehlgeschlagen: ${auth.errorMsgRef.current.message} für User: ${trimmedName}`);
                 return;
             }
 
@@ -65,7 +65,7 @@ export default function Register() {
 
         } catch (err) {
             setError("Ein Fehler ist aufgetreten: " + (err instanceof Error ? err.message : "Unbekannter Fehler"));
-            logger.debug(`Ein Fehler ist aufgetreten: ${err instanceof Error ? err.message : "Unbekannter Fehler"} für User: ${trimmedName}`);
+            logger.error(`Ein Fehler ist aufgetreten: ${err instanceof Error ? err.message : "Unbekannter Fehler"} für User: ${trimmedName}`);
             return;
 
         } finally {

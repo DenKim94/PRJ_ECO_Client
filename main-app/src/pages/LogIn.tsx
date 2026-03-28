@@ -43,13 +43,13 @@ export default function Login() {
 
             if (!result) {
                 setError("Login fehlgeschlagen. Bitte prüfe deine Eingaben.");
-                logger.debug(`Login fehlgeschlagen für User: ${trimmedName}`);
+                logger.error(`Login fehlgeschlagen für User: ${trimmedName}`);
                 return;
             }
 
             if (auth.errorMsgRef.current?.message) {
                 setError("Login fehlgeschlagen: " + auth.errorMsgRef.current.message);
-                logger.debug(`Login fehlgeschlagen: ${auth.errorMsgRef.current.message} für User: ${trimmedName}`);
+                logger.error(`Login fehlgeschlagen: ${auth.errorMsgRef.current.message} für User: ${trimmedName}`);
                 return;
             }
 
@@ -58,14 +58,14 @@ export default function Login() {
 
         } catch (err) {
             setError("Ein Fehler ist aufgetreten: " + (err instanceof Error ? err.message : "Unbekannter Fehler"));
-            logger.debug(`Ein Fehler ist aufgetreten: ${err instanceof Error ? err.message : "Unbekannter Fehler"} für User: ${trimmedName}`);
+            logger.error(`Ein Fehler ist aufgetreten: ${err instanceof Error ? err.message : "Unbekannter Fehler"} für User: ${trimmedName}`);
             return;
 
         } finally {
 
             setSubmitting(false);
             if (auth.isAuthenticated) {
-                logger.debug(`Login erfolgreich für User: ${trimmedName}`);
+                logger.error(`Login erfolgreich für User: ${trimmedName}`);
                 void navigate("/dashboard", { replace: true });
             }
         }

@@ -1,22 +1,29 @@
-import { createContext } from 'react';
+import { createContext, RefObject } from 'react';
+import { TrackingEntityRequest, TrackingEntityResponse } from "../../types/TrackingTypes";
+import { ErrorMessage } from '../../types/AuthTypes';
+import { ApiMessageMap } from '../Auth/AuthContext';
 
-export interface TrackingEntry {
-    id: number;
-    kwhValue: number;
-    date: string;    
-}
-
-/** TODO: Ausgaben ergänzen
- * * getAllEntries: () => Promise<TrackingEntry[]>;
- * * addEntry: (request: AddEntryRequest) => Promise<TrackingEntry>;
- * * getNewestEntry: () => Promise<TrackingEntry | null>;
- * * updateEntryById: (request: UpdateEntryRequest) => Promise<TrackingEntry>;
- * * deleteEntryById: (id: number) => Promise<Map<string, string>>;
- * * deleteAllEntries: () => Promise<Map<string, string>>;
+/**
+ * * newestEntry: TrackingEntityResponse | null;
+ * * entryList: TrackingEntityResponse[];
+ * * getAllEntries: () => Promise<TrackingEntityResponse[]>;
+ * * addEntry: (request: TrackingEntityRequest) => Promise<TrackingEntityResponse>;
+ * * getNewestEntry: () => Promise<TrackingEntityResponse | null>;
+ * * updateEntryById: (id: number, request: TrackingEntityRequest) => Promise<TrackingEntityResponse>;
+ * * deleteEntryById: (id: number) => Promise<ApiMessageMap>;
+ * * deleteAllEntries: () => Promise<ApiMessageMap>;
 */
 export interface TrackingContextType {
-    data: TrackingEntry[];
-    serviceResponse: Map<string, string> | null;
+    newestEntry: TrackingEntityResponse | null;
+    entryList: TrackingEntityResponse[];
+    errorMsgRef: RefObject<ErrorMessage | undefined>;
+    isLoading: boolean;
+    getAllEntries: () => Promise<TrackingEntityResponse[]>;
+    getNewestEntry: () => Promise<TrackingEntityResponse | null>;
+    addEntry: (request: TrackingEntityRequest) => Promise<TrackingEntityResponse>;
+    updateEntryById: (id: number, request: TrackingEntityRequest) => Promise<TrackingEntityResponse>;
+    deleteEntryById: (id: number) => Promise<ApiMessageMap>;
+    deleteAllEntries: () => Promise<ApiMessageMap>;
 }
 
 export const TrackingContext = createContext<TrackingContextType | undefined>(undefined);

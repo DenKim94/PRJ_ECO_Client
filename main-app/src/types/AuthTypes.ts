@@ -39,3 +39,17 @@ export interface UserDataResponseModel{
   isEnabled: boolean;
   isValidatedEmail: boolean;
 }
+
+export interface ErrorMessage {
+  code?: number;
+  message: string;
+}
+
+export interface AllUserDataResponse {
+  id: number;
+  userName: string;
+  eMail: string;
+  isEnabledUser: boolean;
+  isValidatedEmail: boolean;
+  createdAt: string;
+};

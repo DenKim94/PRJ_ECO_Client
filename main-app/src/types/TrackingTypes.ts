@@ -1,10 +1,10 @@
-export interface UpdateEntryRequest {
-    id: number;
-    value: number;
+export interface TrackingEntityRequest {
+    value_kWh: number;
     date: string;
-}
+};
 
-export interface AddEntryRequest {
-    value: number;
-    date: string;
-}
+export interface TrackingEntityResponse {
+    readingValue: number;
+    timestamp: string;
+    id: number;
+};

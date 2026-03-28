@@ -8,7 +8,12 @@ const logger = new Logger('CalculationProvider');
 /**
  * @file CalculationProvider.tsx
  * 
- * Diese Datei definiert den CalculationProvider, der die Calculation-Logik und -zustände für die gesamte Anwendung bereitstellt.
+ * Diese Datei definiert den CalculationProvider, der die Berechnungs-Logik und -zustände für die gesamte Anwendung bereitstellt.
+ * 
+ * Der Provider beinhaltet folgende Daten:
+ * * data: CalculationEntry[];
+ * * errorMsgRef: RefObject<ErrorMessage | undefined>;
+ * * isLoading: boolean;
  * 
  * Der Provider implementiert folgende Funktionen:
  * * getAllResults: () => Promise<CalculationEntry[]>;

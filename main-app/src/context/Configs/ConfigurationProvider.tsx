@@ -3,6 +3,7 @@ import { Logger } from "../../utils/logger";
 import { ConfigurationContext } from "./ConfigurationContext";
 import { ConfigModel } from "../../types/ConfigTypes";
 import { useApiCall } from "../../hooks/useApiCall";
+import { ErrorMessage } from "../../types/AuthTypes";
 
 
 const logger = new Logger('ConfigurationProvider');
@@ -11,16 +12,23 @@ const API_BASE_URL = import.meta.env.VITE_API_URL;
 /**
  * @file ConfigurationProvider.tsx
  * 
- * Diese Datei definiert den ConfigurationProvider, der die Konfigurationsparameter für die gesamte Anwendung bereitstellt.
+ * Diese Datei definiert den ConfigurationProvider, der die spezifischen Konfigurationsparameter für die gesamte Anwendung bereitstellt.
+ * Anhand dieser Konfiguration werden die Kosten-Berechnungen in der Anwendung durchgeführt.
+ * 
+ * Der Provider beinhaltet folgende Daten:
+ * * configs: ConfigModel | null;
+ * * errorMsgRef: RefObject<ErrorMessage | undefined>;
+ * * isLoading: boolean;
  * 
  * Der Provider implementiert folgende Funktionen:
-    * * getConfiguration: () => Promise<ConfigModel | null>;
-    * * updateConfiguration: (request: ConfigModel) => Promise<ConfigModel | null>;
+ * * getConfiguration: () => Promise<ConfigModel | null>;
+ * * updateConfiguration: (request: ConfigModel) => Promise<ConfigModel | null>;
  */
 export const ConfigurationProvider = ({ children }: { children: ReactNode }) => {
     const configApi = useApiCall<ConfigModel>();
-    const errorMsgRef = useRef<{ code?: number; message: string } | undefined>(undefined);
+    const errorMsgRef = useRef<ErrorMessage | undefined>(undefined);
     const [configs, setConfigs] = useState<ConfigModel | null>(null);
+    const isLoading : boolean = configApi.isLoading;
 
     const getConfiguration = useCallback(async (): Promise<ConfigModel | null> => {
         logger.debug('Lade Konfiguration vom Server...');
@@ -32,8 +40,8 @@ export const ConfigurationProvider = ({ children }: { children: ReactNode }) => 
         setConfigs(response);
         logger.debug('Konfiguration erfolgreich geladen.');
         return response;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+
+    }, [configApi]);
 
     const updateConfiguration = useCallback(async (request: ConfigModel): Promise<ConfigModel | null> => {
         logger.debug('Aktualisiere Konfiguration...');
@@ -45,11 +53,14 @@ export const ConfigurationProvider = ({ children }: { children: ReactNode }) => 
         setConfigs(response);
         logger.debug('Konfiguration erfolgreich aktualisiert.');
         return response;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+
+    }, [configApi]);
 
     return (
-        <ConfigurationContext.Provider value={{ configs, 
+        <ConfigurationContext.Provider value={{ 
+            errorMsgRef,
+            configs, 
+            isLoading,
             getConfiguration, 
             updateConfiguration
         }}>

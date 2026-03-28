@@ -3,7 +3,7 @@ import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { Logger } from '../../utils/logger';
 import { ApiMessageMap, ApiResponseMap, AuthContext } from './AuthContext';
 import { useApiCall } from '../../hooks/useApiCall';
-import { LogInRequest, RegisterRequest, PasswordResetRequest, AuthResponseModel, User, UserRoles, UserDataResponseModel } from '../../types/AuthTypes'; 
+import { LogInRequest, RegisterRequest, PasswordResetRequest, AuthResponseModel, User, UserRoles, UserDataResponseModel, ErrorMessage, AllUserDataResponse } from '../../types/AuthTypes'; 
 
 
 export interface CustomJwtPayload extends JwtPayload {
@@ -54,20 +54,35 @@ const getInitialAuthData = (): { token: string | null; user: User | null; remain
  * @file AuthProvider.tsx
  * 
  * Diese Datei definiert den AuthProvider, der die Authentifizierungslogik und -zustände für die gesamte Anwendung bereitstellt.
- * 
+ *
+ * Der Provider beinhaltet folgende Daten:
+ * * user: User | null;
+ * * userDetailedData: UserDataResponseModel | null;
+ * * adminUserData: AllUserDataResponse[];
+ * * isAuthenticated: boolean;
+ * * showSessionWarning: boolean;
+ * * isLoading: boolean;
+ * * errorMsgRef: RefObject<ErrorMessage | undefined>;
+ *
  * Der Provider implementiert folgende Funktionen:
- * * login: (request: LogInRequest) => Promise<Map<string, object>>;
- * * logout: () => Promise<Map<string, string>>;
- * * register: (request: RegisterRequest) => Promise<Map<string, string>>;
- * * refreshToken: () => Promise<Map<string, object>>;
- * * deleteAccount: () => Promise<Map<string, string>>;
- * * verifyEmail: (tfaCode: string) => Promise<Map<string, string>>;
- * * sendVerificationEmail: (request: {email: string}) => Promise<Map<string, string>>;
- * * resetPassword: (request: PasswordResetRequest) => Promise<Map<string, string>>;
+ * * login: (request: LogInRequest) => Promise<AuthResponseModel | null>;
+ * * logout: () => Promise<ApiMessageMap>;
+ * * register: (request: RegisterRequest) => Promise<ApiResponseMap | null>;
+ * * getUserData: () => Promise<UserDataResponseModel | null>;
+ * * refreshToken: () => Promise<AuthResponseModel | null>;
+ * * deleteAccount: () => Promise<ApiMessageMap>;
+ * * verifyEmail: (tfaCode: string) => Promise<ApiMessageMap>;
+ * * sendPasswordVerificationEmail: (request: {email: string}) => Promise<ApiMessageMap>;
+ * * resetPassword: (request: PasswordResetRequest) => Promise<ApiMessageMap>;
+ * * adminDeleteUserById: (userId: number) => Promise<ApiMessageMap>;
+ * * adminSetUserStatusById: (userId: number, isEnabled: boolean) => Promise<ApiMessageMap>;
+ * * adminGetAllUsers: () => Promise<AllUserDataResponse[]>;
+ * * adminUpdatePassword: (newPassword: string) => Promise<ApiMessageMap>;
  */
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [initialAuthData] = useState(getInitialAuthData);
     const [userDetailedData, setUserDetailedData] = useState<UserDataResponseModel | null>(null);
+    const [adminUserData, setAdminUserData] = useState<AllUserDataResponse[]>([]);
     const [token, setToken] = useState<string | null>(() => {
         return localStorage.getItem('token');
     });
@@ -87,11 +102,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const [showSessionWarning, setShowSessionWarning] = useState(false);
     const [warningTimer, setWarningTimer] = useState<NodeJS.Timeout | null>(null);
-    const errorMsgRef = useRef<{ code?: number; message: string } | undefined>(undefined);
+    const errorMsgRef = useRef<ErrorMessage | undefined>(undefined);
 
     // --- API Hooks für jede Aktion ---
     const authApi = useApiCall<AuthResponseModel>(); // Für Login und Token Refresh
     const userApi = useApiCall<UserDataResponseModel>();
+    const adminUserApi = useApiCall<AllUserDataResponse[]>(); // Für Admin-Funktion: Alle Benutzer abrufen
     const registerApi = useApiCall<ApiResponseMap>();
     const accountApi = useApiCall<ApiMessageMap>(); // Für Logout, Delete Account, Reset Password
     const emailApi = useApiCall<ApiMessageMap>();   // Für Verifizierungs-E-Mail senden
@@ -101,7 +117,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         registerApi.isLoading || 
         accountApi.isLoading || 
         emailApi.isLoading || 
-        userApi.isLoading;
+        userApi.isLoading || 
+        adminUserApi.isLoading;
 
     const startWarningTimer = useCallback((expiresInMs: number) => {
         if (warningTimer){ clearTimeout(warningTimer) };
@@ -111,19 +128,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const warningTime = expiresInMs - 60000;
 
         if (warningTime < 0) {
-            logger.debug('Token läuft in weniger als 60 Sekunden ab. Zeige sofort die Warnung an.');
+            logger.warn('Token läuft in weniger als 60 Sekunden ab. Zeige sofort die Warnung an.');
             setShowSessionWarning(true);
             return;
         }
         const delay = warningTime >= 10000 ? warningTime : 10000;
 
         const timerId = setTimeout(() => {
-            logger.debug('Token läuft bald ab.');
+            logger.warn('Token läuft bald ab.');
             setShowSessionWarning(true);
         }, delay);
 
         setWarningTimer(timerId);
-        
+        logger.debug('Token-Warntimer gestartet.');
     }, [warningTimer]);
 
     const clearSession = useCallback(() => {
@@ -137,7 +154,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setToken(null);
         setUser(null);
         setShowSessionWarning(false);
-        logger.debug('Session wurde geleert.');
+        logger.debug('Aktuelle Session wurde zurückgesetzt.');
 
     }, [warningTimer]);
 
@@ -193,30 +210,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, [token]);
 
     const login = useCallback(async (request: LogInRequest): Promise<AuthResponseModel | null> => {
+        logger.debug('Login ...', request);
         const response = await authApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/login`, data: request });
         if (!response) {
             errorMsgRef.current = authApi.errorMsg.current;
             return null;
         }
-        
         setJWT(response.token, response.expiresIn);
         setUser({ name: response.userName, role: response.role as UserRoles, hasValidStatus: response.hasValidStatus });
 
+        logger.debug('Login erfolgreich.', response);
         return response;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [authApi, setJWT]);
 
     const register = useCallback(async (request: RegisterRequest): Promise<ApiResponseMap | null> => {
+        logger.debug('Registriere neuen Benutzer ...', request);
         const response = await registerApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/register`, data: request });
        if (!response) { 
             errorMsgRef.current = registerApi.errorMsg.current;
             return null;
        }
+       logger.debug('Registrierung erfolgreich.', response);
        return response; 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [registerApi]);
 
     const getUserData = useCallback( async (): Promise<UserDataResponseModel | null> => {
+        logger.debug('Lade Benutzerdaten ...');
         const response = await userApi.fetchData({ method: 'GET', url: `${API_BASE_URL}/api/auth/user/get-info` });
         if (!response) {
             errorMsgRef.current = userApi.errorMsg.current;
@@ -227,63 +246,155 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             role: response.role, 
             hasValidStatus: (response.isEnabled && response.isValidatedEmail) });
 
+        logger.debug('Benutzerdaten erfolgreich geladen.', response);
         return response;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [userApi]);
 
     const logout = useCallback(async (): Promise<ApiMessageMap> => {
+        logger.debug('Logout ...');
         const response = await accountApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/logout` });
-
         if (!response) { 
             errorMsgRef.current = accountApi.errorMsg.current; 
             return { message: accountApi.errorMsg.current?.message  ?? 'Logout ist fehlgeschlagen.' };
         }
         clearSession();
+        logger.debug('Logout erfolgreich.');
         return response;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [accountApi, clearSession]);
 
     const sendPasswordVerificationEmail = useCallback(async (request: {email: string}): Promise<ApiMessageMap> => {
         const response = await emailApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/user-password/request`, data: request });
-
         if (!response) { 
             errorMsgRef.current = emailApi.errorMsg.current; 
             return { message: emailApi.errorMsg.current?.message  ?? 'Anfrage ist fehlgeschlagen.' };
         }
         return response;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [emailApi]);
 
     const resetPassword = useCallback(async (request: PasswordResetRequest): Promise<ApiMessageMap> => {
+        logger.debug('Passwort zurücksetzen ...', request);
         const response = await accountApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/user-password/reset`, data: request });
-        
         if (!response) { 
             errorMsgRef.current = accountApi.errorMsg.current; 
             return { message: accountApi.errorMsg.current?.message  ?? 'Anfrage ist fehlgeschlagen.' };
         }
+        logger.debug('Passwort erfolgreich zurückgesetzt.');
         return response;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [accountApi]);
+
+    const refreshToken = useCallback(async (): Promise<AuthResponseModel | null> => {
+        logger.debug('Token aktualisieren ...');
+        const response = await authApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/refresh-token` });
+        if (!response) { 
+            errorMsgRef.current = authApi.errorMsg.current; 
+            return null;
+        }
+        setJWT(response.token, response.expiresIn);
+        setUser({ name: response.userName, role: response.role as UserRoles, hasValidStatus: response.hasValidStatus });
+        logger.debug('Token erfolgreich aktualisiert.');
+        return response;
+    }, [authApi, setJWT]);
+
+    const deleteAccount = useCallback(async (): Promise<ApiMessageMap> => {
+        logger.debug('Account löschen ...');
+        const response = await accountApi.fetchData({ method: 'DELETE', url: `${API_BASE_URL}/api/auth/delete-account` });
+        if (!response) { 
+            errorMsgRef.current = accountApi.errorMsg.current; 
+            return { message: accountApi.errorMsg.current?.message  ?? 'Anfrage ist fehlgeschlagen.' };
+        }
+        clearSession();
+        logger.debug('Account erfolgreich gelöscht.');
+        return response;
+    }, [accountApi, clearSession]);
+
+    const verifyEmail = useCallback(async (code: string): Promise<ApiMessageMap> => {
+        logger.debug('E-Mail verifizieren ...');
+        const response = await accountApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/verify-email`, data: { code } });
+        if (!response) { 
+            errorMsgRef.current = accountApi.errorMsg.current; 
+            return { message: accountApi.errorMsg.current?.message  ?? 'Anfrage ist fehlgeschlagen.' };
+        }
+        setUserDetailedData(prev => {
+            // Wenn prev null ist, wird nichts aktualisiert
+            if (!prev) return prev; 
+            return { 
+                ...prev, 
+                isValidatedEmail: true 
+            };
+        });
+        logger.debug('E-Mail erfolgreich verifiziert.');
+        return response;
+    }, [accountApi]);
+
+    // --- Admin-Funktionen ---
+    const adminDeleteUserById = useCallback(async (userId: number): Promise<ApiMessageMap> => {
+        logger.debug(`[Admin] - Benutzer mit ID ${userId} löschen ...`);
+        const response = await accountApi.fetchData({ method: 'DELETE', url: `${API_BASE_URL}/api/admin/users/{id}/remove"` });
+        if (!response) { 
+            errorMsgRef.current = accountApi.errorMsg.current; 
+            return { message: accountApi.errorMsg.current?.message  ?? `Anfrage zum Löschen des Benutzers mit ID ${userId} ist fehlgeschlagen.` };
+        }
+        logger.debug(`[Admin] - Benutzer mit ID ${userId} erfolgreich gelöscht.`);
+        return response;
+    }, [accountApi]);
+
+    const adminSetUserStatusById = useCallback(async (userId: number, isEnabled: boolean): Promise<ApiMessageMap> => {
+        logger.debug(`[Admin] - Benutzer mit ID ${userId} ${isEnabled ? 'aktivieren' : 'deaktivieren'} ...`);
+        const response = await accountApi.fetchData({ method: 'PATCH', url: `${API_BASE_URL}/api/admin/users/${userId}/set-status`, data: { isEnabled } });
+        if (!response) { 
+            errorMsgRef.current = accountApi.errorMsg.current; 
+            return { message: accountApi.errorMsg.current?.message  ?? `Anfrage zum Setzen des Status des Benutzers mit ID ${userId} ist fehlgeschlagen.` };
+        }
+        logger.debug(`[Admin] - Benutzer mit ID ${userId} wurde erfolgreich ${isEnabled ? 'aktiviert' : 'deaktiviert'}.`);
+        return response;
+    }, [accountApi]);
+
+    const adminGetAllUsers = useCallback(async (): Promise<AllUserDataResponse[]> => {
+        logger.debug(`[Admin] - Alle Benutzerdaten abrufen ...`);
+        const response = await adminUserApi.fetchData({ method: 'GET', url: `${API_BASE_URL}/api/admin/get-users` });
+        if (!response) { 
+            errorMsgRef.current = adminUserApi.errorMsg.current; 
+            return [];
+        }
+        logger.debug(`[Admin] - Alle Benutzerdaten erfolgreich abgerufen.`, response);
+        setAdminUserData(response);
+        return response;
+    }, [adminUserApi]);
+
+    const adminUpdatePassword = useCallback(async (newPassword: string): Promise<ApiMessageMap> => {
+        logger.debug(`[Admin] - Passwort aktualisieren ...`);
+        const response = await accountApi.fetchData({ method: 'PUT', url: `${API_BASE_URL}/api/admin/update-password`, data: { newPassword } });
+        if (!response) { 
+            errorMsgRef.current = accountApi.errorMsg.current; 
+            return { message: accountApi.errorMsg.current?.message  ?? `Anfrage zum Aktualisieren des Passworts ist fehlgeschlagen.` };
+        }
+        logger.debug(`[Admin] - Passwort erfolgreich aktualisiert.`);
+        return response;
+    }, [accountApi]);
 
     return (
         <AuthContext.Provider value={{ 
             user,
-            userDetailedData, 
+            userDetailedData,
+            adminUserData, 
             isAuthenticated: !!token && !!user, 
             showSessionWarning,
             isLoading: isLoadingSevice,
-            errorMsgRef: errorMsgRef, 
+            errorMsgRef, 
             login,
             logout,
             register,
             getUserData,
             sendPasswordVerificationEmail,
             resetPassword,
-            // refreshToken,
-            // deleteAccount,
-            // verifyEmail,
+            refreshToken,
+            deleteAccount,
+            verifyEmail,
+            adminDeleteUserById,
+            adminSetUserStatusById,
+            adminGetAllUsers,
+            adminUpdatePassword
          }}>
-
             {children}
         </AuthContext.Provider>
     );
