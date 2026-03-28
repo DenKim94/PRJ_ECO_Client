@@ -23,6 +23,9 @@ export interface AuthResponseModel {
   hasValidStatus: boolean;
 }
 
+export type ApiResponseMap = Record<string, object>; 
+export type ApiMessageMap = Record<string, string>;
+
 export type UserRoles = 'USER' | 'ADMIN';
 
 export interface User {

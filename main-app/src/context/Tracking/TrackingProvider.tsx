@@ -4,7 +4,7 @@ import { TrackingContext } from "./TrackingContext";
 import { TrackingEntityRequest, TrackingEntityResponse } from "../../types/TrackingTypes";
 import { useApiCall } from "../../hooks/useApiCall";
 import { ErrorMessage } from "../../types/AuthTypes";
-import { ApiMessageMap } from "../Auth/AuthContext";
+import { ApiMessageMap } from '../../types/AuthTypes';
 
 
 const logger = new Logger('TrackingProvider');

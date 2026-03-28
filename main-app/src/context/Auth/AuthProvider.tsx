@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback, ReactNode, useRef } from 'react';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { Logger } from '../../utils/logger';
-import { ApiMessageMap, ApiResponseMap, AuthContext } from './AuthContext';
+import { AuthContext } from './AuthContext';
+import {ApiMessageMap, ApiResponseMap } from '../../types/AuthTypes';
 import { useApiCall } from '../../hooks/useApiCall';
 import { LogInRequest, RegisterRequest, PasswordResetRequest, AuthResponseModel, User, UserRoles, UserDataResponseModel, ErrorMessage, AllUserDataResponse } from '../../types/AuthTypes'; 
 

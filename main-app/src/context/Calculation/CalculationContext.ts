@@ -1,30 +1,15 @@
-import { createContext } from 'react';
-import { CalcultationRequest } from '../../types/CalculationTypes';
+import { createContext, RefObject } from 'react';
+import { CalcultationRequest, CalculationDataResponse } from '../../types/CalculationTypes';
+import { ApiMessageMap, ErrorMessage } from '../../types/AuthTypes';
 
-export interface CalculationEntry {
-    meterid: string;
-    startDate: number;
-    endDate: number;
-    daysBetween: number;
-    paidAmountPeriod: number;
-    bruttoTotalCostPeriod: number;
-    totalConsumptionKwh: number;
-    costDiffPeriod: number;
-    usedEnergyPerDay: number;
-    logMessage: string;    
-}
 
-/** TODO: Ausgaben ergänzen
- * * executeCalculation: (request: CalcultationRequest) => Promise<CalculationEntry[]>;
- * * getAllResults: () => Promise<CalculationEntry[]>;
- * * deleteAllResults: () => Promise<Map<string, string>>;
-*/
 export interface CalculationContextType {
-    data: CalculationEntry[];
-    serviceResponse: Map<string, string> | null;
-    // executeCalculation: (request: CalcultationRequest) => Promise<CalculationEntry[]>;
-    // getAllResults: () => Promise<CalculationEntry[]>;
-    // deleteAllResults: () => Promise<Map<string, string>>;
+    calcData: CalculationDataResponse[];
+    isLoading: boolean;
+    errorMsgRef: RefObject<ErrorMessage | undefined>;
+    executeCalculation: (request: CalcultationRequest) => Promise<CalculationDataResponse[]>;
+    loadResults: () => Promise<CalculationDataResponse[]>;
+    deleteAllResults: () => Promise<ApiMessageMap>;
 }
 
 export const CalculationContext = createContext<CalculationContextType | undefined>(undefined);

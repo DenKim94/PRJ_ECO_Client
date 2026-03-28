@@ -1,9 +1,10 @@
 import { createContext, RefObject } from 'react';
-import { LogInRequest, RegisterRequest, PasswordResetRequest, AuthResponseModel, User, UserDataResponseModel, ErrorMessage, AllUserDataResponse } from '../../types/AuthTypes'; 
+import { LogInRequest, RegisterRequest, 
+  PasswordResetRequest, AuthResponseModel, 
+  User, UserDataResponseModel, 
+  ErrorMessage, AllUserDataResponse, 
+  ApiMessageMap, ApiResponseMap } from '../../types/AuthTypes'; 
 
-
-export type ApiResponseMap = Record<string, object>; 
-export type ApiMessageMap = Record<string, string>;
 
 export interface AuthContextType {
   user: User | null;

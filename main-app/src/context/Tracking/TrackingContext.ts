@@ -1,7 +1,7 @@
 import { createContext, RefObject } from 'react';
 import { TrackingEntityRequest, TrackingEntityResponse } from "../../types/TrackingTypes";
 import { ErrorMessage } from '../../types/AuthTypes';
-import { ApiMessageMap } from '../Auth/AuthContext';
+import { ApiMessageMap } from '../../types/AuthTypes';
 
 /**
  * * newestEntry: TrackingEntityResponse | null;
