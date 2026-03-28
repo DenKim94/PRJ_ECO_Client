@@ -1,9 +1,13 @@
-import { ReactNode } from "react";
+import { ReactNode, useCallback, useRef, useState } from "react";
 import { Logger } from "../../utils/logger";
 import { CalculationContext } from "./CalculationContext";
+import { useApiCall } from "../../hooks/useApiCall";
+import { CalculationDataResponse, CalcultationRequest } from "../../types/CalculationTypes";
+import { ApiMessageMap, ErrorMessage } from "../../types/AuthTypes";
 
 
 const logger = new Logger('CalculationProvider');
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 /**
  * @file CalculationProvider.tsx
@@ -11,26 +15,67 @@ const logger = new Logger('CalculationProvider');
  * Diese Datei definiert den CalculationProvider, der die Berechnungs-Logik und -zustände für die gesamte Anwendung bereitstellt.
  * 
  * Der Provider beinhaltet folgende Daten:
- * * data: CalculationEntry[];
- * * errorMsgRef: RefObject<ErrorMessage | undefined>;
+ * * calcData: CalculationEntry[];
  * * isLoading: boolean;
+ * * errorMsgRef: RefObject<ErrorMessage | undefined>;
  * 
  * Der Provider implementiert folgende Funktionen:
- * * getAllResults: () => Promise<CalculationEntry[]>;
- * * executeCalculation: (request: CalcultationRequest) => Promise<CalculationEntry[]>;
- * * deleteAllResults: () => Promise<Map<string, string>>;
+ * * loadResults: () => Promise<CalculationDataResponse[]>;
+ * * executeCalculation: (request: CalcultationRequest) => Promise<CalculationDataResponse[]>;
+ * * deleteAllResults: () => Promise<ApiMessageMap>;
  */
 export const CalculationProvider = ({ children }: { children: ReactNode }) => {
+    const calcApi = useApiCall<CalculationDataResponse[]>();
+    const deleteApi = useApiCall<ApiMessageMap>();
+    const errorMsgRef = useRef<ErrorMessage | undefined>(undefined);
+    const [calcData, setCalcData] = useState<CalculationDataResponse[]>([]);
+    const isLoading : boolean = calcApi.isLoading || deleteApi.isLoading;
 
-/** 
- * TODO: 
- * Implementieren der Funktionen und Zustände für Calculation, ähnlich wie im AuthProvider, unter Verwendung von useApiCall für API-Anfragen. 
- * Alle Funktionen sollten Fehlerbehandlung und Logging enthalten.
- * 
- * */ 
+    const loadResults = useCallback(async (): Promise<CalculationDataResponse[]> => {
+        logger.debug('Lade Berechnungsergebnisse vom Server ...');
+        const response = await calcApi.fetchData({ method: 'GET', url: `${API_BASE_URL}/api/calculation/get-results`});
+        if (!response) { 
+            errorMsgRef.current = calcApi.errorMsg.current; 
+            return [];
+        }
+        setCalcData(response);
+        logger.debug('Berechnungsergebnisse erfolgreich geladen.');
+        return response;
+    }, [calcApi, setCalcData]);
+
+    const executeCalculation = useCallback(async (request: CalcultationRequest): Promise<CalculationDataResponse[]> => {
+        logger.debug('Führe Berechnung auf dem Server aus ...', request);
+        const response = await calcApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/calculation/run-and-save`, data: request });
+        if (!response) { 
+            errorMsgRef.current = calcApi.errorMsg.current; 
+            return [];
+        }
+        setCalcData(response);
+        logger.debug('Berechnung erfolgreich ausgeführt. Ergebnisse wurden gespeichert.');
+        return response;
+    }, [calcApi, setCalcData]);
+
+    const deleteAllResults = useCallback(async (): Promise<ApiMessageMap> => {
+        logger.debug('Lösche alle Berechnungsergebnisse auf dem Server ...');
+        const response = await deleteApi.fetchData({ method: 'DELETE', url: `${API_BASE_URL}/api/calculation/delete-all` });
+        if (!response) { 
+            errorMsgRef.current = deleteApi.errorMsg.current; 
+            return { message: deleteApi.errorMsg.current?.message ?? `Fehler beim Löschen der Ergebnisse.` };
+        }
+        setCalcData([]);
+        logger.debug('Alle Berechnungsergebnisse erfolgreich gelöscht.');
+        return response;
+    }, [deleteApi, setCalcData]);
 
     return (
-        <CalculationContext.Provider value={{ data: [], serviceResponse: null }}>
+        <CalculationContext.Provider value={{ 
+            calcData, 
+            isLoading, 
+            errorMsgRef,
+            executeCalculation,
+            loadResults,
+            deleteAllResults
+         }}>
             {children}
         </CalculationContext.Provider>
     );

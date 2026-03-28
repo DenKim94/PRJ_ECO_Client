@@ -1,18 +1,19 @@
-import { use } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useConfig } from "../hooks/useConfig";
+import { useTracking } from "../hooks/useTracking";
+import { useCalculation } from "../hooks/useCalculation";
 import { Logger } from "../utils/logger";
 import styles from "./Dashboard.module.scss";
-import { useTracking } from "../hooks/useTracking";
+
 
 export default function Dashboard() {
-    const authObj = useAuth();
-    const configObj = useConfig();
-    const trackingObj = useTracking();  
+    const authService = useAuth();
+    const configService = useConfig();
+    const trackingService = useTracking();  
+    const calcService = useCalculation();
     const logger = new Logger('Dashboard');
     logger.debug('Dashboard ist aufgerufen.');
     
-
     return (
         <div className={styles.pageContainer}>
             <h1>Dashboard</h1>
