@@ -4,6 +4,22 @@ import { ThemeContext, Theme } from './ThemeContext';
 
 const logger = new Logger('ThemeContext');
 
+/**
+ * @file ThemeProvider.tsx
+ * Diese Datei definiert den ThemeProvider, der den Light- bzw. Dark-Mode für die gesamte Anwendung steuert.
+ * 
+ * Der Provider beinhaltet folgende Daten:
+ * * theme: 'light' | 'dark';
+ * * setTheme: (theme: Theme) => void;
+ * * toggleTheme: () => void;
+ * 
+ * Der Provider implementiert folgende Funktionen:
+ * * setTheme: (theme: Theme) => void;
+ * * toggleTheme: () => void;
+ * 
+ * @author Firstname Lastname
+ */
+
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   // Initiale Themen-Ermittlung (Lazy Initialization)
   const [theme, setThemeState] = useState<Theme>(() => {
@@ -19,7 +35,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 
   // Effekt, der bei jeder Theme-Änderung läuft
   useEffect(() => {
-    const root = document.documentElement; // Das <html> Tag
+    const root = document.documentElement;
     const metaThemeColor = document.getElementById('meta-theme-color');
 
     // Attribut setzen, das unser SCSS triggert

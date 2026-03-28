@@ -4,14 +4,14 @@ import { ErrorMessage } from '../../types/AuthTypes';
 
 /** 
  * * configs: ConfigModel | null;
- * * getConfiguration: () => Promise<ConfigModel | null>;
+ * * loadConfiguration: () => Promise<ConfigModel | null>;
  * * updateConfiguration: (request: ConfigModel) => Promise<ConfigModel | null>;
 */
 export interface ConfigurationContextType {
     configs: ConfigModel | null;
     errorMsgRef: RefObject<ErrorMessage | undefined>;
     isLoading: boolean;
-    getConfiguration: () => Promise<ConfigModel | null>;
+    loadConfiguration: () => Promise<ConfigModel | null>;
     updateConfiguration: (request: ConfigModel) => Promise<ConfigModel | null>;
 }
 

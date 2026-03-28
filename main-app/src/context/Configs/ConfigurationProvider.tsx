@@ -21,7 +21,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL;
  * * isLoading: boolean;
  * 
  * Der Provider implementiert folgende Funktionen:
- * * getConfiguration: () => Promise<ConfigModel | null>;
+ * * loadConfiguration: () => Promise<ConfigModel | null>;
  * * updateConfiguration: (request: ConfigModel) => Promise<ConfigModel | null>;
  */
 export const ConfigurationProvider = ({ children }: { children: ReactNode }) => {
@@ -30,7 +30,7 @@ export const ConfigurationProvider = ({ children }: { children: ReactNode }) => 
     const [configs, setConfigs] = useState<ConfigModel | null>(null);
     const isLoading : boolean = configApi.isLoading;
 
-    const getConfiguration = useCallback(async (): Promise<ConfigModel | null> => {
+    const loadConfiguration = useCallback(async (): Promise<ConfigModel | null> => {
         logger.debug('Lade Konfiguration vom Server...');
         const response = await configApi.fetchData({ method: 'GET', url: `${API_BASE_URL}/api/config`});
         if (!response) { 
@@ -61,7 +61,7 @@ export const ConfigurationProvider = ({ children }: { children: ReactNode }) => 
             errorMsgRef,
             configs, 
             isLoading,
-            getConfiguration, 
+            loadConfiguration, 
             updateConfiguration
         }}>
             {children}
