@@ -41,7 +41,7 @@ const getInitialAuthData = (): { token: string | null; user: User | null; remain
     };
     
     const remainingTimeMs = decoded.exp ? (decoded.exp * 1000) - Date.now() : null;
-
+    logger.debug('Authentifizierungsdaten erfolgreich initialisiert.', { user, remainingTimeMs });
     return { token: storedToken, user, remainingTimeMs };
 
   } catch (err) {
@@ -171,7 +171,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (initialAuthData.remainingTimeMs) {
             startWarningTimer(initialAuthData.remainingTimeMs);
         }
-    }, [initialAuthData, startWarningTimer]); 
+        
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); 
 
     useEffect(() => {
         if (token && user) {

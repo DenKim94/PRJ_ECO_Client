@@ -2,7 +2,7 @@ import { useEffect, useState, ReactNode } from 'react';
 import { Logger } from '../../utils/logger';
 import { ThemeContext, Theme } from './ThemeContext';
 
-const logger = new Logger('ThemeContext');
+const logger = new Logger('ThemeProvider');
 
 /**
  * @file ThemeProvider.tsx
@@ -49,8 +49,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
       const color = theme === 'light' ? '#ebebeb' : '#324F56'; 
       metaThemeColor.setAttribute('content', color);
     }
-
-    logger.debug(`Theme changed to '${theme}'`);
+    logger.debug(`Theme gesetzt auf '${theme}'`);
 
   }, [theme]);
 
@@ -59,15 +58,14 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     setThemeState((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
   };
 
-    useEffect(() => {
+  useEffect(() => {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
       
       const handleChange = (e: MediaQueryListEvent) => {
         const newSystemTheme = e.matches ? 'dark' : 'light';
         setThemeState(newSystemTheme);
-        logger.debug(`System theme change detected: '${newSystemTheme}'`);
+        logger.debug(`Theme gesetzt auf '${newSystemTheme}'`);
       };
-
         mediaQuery.addEventListener('change', handleChange);
 
       // Cleanup beim Unmount
