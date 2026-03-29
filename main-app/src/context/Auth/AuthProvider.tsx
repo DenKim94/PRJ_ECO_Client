@@ -90,12 +90,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(() => {
         const savedName = localStorage.getItem('userName');
         const savedRole = localStorage.getItem('userRole');
+        const savedHasValidStatus = localStorage.getItem('hasValidStatus');
 
         if (savedName && savedRole) {
             return {
                 name: savedName,
                 role: savedRole as UserRoles,
-                hasValidStatus: false,
+                hasValidStatus: savedHasValidStatus === 'true',
             };
         }
         return null;
@@ -127,13 +128,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setShowSessionWarning(false);
         // Warnung 60s vor Ablauf (mind. 10s Delay)
         const warningTime = expiresInMs - 60000;
+        const delay = warningTime >= 10000 ? warningTime : 10000;
 
         if (warningTime < 0) {
             logger.warn('Token läuft in weniger als 60 Sekunden ab. Zeige sofort die Warnung an.');
             setShowSessionWarning(true);
             return;
         }
-        const delay = warningTime >= 10000 ? warningTime : 10000;
 
         const timerId = setTimeout(() => {
             logger.warn('Token läuft bald ab.');
@@ -152,6 +153,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         localStorage.removeItem('token');
         localStorage.removeItem('userName');
         localStorage.removeItem('userRole');
+        localStorage.removeItem('hasValidStatus');
         setToken(null);
         setUser(null);
         setShowSessionWarning(false);
@@ -179,6 +181,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (token && user) {
             localStorage.setItem('userName', user.name);
             localStorage.setItem('userRole', user.role);
+            localStorage.setItem('hasValidStatus', user.hasValidStatus ? 'true' : 'false');
         }
     }, [user, token]);
 

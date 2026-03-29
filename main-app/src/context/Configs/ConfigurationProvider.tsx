@@ -38,7 +38,7 @@ export const ConfigurationProvider = ({ children }: { children: ReactNode }) => 
             return null;
         }
         setConfigs(response);
-        logger.debug('Konfiguration erfolgreich geladen.');
+        logger.debug('Konfiguration erfolgreich geladen.', response);
         return response;
 
     }, [configApi]);

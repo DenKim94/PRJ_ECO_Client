@@ -1,0 +1,93 @@
+@use '../styles/abstracts/variables' as var;
+
+$success-color: var(--color-success);
+$error-color: var(--color-error);
+$warning-color: var(--color-warning);
+$info-color: var(--color-text-main);
+
+$popup-colors: (
+  success: $success-color,
+  error: $error-color,
+  warning: $warning-color,
+  info: $info-color
+);
+
+.popUp {
+  position: fixed;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 12px 16px 12px 12px;
+  min-width: 320px;
+  max-width: 480px;
+  z-index: 9999;
+  border-left: 8px solid transparent;
+  
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  // Schließen-Animation
+  &.isClosing {
+    animation: fadeOutDown 0.3s ease-in forwards;
+  }
+
+  // Generiert die Klassen .success, .error, etc.
+  @each $type, $color in $popup-colors {
+    &.#{$type} {
+      border-left-color: $color;
+
+      .icon {
+        background-color: $color;
+        color: white; 
+      }
+    }
+  }
+}
+
+.icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 12px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.content {
+  flex-grow: 1;
+  font-size: 16px;
+  color: #333;
+  line-height: 1.4;
+  white-space: pre-line;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #999;
+  cursor: pointer;
+  margin-left: 12px;
+  
+  &:hover {
+    color: #333;
+  }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translate(-50%, 60px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@keyframes fadeOutDown {
+  from { opacity: 1; transform: translate(-50%, 0); }
+  to { opacity: 0; transform: translate(-50%, 60px); }
+}
+

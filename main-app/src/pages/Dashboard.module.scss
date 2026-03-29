@@ -7,7 +7,7 @@
     gap: 20px;
     align-items: center;
     min-height: 50vh;
-    min-width: var.$breakpoint-sm;
+    min-width: var.$breakpoint-lg;
     max-width: var.$max-width-container;
     max-height: 90vh;
     width: 100%;
@@ -41,5 +41,12 @@
         min-width: var.$breakpoint-sm;
         max-width: var.$breakpoint-md;
         width: 95%; 
+    }
+
+    // Tablet Horizontal
+    @media (max-height: var.$breakpoint-lg) and (min-width: var.$breakpoint-xl) {
+        min-width: var.$breakpoint-md;
+        max-width: var.$breakpoint-xl;
+        width: 100%; 
     }
 }

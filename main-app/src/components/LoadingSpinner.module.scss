@@ -1,0 +1,48 @@
+@use '../styles/abstracts/variables' as var;
+
+$spinner-size: 100px;
+$spinner-track-color: rgba(var.$color-primary-dark, 0.2);
+$spinner-thickness: 6px;
+
+.spinnerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  gap: var.$spacing-md;
+  padding: var.$spacing-lg;
+}
+
+.spinner {
+  width: $spinner-size;
+  height: $spinner-size;
+  // Der transparente Rahmen bildet die "Schiene", auf der die Hauptfarbe rotiert
+  border: $spinner-thickness solid $spinner-track-color;
+  // Die Hauptfarbe markiert den drehenden Teil
+  border-top-color: var.$color-primary-dark;
+  border-radius: 50%;
+  
+  // Endlos-Animation für eine gleichmäßige Drehung
+  animation: spin 1s linear infinite;
+  
+  // Optimierung für den Browser, da sich 'transform' ständig ändert
+  will-change: transform;
+}
+
+// Keyframes für die 360-Grad-Drehung
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spinnerMessage {
+  font-family: inherit;
+  font-weight: var.$font-weight-medium;  
+  font-size: var.$font-size-md;
+  color: var(--color-text-muted);
+}
