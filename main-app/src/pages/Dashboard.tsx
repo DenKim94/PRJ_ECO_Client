@@ -4,7 +4,7 @@ import { useTracking } from "../hooks/useTracking";
 import { useCalculation } from "../hooks/useCalculation";
 import { Logger } from "../utils/logger";
 import styles from "./Dashboard.module.scss";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { PopUp, PopUpProps, PopUpMessageTypes } from "../components/PopUp";
 
