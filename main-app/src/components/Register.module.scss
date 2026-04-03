@@ -1,4 +1,5 @@
 @use '../styles/abstracts/variables' as var;
+@use '../styles/abstracts/mixins' as mixin;
 
 .pageContainer {
     display: flex;
@@ -16,23 +17,7 @@
     background-color: var.$color-surface-light;
     box-shadow: var(--shadow-border-glow);
     
-    @media (min-width: var.$breakpoint-md) {
-        width: 100%;
-        max-width: var.$max-width-content; 
-    }
-
-    @media (max-width: var.$breakpoint-md) {
-        width: 80%;
-        padding: 0 var.$spacing-md;
-        max-width: var.$max-width-content; 
-    }
-        
-    @media (max-height: var.$breakpoint-height-sm) {
-        width: 100%;
-        max-width: var.$max-width-content; 
-        margin: 10px auto;
-        overflow-y: auto;
-    }
+    @include mixin.responsive-input-container;
 }
 
 .formContainer{

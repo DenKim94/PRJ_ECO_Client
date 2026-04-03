@@ -6,8 +6,9 @@
   align-items: center;
   justify-content: center;
   max-width: var.$max-width-container;
-  min-width: var.$max-width-content;
+  min-width: var.$breakpoint-xs;
   width: 100%;
   height: 100%;
   margin: 0 auto;
+  overflow-y: auto;
 }

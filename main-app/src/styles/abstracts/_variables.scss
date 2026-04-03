@@ -45,7 +45,7 @@ $spacing-lg: 1.5rem;
 $spacing-xl: 3rem;
 
 // Maximale Container-Breite
-$max-width-container: 1300px;
+$max-width-container: 1400px;
 $max-width-content: 480px;
 
 // Minimale Breite von Textfeldern
@@ -58,7 +58,8 @@ $radius-md: 16px;
 $radius-lg: 32px;
 
 // Breaking Points für Responsive Design
-$breakpoint-sm: 380px;
+$breakpoint-xs: 360px;
+$breakpoint-sm: 450px;
 $breakpoint-md: 768px;
 $breakpoint-lg: 992px;
 $breakpoint-xl: 1200px;

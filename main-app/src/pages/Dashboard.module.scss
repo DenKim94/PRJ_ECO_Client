@@ -10,7 +10,7 @@
     min-width: var.$breakpoint-lg;
     max-width: var.$max-width-container;
     max-height: 90vh;
-    width: 100%;
+    width: 90%;
     height: 85%;
     border: 1px solid var(--color-border);
     border-radius: var.$radius-md;
@@ -37,13 +37,12 @@
     
     // Tablet Mini
     @media (max-width: var.$breakpoint-md) and (min-width: var.$breakpoint-sm) {
-        // padding: 0 var.$spacing-xs;
         min-width: var.$breakpoint-sm;
         max-width: var.$breakpoint-md;
         width: 95%; 
     }
 
-    // Tablet Horizontal
+    // Tablet (horizontal)
     @media (max-height: var.$breakpoint-lg) and (min-width: var.$breakpoint-xl) {
         min-width: var.$breakpoint-md;
         max-width: var.$breakpoint-xl;

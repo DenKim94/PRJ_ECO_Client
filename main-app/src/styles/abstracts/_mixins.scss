@@ -1,0 +1,25 @@
+@use './variables' as var; 
+
+@mixin responsive-input-container {
+    // Smartphone (vertikal)
+    @media (min-width: var.$breakpoint-xs) and (max-width: var.$breakpoint-sm) {
+        width: 80%;
+        min-width: var.$min-width-input;
+        max-width: var.$breakpoint-xs;
+    }
+
+    // Smartphone (horizontal)
+    @media (min-width: var.$breakpoint-sm) and (max-width: var.$breakpoint-lg) and (max-height: var.$breakpoint-height-sm) {
+        margin-top: 200px;
+        min-width: var.$min-width-input;
+        max-width: var.$breakpoint-xs;
+        min-height: var.$breakpoint-height-sm;
+    }
+
+    // Tablet
+    @media (min-width: var.$breakpoint-md) and (min-height: var.$breakpoint-height-sm) {
+        width: 100%;
+        max-width: var.$max-width-content; 
+        margin: 10px auto;
+    }
+}

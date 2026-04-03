@@ -3,7 +3,7 @@
 $success-color: var(--color-success);
 $error-color: var(--color-error);
 $warning-color: var(--color-warning);
-$info-color: var(--color-text-main);
+$info-color: var.$color-text-muted-light;
 
 $popup-colors: (
   success: $success-color,
@@ -39,25 +39,8 @@ $popup-colors: (
   @each $type, $color in $popup-colors {
     &.#{$type} {
       border-left-color: $color;
-
-      .icon {
-        background-color: $color;
-        color: white; 
-      }
     }
   }
-}
-
-.icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: 12px;
-  font-weight: bold;
-  font-size: 14px;
 }
 
 .content {
@@ -66,9 +49,13 @@ $popup-colors: (
   color: #333;
   line-height: 1.4;
   white-space: pre-line;
+  padding-right: 15px;
 }
 
 .closeBtn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
   background: none;
   border: none;
   font-size: 20px;
