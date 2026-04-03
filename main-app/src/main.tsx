@@ -1,7 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './styles/main.scss'
-import '@fontsource-variable/inter'; 
 import { AuthProvider } from './context/Auth/AuthProvider.tsx';
 import { ThemeProvider } from './context/Theme/ThemeProvider.tsx';
 import { ConfigurationProvider } from './context/Configs/ConfigurationProvider.tsx';

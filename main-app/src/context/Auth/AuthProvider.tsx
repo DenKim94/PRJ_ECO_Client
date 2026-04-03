@@ -103,7 +103,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     const [showSessionWarning, setShowSessionWarning] = useState(false);
-    const [warningTimer, setWarningTimer] = useState<NodeJS.Timeout | null>(null);
+    const [warningTimer, setWarningTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
     const errorMsgRef = useRef<ErrorMessage | undefined>(undefined);
 
     // --- API Hooks für jede Aktion ---
@@ -299,7 +299,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser({ name: response.userName, role: response.role as UserRoles, hasValidStatus: response.hasValidStatus });
         logger.debug('Token erfolgreich aktualisiert.');
         return response;
-    }, [authApi, setJWT]);
+    }, [authApi, setJWT, setUser]);
 
     const deleteAccount = useCallback(async (): Promise<ApiMessageMap> => {
         logger.debug('Account löschen ...');

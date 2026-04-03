@@ -23,8 +23,6 @@ export const PopUp = ({isActive, type, duration=6000, message} : PopUpProps) => 
 
   if (!isActive || isUnmounted) return null;
 
-  // TODO [29.03.2026]: Styling bzw. die Position des 'Schließen'-Buttons anpassen
-
   return (
     <div 
       className={`
