@@ -7,13 +7,15 @@ import { HelperClass } from "../utils/helper";
 import { useTheme } from "../hooks/useTheme";
 import { PasswordResetRequest } from "../types/AuthTypes";
 import { useNavigate } from "react-router-dom";
+import { MessageContainer, MessageContainerProps } from "./MessageContainer";
 
-export default function PasswordResetInput({ eMail, setMessage }: { eMail: string; setMessage: (message: string | null) => void }) {
+export default function PasswordResetInput({ eMail }: { eMail: string }) {
         const auth = useAuth();
         const [code, setCode] = useState("");
          const navigate = useNavigate();
         const [submitting, setSubmitting] = useState(false);
         const [password, setPassword] = useState("");
+        const [message, setMessage] = useState<{ message: string, type?: MessageContainerProps['type'] }  | null>(null);
         const [approvePassword, setApprovePassword] = useState("");
         const [showPassword, setShowPassword] = useState(false);
         const themeObject = useTheme();
@@ -24,7 +26,7 @@ export default function PasswordResetInput({ eMail, setMessage }: { eMail: strin
             setMessage(null);
         
             if (!HelperClass.isEqualPasswords(password, approvePassword)) {
-                setMessage("Die Passwörter stimmen nicht überein.");
+                setMessage({ message: "Die Passwörter stimmen nicht überein.", type: "error" });
                 return;
             }
 
@@ -34,17 +36,17 @@ export default function PasswordResetInput({ eMail, setMessage }: { eMail: strin
                 const result = await auth.resetPassword(request);
     
                 if (auth.errorMsgRef.current?.message) {
-                    setMessage('Anfrage ist fehlgeschlagen. Bitte überprüfe deine Eingabe.');
+                    setMessage({ message: `Anfrage ist fehlgeschlagen: ${auth.errorMsgRef.current.message}`, type: "error" });
                     logger.error(`${auth.errorMsgRef.current.message}`);
                     return;
                 }
-                setMessage(result.message);
+                setMessage({ message: result.message, type: "success" });
                 setTimeout(() => {
                     void navigate("/login", { replace: true });
                 }, 2500);
     
             } catch (err) {
-                setMessage((err instanceof Error ? err.message : "Unbekannter Fehler ist aufgetreten."));
+                setMessage({ message: err instanceof Error ? err.message : "Unbekannter Fehler ist aufgetreten.", type: "error" });
                 logger.error(`Ein Fehler ist aufgetreten: ${err instanceof Error ? err.message : "Unbekannter Fehler ist aufgetreten."}`);
                 return;
     
@@ -130,5 +132,6 @@ export default function PasswordResetInput({ eMail, setMessage }: { eMail: strin
                     isDisabled={submitting} 
                 />
             </form>
+            <MessageContainer message={message?.message ?? ""} type={message?.type} isVisible={message !== null} />
         </>
     );}

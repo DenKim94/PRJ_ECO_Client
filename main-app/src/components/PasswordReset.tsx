@@ -4,7 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import { Logger } from "../utils/logger";
 import { HelperClass } from "../utils/helper";
 import { AppLogo } from "./AppLogo";
-import { MessageContainer } from "./MessageContainer";
+import { MessageContainer, MessageContainerProps } from "./MessageContainer";
 import { CustomButton } from "./CustomButton";
 import PasswordResetInput from "./PasswordResetInput";
 
@@ -12,7 +12,7 @@ export default function PasswordReset() {
     const auth = useAuth();
     const [eMail, setEMail] = useState("");
     const [submitting, setSubmitting] = useState(false);
-    const [message, setMessage] = useState<string | null>(null);
+    const [message, setMessage] = useState<{ message: string, type?: MessageContainerProps['type'] }  | null>(null);
     const [eMailSent, setEmailSent] = useState(false);
     const logger = new Logger('PasswordReset');
     
@@ -21,7 +21,7 @@ export default function PasswordReset() {
         setMessage(null);
 
         if (!HelperClass.isValidEmail(eMail)) {
-            setMessage("Bitte eine gültige E-Mail-Adresse eingeben.");
+            setMessage({ message: "Bitte eine gültige E-Mail-Adresse eingeben.", type: "error" });
             return;
         }
 
@@ -31,16 +31,16 @@ export default function PasswordReset() {
             const result = await auth.sendPasswordVerificationEmail(request);
 
             if (auth.errorMsgRef.current?.message) {
-                setMessage('Anfrage ist fehlgeschlagen. Bitte überprüfe deine Eingabe.');
+                setMessage({ message: `Anfrage ist fehlgeschlagen: ${auth.errorMsgRef.current.message}`, type: "error" });
                 logger.error(`${auth.errorMsgRef.current.message}`);
                 return;
             }
-            setMessage(`${result.message} Bitte überprüfe dein Postfach.`);
+            setMessage({ message: `${result.message}`, type: "success" });
             setEmailSent(true);
 
         } catch (err) {
             setEMail("");
-            setMessage((err instanceof Error ? err.message : "Unbekannter Fehler ist aufgetreten."));
+            setMessage({ message: err instanceof Error ? err.message : "Unbekannter Fehler ist aufgetreten.", type: "error" });
             logger.error(`Ein Fehler ist aufgetreten: ${err instanceof Error ? err.message : "Unbekannter Fehler ist aufgetreten."}`);
             return;
 
@@ -78,10 +78,9 @@ export default function PasswordReset() {
                             isDisabled={submitting} 
                         />
                     </form>
+                    <MessageContainer message={message?.message ?? ""} type={message?.type} isVisible={message !== null} />
                 </> 
-            ) : <PasswordResetInput eMail={eMail} setMessage={setMessage} />}
-
-            <MessageContainer message={message ?? ""} type={auth.errorMsgRef.current?.message ? "error" : "info"} isVisible={message !== null} />
+            ) : <PasswordResetInput eMail={eMail}/>}
         </div>
     );
 }

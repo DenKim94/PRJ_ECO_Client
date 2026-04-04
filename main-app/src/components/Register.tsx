@@ -6,7 +6,7 @@ import styles from "./Register.module.scss";
 import { Logger } from "../utils/logger";
 import { RegisterRequest } from "../types/AuthTypes";
 import { CustomButton } from "./CustomButton";
-import { MessageContainer } from "./MessageContainer";
+import { MessageContainer, MessageContainerProps } from "./MessageContainer";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../hooks/useTheme";
 
@@ -19,23 +19,18 @@ export default function Register() {
     const [eMail, setEMail] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [submitting, setSubmitting] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [message, setMessage] = useState<{ message: string, type?: MessageContainerProps['type'] }  | null>(null);
     const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
     const themeObject = useTheme();
     const logger = new Logger('Register');
     
     const onSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setError(null);
 
         const trimmedName = name.trim();
-        if (!trimmedName || !password) {
-            setError("Bitte Name und Passwort ausfüllen.");
-            return;
-        }
 
         if (!HelperClass.isValidEmail(eMail)) {
-            setError("Bitte eine gültige E-Mail-Adresse eingeben.");
+            setMessage({ message: "Bitte eine gültige E-Mail-Adresse eingeben.", type: "error" });
             return;
         }
 
@@ -45,13 +40,13 @@ export default function Register() {
             const result = await auth.register(request);
 
             if (!result) {
-                setError('Registrierung fehlgeschlagen. Bitte prüfe deine Eingaben.');
+                setMessage({ message: 'Registrierung fehlgeschlagen. Bitte prüfe deine Eingaben.', type: "error" });
                 logger.error(`Registrierung fehlgeschlagen für User: ${trimmedName}`);
                 return;
             }
 
             if (auth.errorMsgRef.current?.message) {
-                setError(auth.errorMsgRef.current.message);
+                setMessage({ message: `Registrierung fehlgeschlagen: ${auth.errorMsgRef.current.message}`, type: "error" });
                 logger.error(`Registrierung fehlgeschlagen: ${auth.errorMsgRef.current.message} für User: ${trimmedName}`);
                 return;
             }
@@ -64,7 +59,7 @@ export default function Register() {
             void navigate("/login", { replace: true });
 
         } catch (err) {
-            setError("Ein Fehler ist aufgetreten: " + (err instanceof Error ? err.message : "Unbekannter Fehler"));
+            setMessage({ message: "Ein Fehler ist aufgetreten.", type: "error" });
             logger.error(`Ein Fehler ist aufgetreten: ${err instanceof Error ? err.message : "Unbekannter Fehler"} für User: ${trimmedName}`);
             return;
 
@@ -165,7 +160,7 @@ export default function Register() {
                     isDisabled={submitting} 
                 />
             </form>
-            <MessageContainer message={error ?? ""} type="error" isVisible={error !== null} />
+            <MessageContainer message={message?.message ?? ""} type={message?.type} isVisible={message !== null} />
         </div>
     );
 }
