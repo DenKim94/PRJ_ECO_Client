@@ -23,8 +23,8 @@ export default function Login() {
 
     useEffect(() => {
         if (auth.user && !auth.isAuthenticated) {
-            logger.debug(`Session für ${auth.user.name} ist abgelaufen, bitte erneut einloggen.`);
-            setMessage({ message: "Die Sitzung ist abgelaufen. Bitte erneut einloggen.", type: "error" });
+            logger.debug(`Session für ${auth.user.name} ist abgelaufen, bitte erneut anmelden.`);
+            setMessage({ message: "Die Sitzung ist abgelaufen. Bitte erneut anmelden.", type: "warning" });
         }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

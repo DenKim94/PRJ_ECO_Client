@@ -1,0 +1,58 @@
+@use '../styles/abstracts/variables' as var;
+@use '../styles/abstracts/mixins' as mixin;
+
+.pageContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 30vh;
+    min-width: calc(var.$breakpoint-sm - (2.65 * var.$spacing-lg));
+    max-width: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: var.$radius-md;
+    padding: var.$spacing-lg;
+    background-image: var(--app-background-image);
+    background-color: var.$color-surface-light;
+    
+    @include mixin.responsive-input-container;
+
+    // Smartphone (horizontal)
+    @media (min-width: var.$breakpoint-sm) and (max-width: var.$breakpoint-lg) and (max-height: var.$breakpoint-height-sm) {
+        margin-top: 0px;
+        min-width: var.$min-width-input;
+        max-width: var.$breakpoint-sm;
+        min-height: var.$breakpoint-height-xs;
+    }
+}
+
+.formContainer{
+    display: flex;
+    flex-direction: column;
+    gap: var.$spacing-sm;
+    align-self: stretch;
+    width: 100%;
+}
+
+.inputCode {
+    padding: var.$spacing-sm;
+    border: 1px solid var(--color-border);
+    border-radius: var.$radius-sm;
+    font-size: var.$font-size-md;
+    font-family: var.$font-family-base;
+    background-color: transparent;
+    color: var(--color-text-main);
+}
+
+.infoText {
+    font-size: var.$font-size-md;
+    font-family: var.$font-family-base;
+    color: var(--color-text-secondary);
+    margin-bottom: var.$spacing-md;
+    text-align: left;
+    min-width: var.$min-width-input;
+
+    @media (max-width: var.$breakpoint-md) {
+        margin-bottom: var.$spacing-sm;
+    }
+}

@@ -340,7 +340,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             errorMsgRef.current = emailApi.errorMsg.current; 
             return { message: emailApi.errorMsg.current?.message  ?? 'Anfrage ist fehlgeschlagen.' };
         }
-        logger.debug(`${emailApi.errorMsg.current?.message}`);
+        logger.debug(`${response.message}`);
         return response;
     }, [emailApi]);
 

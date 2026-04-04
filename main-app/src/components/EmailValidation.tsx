@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Logger } from "../utils/logger";
-import { AppLogo } from "./AppLogo";
 import styles from "./EmailValidation.module.scss";
 import { MessageContainer, MessageContainerProps } from "./MessageContainer";
 import { useAuth } from "../hooks/useAuth";
@@ -77,7 +76,7 @@ export const EmailValidation = ({show}: {show: boolean}) => {
                     id="code-reset"
                     name="code-reset"
                     type='text'
-                    className={styles.inputEmail}
+                    className={styles.inputCode}
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
                     autoComplete="code-reset"
