@@ -72,6 +72,7 @@ const getInitialAuthData = (): { token: string | null; user: User | null; remain
  * * getUserData: () => Promise<UserDataResponseModel | null>;
  * * refreshToken: () => Promise<AuthResponseModel | null>;
  * * deleteAccount: () => Promise<ApiMessageMap>;
+ * * resendVerificationEmail: () => Promise<ApiMessageMap>;
  * * verifyEmail: (tfaCode: string) => Promise<ApiMessageMap>;
  * * sendPasswordVerificationEmail: (request: {email: string}) => Promise<ApiMessageMap>;
  * * resetPassword: (request: PasswordResetRequest) => Promise<ApiMessageMap>;
@@ -332,6 +333,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return response;
     }, [accountApi]);
 
+    const resendVerificationEmail = useCallback(async (): Promise<ApiMessageMap> => {
+        logger.debug('E-Mail senden ...');
+        const response = await emailApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/resend-email` });
+        if (!response) { 
+            errorMsgRef.current = emailApi.errorMsg.current; 
+            return { message: emailApi.errorMsg.current?.message  ?? 'Anfrage ist fehlgeschlagen.' };
+        }
+        logger.debug(`${emailApi.errorMsg.current?.message}`);
+        return response;
+    }, [emailApi]);
+
     // --- Admin-Funktionen ---
     const adminDeleteUserById = useCallback(async (userId: number): Promise<ApiMessageMap> => {
         logger.debug(`[Admin] - Benutzer mit ID ${userId} löschen ...`);
@@ -394,6 +406,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             sendPasswordVerificationEmail,
             resetPassword,
             refreshToken,
+            resendVerificationEmail,
             deleteAccount,
             verifyEmail,
             adminDeleteUserById,

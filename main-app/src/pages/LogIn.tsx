@@ -1,13 +1,13 @@
 import { Link, useNavigate, Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LogInRequest } from "../types/AuthTypes";
 import styles from "./LogIn.module.scss";
 import { AppLogo } from "../components/AppLogo";
 import { Logger } from "../utils/logger";
 import { useTheme } from "../hooks/useTheme";
 import { CustomButton } from "../components/CustomButton";
-import { MessageContainer } from "../components/MessageContainer";
+import { MessageContainer, MessageContainerProps } from "../components/MessageContainer";
 
 
 export default function Login() {
@@ -17,9 +17,18 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const [submitting, setSubmitting] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [message, setMessage] = useState<{ message: string, type?: MessageContainerProps['type'] }  | null>(null);
     const themeObject = useTheme();
     const logger = new Logger('Login');
+
+    useEffect(() => {
+        if (auth.user && !auth.isAuthenticated) {
+            logger.debug(`Session für ${auth.user.name} ist abgelaufen, bitte erneut einloggen.`);
+            setMessage({ message: "Die Sitzung ist abgelaufen. Bitte erneut einloggen.", type: "error" });
+        }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [auth.isAuthenticated, auth.user]);
 
     if (auth.isAuthenticated) {
         logger.debug(`User ${auth.user?.name} ist eingeloggt, leite zum Dashboard weiter.`);
@@ -28,13 +37,7 @@ export default function Login() {
 
     const onSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setError(null);
-
         const trimmedName = name.trim();
-        if (!trimmedName || !password) {
-            setError("Bitte Name und Passwort ausfüllen.");
-            return;
-        }
 
         setSubmitting(true);
         try {
@@ -42,30 +45,28 @@ export default function Login() {
             const result = await auth.login(request);
 
             if (!result) {
-                setError("Login fehlgeschlagen. Bitte prüfe deine Eingaben.");
-                logger.error(`Login fehlgeschlagen für User: ${trimmedName}`);
+                setMessage({ message: "Login ist fehlgeschlagen. Bitte prüfe deine Eingaben.", type: "error" });
+                logger.error(`Login ist fehlgeschlagen für User: ${trimmedName}`);
                 return;
             }
 
             if (auth.errorMsgRef.current?.message) {
-                setError("Login fehlgeschlagen: " + auth.errorMsgRef.current.message);
+                setMessage({ message: `Login fehlgeschlagen: ${auth.errorMsgRef.current.message}`, type: "error" });
                 logger.error(`Login fehlgeschlagen: ${auth.errorMsgRef.current.message} für User: ${trimmedName}`);
                 return;
             }
-
             setName("");
             setPassword("");
 
         } catch (err) {
-            setError("Ein Fehler ist aufgetreten: " + (err instanceof Error ? err.message : "Unbekannter Fehler"));
+            setMessage({ message: "Ein Fehler ist aufgetreten.", type: "error" });
             logger.error(`Ein Fehler ist aufgetreten: ${err instanceof Error ? err.message : "Unbekannter Fehler"} für User: ${trimmedName}`);
             return;
 
         } finally {
-
             setSubmitting(false);
             if (auth.isAuthenticated) {
-                logger.error(`Login erfolgreich für User: ${trimmedName}`);
+                logger.debug(`Login erfolgreich für User: ${trimmedName}`);
                 void navigate("/dashboard", { replace: true });
             }
         }
@@ -138,8 +139,7 @@ export default function Login() {
                 <Link to="/password-reset">Passwort vergessen?</Link>
                 <Link to="/register">Registrieren</Link>
             </div>
-
-            <MessageContainer message={error ?? ""} type="error" isVisible={error !== null} />
+            <MessageContainer message={message?.message ?? ""} type={message?.type} isVisible={message !== null} />
         </div>
     );
 }

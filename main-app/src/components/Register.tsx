@@ -11,7 +11,6 @@ import { useNavigate } from "react-router-dom";
 import { useTheme } from "../hooks/useTheme";
 
 export default function Register() {
-
     const auth = useAuth();
     const navigate = useNavigate();
     const [name, setName] = useState("");
@@ -26,7 +25,6 @@ export default function Register() {
     
     const onSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
-
         const trimmedName = name.trim();
 
         if (!HelperClass.isValidEmail(eMail)) {

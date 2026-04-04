@@ -7,6 +7,7 @@ import styles from "./Dashboard.module.scss";
 import { useEffect, useState } from "react";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { PopUp, PopUpProps, PopUpMessageTypes } from "../components/PopUp";
+import { EmailValidation } from "../components/EmailValidation";
 
 
 export default function Dashboard() {
@@ -18,7 +19,7 @@ export default function Dashboard() {
     const [activePopUp, setActivePopUp] = useState<PopUpProps>({
         isActive: false,
         type: 'info',
-        duration: 5000,
+        duration: 8000,
         message: ''
     });
 
@@ -51,16 +52,17 @@ export default function Dashboard() {
     useEffect(() => {
         if (authService.showSessionWarning){
             updatePopUpProps(true, "Deine Sitzung läuft bald ab. Möchtest du deine Sitzung verlängern?", 'warning');
-        };
-        if (authService.userDetailedData?.isEnabled === false){
+        }
+        else if (authService.userDetailedData?.isEnabled === false){
             updatePopUpProps(true, "Dein Nutzerstatus wurde deaktiviert. Daher kann die Nutzung der Anwendung eingeschränkt sein.", 'warning');
-        };
-        if (authService.userDetailedData?.isValidatedEmail === false){
+        }
+        else if (authService.userDetailedData?.isValidatedEmail === false){
             updatePopUpProps(true, "Deine E-Mail-Adresse ist nicht validiert. Daher kann die Nutzung der Anwendung eingeschränkt sein.", 'warning');
         }
-        if (authService.errorMsgRef.current || configService.errorMsgRef.current || trackingService.errorMsgRef.current || calcService.errorMsgRef.current){
+        else if (authService.errorMsgRef.current || configService.errorMsgRef.current || trackingService.errorMsgRef.current || calcService.errorMsgRef.current){
             updatePopUpProps(true, "Ein Fehler bei Laden der Daten ist aufgetreten. Bitte versuche die Seite erneut zu laden.", 'error');
         };
+
     }, [authService.userDetailedData, 
         authService.showSessionWarning, 
         authService.errorMsgRef, 
@@ -71,6 +73,7 @@ export default function Dashboard() {
     return (
         <div className={styles.pageContainer}>
             <h1>Dashboard</h1>
+            <EmailValidation show={!authService.userDetailedData?.isValidatedEmail} />
             <LoadingSpinner isActive={isLoading} message="Daten werden geladen..." />
             <PopUp isActive={activePopUp.isActive} 
                     type={activePopUp.type} 

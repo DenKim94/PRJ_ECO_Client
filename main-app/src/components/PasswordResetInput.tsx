@@ -12,7 +12,7 @@ import { MessageContainer, MessageContainerProps } from "./MessageContainer";
 export default function PasswordResetInput({ eMail }: { eMail: string }) {
         const auth = useAuth();
         const [code, setCode] = useState("");
-         const navigate = useNavigate();
+        const navigate = useNavigate();
         const [submitting, setSubmitting] = useState(false);
         const [password, setPassword] = useState("");
         const [message, setMessage] = useState<{ message: string, type?: MessageContainerProps['type'] }  | null>(null);
