@@ -1,0 +1,28 @@
+@use '../styles/abstracts/variables' as var;
+
+
+.elementContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var.$spacing-sm;
+    width: 25vh;
+    height: 100%;
+}
+
+.menuBarContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0px;
+    color: var(--color-text-main);
+    height: 100%;
+    width: 100%;
+}
+
+.divider {
+    width: 1px; // Dicke der Linie
+    background-color: var(--color-text-main); // Farbe der Linie (gerne an dein Design anpassen)
+    border-radius: 2px; // Macht die Enden leicht abgerundet (optional)
+    height: 100%; 
+}

@@ -9,6 +9,8 @@ import { LoadingSpinner } from "../components/LoadingSpinner";
 import { PopUp, PopUpProps, PopUpMessageTypes } from "../components/PopUp";
 import { EmailValidation } from "../components/EmailValidation";
 import { useIsMobile } from "../hooks/useIsMobile";
+import DashboardHeader from "../components/DashboardHeader";
+import MenuSideBar from "../components/MenuSideBar";
 
 
 export default function Dashboard() {
@@ -20,21 +22,36 @@ export default function Dashboard() {
     const [activePopUp, setActivePopUp] = useState<PopUpProps>({
         isActive: false,
         type: 'info',
-        duration: 8000,
+        duration: 0,
         message: ''
     });
     const isMobile = useIsMobile();
-
     const isLoading = authService.isLoading || configService.isLoading || trackingService.isLoading || calcService.isLoading;
     
-    function updatePopUpProps(isActive: boolean, message: string, type: PopUpMessageTypes = 'info'){
-        setActivePopUp(prev => ({
-            ...prev,
-            isActive,
-            message,
-            type
-        }));
-    };
+    function closePopUp() {
+        setActivePopUp(prev => ({ ...prev, isActive: false }));
+    }
+
+    function updatePopUpProps(
+        isActive: boolean, 
+        message: string, 
+        type: PopUpMessageTypes = 'info',
+        duration_ms?: number
+    ){
+        setActivePopUp(prev => {
+            if (prev.isActive === isActive && prev.message === message && prev.type === type) {
+                return prev; 
+            }
+            
+            return {
+                ...prev,
+                isActive,
+                message,
+                duration: duration_ms ?? 6000,
+                type
+            };
+        });
+    }
 
     useEffect(() => {
         async function performInitialDataLoad(): Promise<void> {
@@ -52,6 +69,8 @@ export default function Dashboard() {
     
     // Überwache relevante Daten und Fehler, um PopUps entsprechend zu aktualisieren
     useEffect(() => {
+        if (isLoading) return;
+
         if (authService.showSessionWarning){
             updatePopUpProps(true, "Deine Sitzung läuft bald ab. Möchtest du deine Sitzung verlängern?", 'warning');
         }
@@ -70,22 +89,30 @@ export default function Dashboard() {
         authService.errorMsgRef, 
         configService.errorMsgRef, 
         trackingService.errorMsgRef, 
-        calcService.errorMsgRef]);
+        calcService.errorMsgRef, 
+        isLoading 
+    ]);
 
     return (
         <div className={styles.pageContainer}>
-            <h1>Dashboard</h1>
-            <EmailValidation show={!authService.userDetailedData?.isValidatedEmail && !isLoading} />
-            <LoadingSpinner 
-                isActive={isLoading} 
-                message="Daten werden geladen..."
-                sxContainer={{gap: isMobile ? '5px' : '20px', padding: isMobile ? '10px' : '20px'}} 
-                sxSpinner={{width: isMobile ? '50px' : '100px', height: isMobile ? '50px' : '100px'}}/>
-
-            <PopUp isActive={activePopUp.isActive} 
+           { !isMobile && <MenuSideBar/> }
+            <div className={styles.overViewContainer}>
+                <DashboardHeader/>
+                <EmailValidation show={!authService.userDetailedData?.isValidatedEmail && !isLoading} />
+                <LoadingSpinner 
+                    isActive={isLoading} 
+                    message="Daten werden geladen..."
+                    sxContainer={{gap: isMobile ? '5px' : '20px', padding: isMobile ? '10px' : '20px'}} 
+                    sxSpinner={{width: isMobile ? '50px' : '100px', height: isMobile ? '50px' : '100px'}}
+                />
+                <PopUp 
+                    isActive={activePopUp.isActive} 
                     type={activePopUp.type} 
                     duration={activePopUp.duration} 
-                    message={activePopUp.message} />
+                    message={activePopUp.message}
+                    onClose={closePopUp}
+                />
+            </div>
         </div>
     );
 }

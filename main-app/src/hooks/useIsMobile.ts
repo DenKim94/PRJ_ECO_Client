@@ -27,10 +27,18 @@ function useMediaQuery(query: string, ssrFallback = false) : boolean {
 }
 
 /**
- * Gibt an, ob aktuell ein mobiles Gerät verwendet wird.
- * @param {number} breakpointPx - Die Breite in Pixel, ab der ein mobiles Gerät angenommen wird. Standardwert in Pixel: 768
+ * Gibt an, ob aktuell ein mobiles Gerät verwendet wird (sowohl vertikal als auch horizontal).
+ * 
+ * @param {number} maxWidthBreakpoint - Die maximale Breite im Hochformat (Standard: 768px).
+ * @param {number} maxHeightLandscape - Die maximale Höhe, um es quer noch als Handy zu werten (Standard: 500px).
  * @returns {boolean} true, wenn ein mobiles Gerät verwendet wird, sonst false.
  */
-export function useIsMobile(breakpointPx = 768){
-  return useMediaQuery(`(max-width: ${breakpointPx - 1}px)`, false);
+export function useIsMobile(maxWidthBreakpoint = 768, maxHeightLandscape = 500){
+  // Die Media Query deckt nun zwei Fälle ab:
+  // 1. Gerät im Hochformat oder kleine Tablets: Breite ist kleiner als der Breakpoint.
+  // 2. ODER: Gerät im Querformat (landscape) UND die Höhe ist sehr gering (z.B. < 500px).
+  // Ein Komma in einer CSS Media Query wirkt wie ein logisches ODER.
+  const query = `(max-width: ${maxWidthBreakpoint - 1}px), (orientation: landscape) and (max-height: ${maxHeightLandscape - 1}px)`;
+  
+  return useMediaQuery(query, false);
 }

@@ -8,10 +8,11 @@ export interface PopUpProps {
     type: PopUpMessageTypes;
     duration?: number; // Optional, Zeit in ms bis zum automatischen Schließen
     message: string;
+    onClose?: () => void; // Optional, Callback-Funktion beim Schließen
     sx?: React.CSSProperties;
 };
 
-export const PopUp = ({isActive, type, duration=6000, message, sx} : PopUpProps) => {
+export const PopUp = ({isActive, type, duration=5000, message, onClose, sx} : PopUpProps) => {
   const [isClosing, setIsClosing] = useState(false);
   const [isUnmounted, setIsUnmounted] = useState(false);
 
@@ -23,6 +24,13 @@ export const PopUp = ({isActive, type, duration=6000, message, sx} : PopUpProps)
   }, [duration]);
 
   if (!isActive || isUnmounted) return null;
+
+  function handleClose() {
+    setIsClosing(true);
+    if (onClose) {
+      onClose();
+    }
+  }
 
   return (
     <div 
@@ -40,7 +48,7 @@ export const PopUp = ({isActive, type, duration=6000, message, sx} : PopUpProps)
       </div>
       <button 
         className={styles.closeBtn} 
-        onClick={() => setIsClosing(true)} 
+        onClick={handleClose} 
         aria-label="Schließen"
       >
         ×

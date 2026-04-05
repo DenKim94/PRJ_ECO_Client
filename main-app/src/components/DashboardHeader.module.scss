@@ -1,0 +1,24 @@
+@use '../styles/abstracts/variables' as var;
+
+.headerContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var.$spacing-md;
+    width: 95%;
+    height: 40px;
+    padding: 0;
+
+    // Smartphone (vertikal)
+    @media (min-width: var.$breakpoint-xs) and (max-width: var.$breakpoint-sm) and (min-height: 700px) {
+        margin-left: var.$spacing-sm;
+    }
+
+    // Smartphone (horizontal)
+    @media (min-width: var.$breakpoint-sm) and (max-width: var.$breakpoint-lg) and (max-height: var.$breakpoint-height-sm) {
+        margin-top: 0px;;
+        margin-bottom: 10px;
+        min-width: var.$min-width-input;
+    }
+}

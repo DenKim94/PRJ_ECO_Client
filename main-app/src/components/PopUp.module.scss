@@ -41,6 +41,17 @@ $popup-colors: (
       border-left-color: $color;
     }
   }
+
+    // Smartphone (vertikal)
+    @media (min-width: var.$breakpoint-xs) and (max-width: var.$breakpoint-sm){
+      bottom: 50px;
+    }
+
+    // Smartphone (horizontal)
+    @media (min-width: var.$breakpoint-sm) and (max-width: var.$breakpoint-lg) and (max-height: var.$breakpoint-height-sm) {
+      bottom: 50px;
+    }
+
 }
 
 .content {

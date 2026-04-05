@@ -2,10 +2,10 @@
 
 .pageContainer {
     display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    gap: 20px;
-    align-items: center;
+    flex-direction: row;
+    justify-content: center;
+    gap: var.$spacing-md;
+    align-items: flex-start;
     min-height: 50vh;
     min-width: var.$breakpoint-lg;
     max-width: var.$max-width-container;
@@ -25,6 +25,20 @@
     @media (max-width: var.$breakpoint-md) {
         padding: 0 var.$spacing-xs;
         min-width: var.$min-width-input;
+        max-width: 370px;
+        width: 100%; 
+        height: 100%;
+    }
+
+    // Smartphone (horizontal)
+    @media (min-width: var.$breakpoint-sm) and (max-width: var.$breakpoint-lg) and (max-height: var.$breakpoint-height-sm) {
+        padding: 0px var.$spacing-md;
+    }
+
+    // Smartphone Mini (vertikal)
+    @media (min-width: var.$breakpoint-xs) and (max-width: var.$breakpoint-sm) and (max-height: 700px) {
+        padding: 0 var.$spacing-xs;
+        min-width: var.$min-width-input;
         max-width: 360px;
         width: 100%; 
         height: 100%;
@@ -39,6 +53,7 @@
     
     // Tablet Mini
     @media (max-width: var.$breakpoint-md) and (min-width: var.$breakpoint-sm) {
+        padding: var.$spacing-sm;
         min-width: var.$breakpoint-sm;
         max-width: var.$breakpoint-md;
         width: 95%; 
@@ -46,8 +61,17 @@
 
     // Tablet (horizontal)
     @media (max-height: var.$breakpoint-lg) and (min-width: var.$breakpoint-xl) {
+        padding: var.$spacing-sm;
         min-width: var.$breakpoint-md;
         max-width: var.$breakpoint-xl;
         width: 100%; 
     }
+}
+
+.overViewContainer {
+    display: flex;
+    flex-direction: column;
+    gap: var.$spacing-lg;
+    align-items: center;
+    width: 100%;
 }
