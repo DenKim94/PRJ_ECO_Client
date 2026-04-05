@@ -8,6 +8,12 @@
     font-family: inherit;
     font-weight: 400;
     text-align: center;
+
+    // Smartphone Mini (vertikal)
+    @media (min-width: var.$breakpoint-xs) and (max-width: var.$breakpoint-sm) and (max-height: 700px) {
+        margin: 0px;
+        padding: 0px;
+    }
 }
 
 .error {

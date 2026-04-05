@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { PopUp, PopUpProps, PopUpMessageTypes } from "../components/PopUp";
 import { EmailValidation } from "../components/EmailValidation";
+import { useIsMobile } from "../hooks/useIsMobile";
 
 
 export default function Dashboard() {
@@ -22,6 +23,7 @@ export default function Dashboard() {
         duration: 8000,
         message: ''
     });
+    const isMobile = useIsMobile();
 
     const isLoading = authService.isLoading || configService.isLoading || trackingService.isLoading || calcService.isLoading;
     
@@ -73,8 +75,13 @@ export default function Dashboard() {
     return (
         <div className={styles.pageContainer}>
             <h1>Dashboard</h1>
-            <EmailValidation show={!authService.userDetailedData?.isValidatedEmail} />
-            <LoadingSpinner isActive={isLoading} message="Daten werden geladen..." />
+            <EmailValidation show={!authService.userDetailedData?.isValidatedEmail && !isLoading} />
+            <LoadingSpinner 
+                isActive={isLoading} 
+                message="Daten werden geladen..."
+                sxContainer={{gap: isMobile ? '5px' : '20px', padding: isMobile ? '10px' : '20px'}} 
+                sxSpinner={{width: isMobile ? '50px' : '100px', height: isMobile ? '50px' : '100px'}}/>
+
             <PopUp isActive={activePopUp.isActive} 
                     type={activePopUp.type} 
                     duration={activePopUp.duration} 

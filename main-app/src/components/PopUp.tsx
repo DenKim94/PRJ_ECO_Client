@@ -8,9 +8,10 @@ export interface PopUpProps {
     type: PopUpMessageTypes;
     duration?: number; // Optional, Zeit in ms bis zum automatischen Schließen
     message: string;
+    sx?: React.CSSProperties;
 };
 
-export const PopUp = ({isActive, type, duration=6000, message} : PopUpProps) => {
+export const PopUp = ({isActive, type, duration=6000, message, sx} : PopUpProps) => {
   const [isClosing, setIsClosing] = useState(false);
   const [isUnmounted, setIsUnmounted] = useState(false);
 
@@ -30,6 +31,7 @@ export const PopUp = ({isActive, type, duration=6000, message} : PopUpProps) => 
         ${styles[type]} 
         ${isClosing ? styles.isClosing : ''}
       `}
+      style={sx}
       role="alert"
       onAnimationEnd={() => isClosing && setIsUnmounted(true)}
     >

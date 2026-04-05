@@ -12,6 +12,8 @@ $spinner-thickness: 6px;
   margin: auto;
   gap: var.$spacing-md;
   padding: var.$spacing-lg;
+  background-color: blur(10px) rgba(var.$color-surface-light, 0.8);
+  z-index: 100;
 }
 
 .spinner {

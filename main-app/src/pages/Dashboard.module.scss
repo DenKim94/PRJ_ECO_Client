@@ -19,6 +19,7 @@
     background-color: var.$color-surface-light;
     box-shadow: var(--shadow-border-glow);
     overflow-y: auto;
+    z-index: 1;
     
     // Smartphone
     @media (max-width: var.$breakpoint-md) {

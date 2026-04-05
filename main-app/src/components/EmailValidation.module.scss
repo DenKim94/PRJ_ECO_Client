@@ -6,7 +6,7 @@
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    min-height: 30vh;
+    min-height: 35vh;
     min-width: calc(var.$breakpoint-sm - (2.65 * var.$spacing-lg));
     max-width: 100%;
     border: 1px solid var(--color-border);
@@ -14,15 +14,27 @@
     padding: var.$spacing-lg;
     background-image: var(--app-background-image);
     background-color: var.$color-surface-light;
+    z-index: 10;
     
     @include mixin.responsive-input-container;
+
+    // Smartphone (vertikal)
+    @media (min-width: var.$breakpoint-xs) and (max-width: var.$breakpoint-sm) and (min-height: 700px) {
+        height: 60%;
+    }
+
+    // Smartphone Mini (vertikal)
+    @media (min-width: var.$breakpoint-xs) and (max-width: var.$breakpoint-sm) and (max-height: 700px) {
+        height: 70%;
+    }
 
     // Smartphone (horizontal)
     @media (min-width: var.$breakpoint-sm) and (max-width: var.$breakpoint-lg) and (max-height: var.$breakpoint-height-sm) {
         margin-top: 0px;
+        margin-bottom: 10px;
         min-width: var.$min-width-input;
         max-width: var.$breakpoint-sm;
-        min-height: var.$breakpoint-height-xs;
+        min-height: var.$breakpoint-height-sm;
     }
 }
 
@@ -40,6 +52,7 @@
     border-radius: var.$radius-sm;
     font-size: var.$font-size-md;
     font-family: var.$font-family-base;
+    margin-top: 20px;
     background-color: transparent;
     color: var(--color-text-main);
 }

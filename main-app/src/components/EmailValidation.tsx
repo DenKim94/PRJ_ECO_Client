@@ -5,6 +5,7 @@ import { MessageContainer, MessageContainerProps } from "./MessageContainer";
 import { useAuth } from "../hooks/useAuth";
 import { CustomButton } from "./CustomButton";
 
+
 export const EmailValidation = ({show}: {show: boolean}) => {
     const auth = useAuth();
     const [submitting, setSubmitting] = useState(false);
@@ -67,7 +68,7 @@ export const EmailValidation = ({show}: {show: boolean}) => {
         <div className={styles.pageContainer}>
             <h2 className={styles.title}>{'Verifizierung erforderlich.'}</h2>
             <span className={styles.infoText}>
-                {`Du solltest eine E-Mail mit deinem persönlichen Verifizierungscode erhalten haben. 
+                {`Du hast eine E-Mail mit deinem persönlichen Verifizierungscode erhalten. 
                   Bitte gib diesen Code hier ein, um deine E-Mail-Adresse zu bestätigen.`}
             </span>
 
@@ -87,16 +88,22 @@ export const EmailValidation = ({show}: {show: boolean}) => {
                 <CustomButton 
                     title={submitting ? "Anfrage senden..." : "Bestätigen"} 
                     type="submit" 
-                    isDisabled={submitting} 
+                    isDisabled={submitting}
+                    sx={{marginBottom: '10px'}} 
                 />
                 <CustomButton 
                     title="Code erneut senden" 
                     type="button"
                     onClickCallback={resendCode} 
                     isDisabled={submitting} 
+                    sx={{marginTop: '0px'}}
                 />
             </form>
-            <MessageContainer message={message?.message ?? ""} type={message?.type} isVisible={message !== null} />
+            <MessageContainer 
+                message={message?.message ?? ""} 
+                type={message?.type} 
+                isVisible={message !== null} 
+            />
         </div>
     );
 };
