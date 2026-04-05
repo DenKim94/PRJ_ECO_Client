@@ -5,7 +5,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: var.$spacing-sm;
+    gap: 0;
     width: 25vh;
     height: 100%;
 }
@@ -13,7 +13,7 @@
 .menuBarContainer {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     padding: 0px;
     color: var(--color-text-main);
     height: 100%;
@@ -21,8 +21,51 @@
 }
 
 .divider {
-    width: 1px; // Dicke der Linie
-    background-color: var(--color-text-main); // Farbe der Linie (gerne an dein Design anpassen)
-    border-radius: 2px; // Macht die Enden leicht abgerundet (optional)
+    width: 1px;
+    background-color: var(--color-text-main);
+    border-radius: 2px;
+    margin-left: var.$spacing-lg;
     height: 100%; 
+}
+
+.menuItemsContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var.$spacing-md;
+    width: 100%;
+    height: 100%;
+    margin-top: 40px;
+    padding-left: var.$spacing-sm;
+}
+
+.logoutButton {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: var.$spacing-sm;
+    border: none;
+    text-align: center;
+    padding-right: var.$spacing-lg;
+    border-radius: var.$radius-sm;
+    font-size: var.$font-size-md;
+    font-weight: var.$font-weight-medium;
+    font-family: var.$font-family-base;
+    background-color: var(--color-logout-button);
+    color: var(--color-button-text);
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover{
+        background-color: var(--color-primary-hover);
+        box-shadow: var(--shadow-border-glow);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
 }

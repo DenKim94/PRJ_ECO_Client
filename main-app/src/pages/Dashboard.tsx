@@ -98,7 +98,11 @@ export default function Dashboard() {
            { !isMobile && <MenuSideBar/> }
             <div className={styles.overViewContainer}>
                 <DashboardHeader/>
-                <EmailValidation show={!authService.userDetailedData?.isValidatedEmail && !isLoading} />
+                <EmailValidation show={
+                    !authService.errorMsgRef.current && 
+                    !authService.userDetailedData?.isValidatedEmail && 
+                    !isLoading} 
+                />
                 <LoadingSpinner 
                     isActive={isLoading} 
                     message="Daten werden geladen..."

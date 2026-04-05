@@ -9,8 +9,10 @@ import { LogInRequest, RegisterRequest, PasswordResetRequest, AuthResponseModel,
 
 export interface CustomJwtPayload extends JwtPayload {
   sub: string;         
-  roles?: string[];      
-  exp: number;         
+  userRole: UserRoles;      
+  exp: number;
+  hasValidStatus: boolean;
+  tokenVersion: number;         
 }
 
 const logger = new Logger('AuthProvider');
@@ -36,8 +38,8 @@ const getInitialAuthData = (): { token: string | null; user: User | null; remain
 
     const user: User = { 
       name: decoded.sub, 
-      role: decoded.roles?.[0] as UserRoles ?? 'USER',
-      hasValidStatus: false
+      role: decoded.userRole,
+      hasValidStatus: decoded.hasValidStatus
     };
     
     const remainingTimeMs = decoded.exp ? (decoded.exp * 1000) - Date.now() : null;
@@ -217,7 +219,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, [token]);
 
     const login = useCallback(async (request: LogInRequest): Promise<AuthResponseModel | null> => {
-        logger.debug('Login ...', request);
+        logger.debug('Login ...', { userName: request.username });
         const response = await authApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/login`, data: request });
         if (!response) {
             errorMsgRef.current = authApi.errorMsg.current;
@@ -226,18 +228,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setJWT(response.token, response.expiresIn);
         setUser({ name: response.userName, role: response.role as UserRoles, hasValidStatus: response.hasValidStatus });
 
-        logger.debug('Login erfolgreich.', response);
+        logger.debug('Login erfolgreich.', 
+            { userName: response.userName, role: response.role, hasValidStatus: response.hasValidStatus });
+
         return response;
     }, [authApi, setJWT]);
 
     const register = useCallback(async (request: RegisterRequest): Promise<ApiResponseMap | null> => {
-        logger.debug('Registriere neuen Benutzer ...', request);
+        logger.debug('Registriere neuen Benutzer ...', { email: request.email });
         const response = await registerApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/register`, data: request });
        if (!response) { 
             errorMsgRef.current = registerApi.errorMsg.current;
             return null;
        }
-       logger.debug('Registrierung erfolgreich.', response);
+       logger.debug('Registrierung erfolgreich.');
        return response; 
     }, [registerApi]);
 
@@ -253,7 +257,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             role: response.role, 
             hasValidStatus: (response.isEnabled && response.isValidatedEmail) });
 
-        logger.debug('Benutzerdaten erfolgreich geladen.', response);
+        logger.debug('Benutzerdaten erfolgreich geladen.', { name: response.name, role: response.role });
         return response;
     }, [userApi]);
 
@@ -279,7 +283,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, [emailApi]);
 
     const resetPassword = useCallback(async (request: PasswordResetRequest): Promise<ApiMessageMap> => {
-        logger.debug('Passwort zurücksetzen ...', request);
+        logger.debug('Passwort zurücksetzen ...', { email: request.email });
         const response = await accountApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/user-password/reset`, data: request });
         if (!response) { 
             errorMsgRef.current = accountApi.errorMsg.current; 

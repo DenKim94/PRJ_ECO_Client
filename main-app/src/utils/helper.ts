@@ -1,4 +1,6 @@
 export class HelperClass {
+    static readonly gitHubRepoUrl = 'https://github.com/DenKim94/PRJ_ECO_Client';
+
     static isValidEmail(email: string): boolean {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);

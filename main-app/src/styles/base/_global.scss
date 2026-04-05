@@ -19,6 +19,7 @@ body {
   --color-warning: #{var.$color-warning-light};
   --color-success: #{var.$color-success-light};
   --color-border: #{var.$color-border-light};
+  --color-logout-button: #{var.$color-text-muted-light};
 
   // Typografie & Spacing
   --font-family-base: #{var.$font-family-base};
@@ -43,6 +44,7 @@ body {
   --color-warning: #{var.$color-warning-dark};
   --color-success: #{var.$color-success-dark};
   --color-border: #{var.$color-border-dark};
+  --color-logout-button: #{var.$color-text-muted-light};
 
   --app-background-image: linear-gradient(
     180deg,

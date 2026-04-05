@@ -30,7 +30,7 @@ export function useApiCall<T = unknown>(): UseApiResponse<T> {
   const fetchData = useCallback(async (config: AxiosRequestConfig) => {
     setIsLoading(true);
     
-    logger.debug('Sende API-Anfrage...', config);
+    logger.debug('Sende API-Anfrage...', { url: config.url, method: config.method });
 
     try {
         const response = await apiClient.request<T>(config);
