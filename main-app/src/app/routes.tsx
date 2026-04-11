@@ -4,7 +4,13 @@ import LogIn from '../pages/LogIn';
 import Register from '../components/Register';
 import PasswordReset from '../components/PasswordReset';
 import Dashboard from '../pages/Dashboard';
-import ProtectedRoute from '../components/ProtectedRoute'; // Bauen wir in Schritt 3
+import ProtectedRoute from '../routes-composer/ProtectedRoute';
+import Settings from '../pages/Settings';
+import Overview from '../pages/Overview';
+import Dataview from '../pages/Dataview';
+import AdminRoute from '../routes-composer/AdminRoute';
+import Adminview from '../pages/Adminview';
+
 
 // Hier definieren wir den Router als Baumstruktur
 export const router = createBrowserRouter([
@@ -37,10 +43,36 @@ export const router = createBrowserRouter([
           {
             path: 'dashboard', 
             element: <Dashboard />,
+                  // Die Sub-Routen des Dashboards
+                  children: [
+                      {
+                          // "index: true" bedeutet: Wenn nur "/dashboard" aufgerufen wird, 
+                          // zeige standardmäßig die Overview-Komponente
+                          index: true, 
+                          element: <Overview /> 
+                      },
+                      {
+                          // URL: /dashboard/data
+                          path: 'data', 
+                          element: <Dataview />
+                      },
+                      {
+                          // URL: /dashboard/settings
+                          path: 'settings', 
+                          element: <Settings />
+                      },
+                      {
+                          // Der AdminRoute-Guard sichert diesen Bereich ab
+                          element: <AdminRoute />, 
+                          children: [
+                              { 
+                                  path: 'admin', 
+                                  element: <Adminview /> // Rendert im Dashboard-Outlet
+                              }
+                          ]
+                      }
+                  ]
           },
-          // Hier können weitere geschützte Routen hin:
-          // { path: 'settings', element: <Settings /> },
-          // { path: 'analytics', element: <Analytics /> },
         ],
       },
     ],
