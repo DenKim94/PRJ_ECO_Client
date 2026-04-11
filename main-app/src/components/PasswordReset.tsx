@@ -30,7 +30,7 @@ export default function PasswordReset() {
             const request: { email: string } = { email: eMail };
             const result = await auth.sendPasswordVerificationEmail(request);
 
-            if (auth.errorMsgRef.current?.message) {
+            if (result.message === auth.errorMsgRef.current?.message) {
                 setMessage({ message: `Anfrage ist fehlgeschlagen: ${auth.errorMsgRef.current.message}`, type: "error" });
                 logger.error(`${auth.errorMsgRef.current.message}`);
                 return;

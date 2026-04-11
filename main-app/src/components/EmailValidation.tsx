@@ -22,7 +22,7 @@ export const EmailValidation = ({show}: {show: boolean}) => {
         try {
             const result = await auth.verifyEmail(code);
 
-            if (auth.errorMsgRef.current?.message) {
+            if (result.message === auth.errorMsgRef.current?.message) {
                 setMessage({ message: `Anfrage ist fehlgeschlagen: ${auth.errorMsgRef.current.message}`, type: "error" });
                 logger.error(`${auth.errorMsgRef.current.message}`);
                 return;
@@ -46,7 +46,7 @@ export const EmailValidation = ({show}: {show: boolean}) => {
         try {
             const result = await auth.resendVerificationEmail();
 
-            if (auth.errorMsgRef.current?.message) {
+            if (result.message === auth.errorMsgRef.current?.message) {
                 setMessage({ message: `Anfrage ist fehlgeschlagen: ${auth.errorMsgRef.current.message}`, type: "error" });
                 logger.error(`${auth.errorMsgRef.current.message}`);
                 return;

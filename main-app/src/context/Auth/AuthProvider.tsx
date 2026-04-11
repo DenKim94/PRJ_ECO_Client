@@ -242,8 +242,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             return null;
        }
        logger.debug('Registrierung erfolgreich.');
+       clearSession();
        return response; 
-    }, [registerApi]);
+    }, [registerApi, clearSession]);
 
     const getUserData = useCallback( async (): Promise<UserDataResponseModel | null> => {
         logger.debug('Lade Benutzerdaten ...');

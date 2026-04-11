@@ -37,13 +37,7 @@ export default function Register() {
             const request: RegisterRequest = { username: trimmedName, password, email: eMail };
             const result = await auth.register(request);
 
-            if (!result) {
-                setMessage({ message: 'Registrierung fehlgeschlagen. Bitte prüfe deine Eingaben.', type: "error" });
-                logger.error(`Registrierung fehlgeschlagen für User: ${trimmedName}`);
-                return;
-            }
-
-            if (auth.errorMsgRef.current?.message) {
+            if (!result && auth.errorMsgRef.current?.message) {
                 setMessage({ message: `Registrierung fehlgeschlagen: ${auth.errorMsgRef.current.message}`, type: "error" });
                 logger.error(`Registrierung fehlgeschlagen: ${auth.errorMsgRef.current.message} für User: ${trimmedName}`);
                 return;
@@ -83,6 +77,7 @@ export default function Register() {
                     placeholder="Name"
                     required={true}
                     minLength={2}
+                    maxLength={16}
                     disabled={submitting}
                 />
                 <div className={styles.passwordField}>
