@@ -11,7 +11,8 @@
     padding: 0;
 
     // Smartphone (vertikal)
-    @media (min-width: var.$breakpoint-xs) and (max-width: var.$breakpoint-sm) and (min-height: 700px) {
+    @media (min-width: var.$breakpoint-xs) and (max-width: var.$breakpoint-sm) and (min-height: 650px) {
+        padding-top: 5px;
         margin-left: var.$spacing-sm;
     }
 

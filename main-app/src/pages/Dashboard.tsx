@@ -1,3 +1,4 @@
+import { Outlet } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useConfig } from "../hooks/useConfig";
 import { useTracking } from "../hooks/useTracking";
@@ -99,16 +100,21 @@ export default function Dashboard() {
             <div className={styles.overViewContainer}>
                 <DashboardHeader/>
                 <EmailValidation show={
-                    !authService.errorMsgRef.current && 
                     !authService.userDetailedData?.isValidatedEmail && 
                     !isLoading} 
                 />
-                <LoadingSpinner 
-                    isActive={isLoading} 
-                    message="Daten werden geladen..."
-                    sxContainer={{gap: isMobile ? '5px' : '20px', padding: isMobile ? '10px' : '20px'}} 
-                    sxSpinner={{width: isMobile ? '50px' : '100px', height: isMobile ? '50px' : '100px'}}
-                />
+                {isLoading ? (
+                    <LoadingSpinner 
+                        isActive={true} 
+                        message="Daten werden geladen..."
+                        sxContainer={{gap: isMobile ? '5px' : '20px', padding: isMobile ? '10px' : '20px'}} 
+                        sxSpinner={{width: isMobile ? '50px' : '100px', height: isMobile ? '50px' : '100px'}}
+                    />
+                ) : (
+                    <div className={styles.dashboardContentArea}>
+                        <Outlet /> 
+                    </div>
+                )}
                 <PopUp 
                     isActive={activePopUp.isActive} 
                     type={activePopUp.type} 

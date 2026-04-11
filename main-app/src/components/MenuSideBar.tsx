@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { Logger } from '../utils/logger';
@@ -32,11 +32,16 @@ export default function MenuSideBar() {
         <div className={styles.elementContainer}>
             <div className={styles.menuBarContainer}>
                 <AppLogo src='/eco_app_v2.png' alt='ECO App Logo' size= {isMobile ? 'm' : 'xl'}/>
-                <div className={styles.menuItemsContainer}>
-                    <span>{'Platzhalter: Überscht'}</span>
-                    <span>{'Platzhalter: Daten'}</span>
-                    <span>{'Platzhalter: Einstellungen'}</span>
-                </div>
+                <nav className={styles.menuItemsContainer}>
+                    <NavLink to="/dashboard" end>{'Übersicht'}</NavLink>
+                    <NavLink to="/dashboard/data">{'Daten'}</NavLink>
+                    <NavLink to="/dashboard/settings">{'Einstellungen'}</NavLink>
+
+                    {/* Nur Admins sehen diesen Menüpunkt */}
+                    {authService.userDetailedData?.role === 'ADMIN' && (
+                        <NavLink to="/dashboard/admin">{'Admin-Bereich'}</NavLink>
+                    )}
+                </nav>
                         <button
                             type='button'
                             className={styles.logoutButton}
@@ -45,7 +50,6 @@ export default function MenuSideBar() {
                             disabled={authService.isLoading}
                         >
                                 <img
-                                    // src={themeObject.theme === 'light' ? '/visibility_off_dark.png' : '/visibility_off_light.png'}
                                     src={'/logout_icon_light.png'}
                                     alt={'Button zum Logout'}
                                     width={24}
