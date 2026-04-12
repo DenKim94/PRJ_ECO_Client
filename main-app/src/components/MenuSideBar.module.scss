@@ -6,8 +6,14 @@
     flex-direction: row;
     align-items: center;
     gap: 0;
-    width: 25vh;
+    min-width: 20vw;
+    width: 25vw;
     height: 100%;
+
+    // Tablet (vertikal)
+    @media (max-width: var.$breakpoint-xl) and (min-width: var.$breakpoint-md) {
+        min-width: 28vw;
+    }
 }
 
 .menuBarContainer {
@@ -38,24 +44,43 @@
     height: 100%;
     margin-top: 40px;
     padding-left: var.$spacing-sm;
+}
 
-    a {
+.menuItem {
+        // Flexbox ordnet Bild und Text nebeneinander an
+        display: flex;
+        flex-direction: row;
+        align-items: center; 
+        justify-content: flex-start;
+        gap: var.$spacing-sm; // Abstand zwischen Icon und Text
+        
+        // Klickbarer Bereich und Aussehen
+        width: 100%;
+        padding: 10px 0px; 
+        border-radius: var.$radius-sm;
         text-decoration: none;
         color: var(--color-text-main, #333333); 
         font-size: var.$font-size-md; 
-        transition: color 0.2s ease;
+        transition: all 0.2s ease;
         
-        &:hover {
-            color: var(--color-primary, #007bff); 
+        // Verhindert, dass das Bild gestaucht wird
+        img {
+            flex-shrink: 0;
+            object-fit: contain;
+            margin-left: 10px;
         }
-
-        // react-router-dom hängt automatisch die Klasse "active" an, wenn die Route ausgewählt ist. 
-        &.active {
-            color: var(--color-primary, #007bff);
-            font-weight: bold;
+        
+        // Hover-Effekt (leicht grauer Hintergrund, bevor man klickt)
+        &:hover {
+            background-color: var(--color-primary-hover); 
         }
     }
-}
+
+    // Aktiver Zustand
+    .active {
+        background-color: var(--color-primary-hover);
+        font-weight: var.$font-weight-bold;
+    }
 
 .logoutButton {
     display: flex;
@@ -85,5 +110,11 @@
     &:disabled {
         opacity: 0.5;
         cursor: not-allowed;
+    }
+
+    // Tablet Mini
+    @media (max-width: var.$breakpoint-md) and (min-width: var.$breakpoint-sm) {
+        margin-left: var.$spacing-sm;
+        margin-bottom: var.$spacing-sm;
     }
 }

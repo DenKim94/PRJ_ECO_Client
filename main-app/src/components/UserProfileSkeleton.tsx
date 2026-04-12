@@ -11,6 +11,9 @@ export default function UserProfileSkeleton() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const themeObject = useTheme();
     
+    const iconSrcLightMode = authService.userDetailedData?.role === 'ADMIN' ? '/admin_icon_dark.svg' : '/account_circle_icon_dark.svg';
+    const iconSrcDarkMode = authService.userDetailedData?.role === 'ADMIN' ? '/admin_icon_light.svg' : '/account_circle_icon_light.svg';
+
     // Toggle-Funktion für den Klick auf das Profil-Icon
     const toggleMenu = () => {
         if (isMobile) {
@@ -32,7 +35,7 @@ export default function UserProfileSkeleton() {
                 disabled={!isMobile} // Auf der Desktop-Ansicht bleibt der Button inaktiv
             >
                 <img 
-                    src={themeObject.theme === 'light' ? '/account_circle_icon_dark.svg' : '/account_circle_icon.svg'}
+                    src={themeObject.theme === 'light' ? iconSrcLightMode : iconSrcDarkMode}
                     alt='Profil-Icon' 
                     width={28}
                     height={28}
