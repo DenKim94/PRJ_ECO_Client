@@ -12,8 +12,10 @@ export interface AuthContextType {
   adminUserData: AllUserDataResponse[];
   isAuthenticated: boolean;
   showSessionWarning: boolean;
+  sessionTimeRemaining: RefObject<number>;
   isLoading: boolean;
   errorMsgRef: RefObject<ErrorMessage | undefined>;
+  isTokenValid: () => boolean;
   login: (request: LogInRequest) => Promise<AuthResponseModel | null>;
   logout: () => Promise<ApiMessageMap>;
   register: (request: RegisterRequest) => Promise<ApiResponseMap | null>;

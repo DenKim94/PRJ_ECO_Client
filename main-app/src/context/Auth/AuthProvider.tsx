@@ -64,6 +64,7 @@ const getInitialAuthData = (): { token: string | null; user: User | null; remain
  * * adminUserData: AllUserDataResponse[];
  * * isAuthenticated: boolean;
  * * showSessionWarning: boolean;
+ * * sessionTimeRemaining: RefObject<number>;
  * * isLoading: boolean;
  * * errorMsgRef: RefObject<ErrorMessage | undefined>;
  *
@@ -107,6 +108,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const [showSessionWarning, setShowSessionWarning] = useState(false);
     const [warningTimer, setWarningTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
+    const sessionTimeRemaining = useRef<number>(initialAuthData.remainingTimeMs ?? 0);
+    const [countdownInterval, setCountdownInterval] = useState<ReturnType<typeof setInterval> | null>(null);
     const errorMsgRef = useRef<ErrorMessage | undefined>(undefined);
 
     // --- API Hooks für jede Aktion ---
@@ -125,34 +128,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         userApi.isLoading || 
         adminUserApi.isLoading;
 
-    const startWarningTimer = useCallback((expiresInMs: number) => {
-        if (warningTimer){ clearTimeout(warningTimer) };
-
-        setShowSessionWarning(false);
-        // Warnung 60s vor Ablauf (mind. 10s Delay)
-        const warningTime = expiresInMs - 60000;
-        const delay = warningTime >= 10000 ? warningTime : 10000;
-
-        if (warningTime < 0) {
-            logger.warn('Token läuft in weniger als 60 Sekunden ab. Zeige sofort die Warnung an.');
-            setShowSessionWarning(true);
-            return;
-        }
-
-        const timerId = setTimeout(() => {
-            logger.warn('Token läuft bald ab.');
-            setShowSessionWarning(true);
-        }, delay);
-
-        setWarningTimer(timerId);
-        logger.debug('Token-Warntimer gestartet.');
-
-    }, [warningTimer]);
-
     const clearSession = useCallback(() => {
-        if (warningTimer) { 
-            clearTimeout(warningTimer); 
-        } 
+        if (warningTimer) { clearTimeout(warningTimer); } 
+        if (countdownInterval) { clearInterval(countdownInterval); }
 
         localStorage.removeItem('token');
         localStorage.removeItem('userName');
@@ -164,7 +142,59 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         logger.debug('Aktuelle Session wurde zurückgesetzt.');
         errorMsgRef.current = undefined;
 
-    }, [warningTimer]);
+    }, [warningTimer, countdownInterval]);
+
+    const startWarningTimer = useCallback((expiresInMs: number) => {
+        if (warningTimer){ clearTimeout(warningTimer) };
+        if (countdownInterval) clearInterval(countdownInterval);
+
+        const warningThresholdMs = 60000; // Warnung 60 Sekunden vor Ablauf
+        setShowSessionWarning(false);
+        sessionTimeRemaining.current = 0;
+        const timeUntilWarning = expiresInMs - warningThresholdMs;
+
+        // Hilfsfunktion für den sekündlichen Countdown
+        const startCountdown = (initialRemainingMs: number) => {
+            setShowSessionWarning(true);
+            let currentRemainingMs = initialRemainingMs;
+            sessionTimeRemaining.current = Math.floor(currentRemainingMs / 1000);
+
+            const intervalId = setInterval(() => {
+                currentRemainingMs -= 1000;
+                
+                if (currentRemainingMs <= 0) {
+                    logger.debug('Token ist abgelaufen.');
+                    clearInterval(intervalId);
+                    sessionTimeRemaining.current = 0;
+                    setShowSessionWarning(false);
+                    clearSession(); // Token ist abgelaufen -> User ausloggen
+
+                } else {
+                    sessionTimeRemaining.current = Math.floor(currentRemainingMs / 1000);
+                }
+            }, 1000);
+        
+            setCountdownInterval(intervalId);
+        };
+
+        // Fall 1: Token läuft in weniger als warningThresholdMs ab -> Sofort Countdown starten
+        if (timeUntilWarning <= 0) {
+            logger.warn(`Token läuft in weniger als ${warningThresholdMs / 1000} Sekunden ab. Starte Countdown sofort.`);
+            startCountdown(expiresInMs);
+            return;
+        }
+
+        // Fall 2: Genug Zeit übrig -> Timer setzen, der später den Countdown startet
+        const timerId = setTimeout(() => {
+            logger.warn(`Token läuft in ${timeUntilWarning} ms ab.`);
+            setShowSessionWarning(true);
+            startCountdown(warningThresholdMs);
+        }, timeUntilWarning);
+
+        setWarningTimer(timerId);
+        logger.debug('Token-Warntimer gestartet.');
+
+    }, [warningTimer, countdownInterval, clearSession]);
 
     const setJWT = useCallback((newToken: string, expiresInMs: number) => {
         localStorage.setItem('token', newToken);
@@ -177,6 +207,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
         if (initialAuthData.remainingTimeMs) {
             startWarningTimer(initialAuthData.remainingTimeMs);
+            sessionTimeRemaining.current = Math.floor(initialAuthData.remainingTimeMs / 1000);
         }
         
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -359,6 +390,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return response;
     }, [emailApi]);
 
+    /**
+     * Prüft synchron, ob der aktuell im localStorage liegende Token noch gültig ist.
+     * @returns {boolean} true wenn gültig, false wenn abgelaufen oder nicht vorhanden
+     */
+    const isTokenValid = (): boolean => {
+        const currentToken = localStorage.getItem('token');
+        
+        if (!currentToken) {
+            return false;
+        }
+
+        const decoded = jwtDecode<{ exp?: number }>(currentToken);
+        
+        if (!decoded.exp) {
+            return false; // Kein Ablaufdatum definiert = ungültig für unser System
+        }
+
+        const currentTimeInSeconds = Date.now() / 1000;
+        
+        // true zurückgeben, wenn die Expiration-Time in der Zukunft liegt
+        return decoded.exp > currentTimeInSeconds;
+    };
+
     // --- Admin-Funktionen ---
     const adminDeleteUserById = useCallback(async (userId: number): Promise<ApiMessageMap> => {
         logger.debug(`[Admin] - Benutzer mit ID ${userId} löschen ...`);
@@ -416,8 +470,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             adminUserData, 
             isAuthenticated: !!token && !!user, 
             showSessionWarning,
+            sessionTimeRemaining,
             isLoading: isLoadingSevice,
             errorMsgRef, 
+            isTokenValid,
             login,
             logout,
             register,

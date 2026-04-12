@@ -61,6 +61,7 @@ export default function Dashboard() {
             await trackingService.getAllEntries();
             await authService.getUserData();
             logger.debug('Initialisierung abgeschlossen.');
+            logger.debug(`Token läuft in ${authService.sessionTimeRemaining.current} s ab.`);
         }
         performInitialDataLoad().catch((error) => {
             logger.error('Fehler bei der initialen Datenladung:', error);
@@ -73,7 +74,7 @@ export default function Dashboard() {
         if (isLoading) return;
 
         if (authService.showSessionWarning){
-            updatePopUpProps(true, "Deine Sitzung läuft bald ab. Möchtest du deine Sitzung verlängern?", 'warning');
+            updatePopUpProps(true, `Deine Sitzung läuft in ${authService.sessionTimeRemaining.current} s ab.`, 'warning');
         }
         else if (authService.userDetailedData?.isEnabled === false){
             updatePopUpProps(true, "Dein Nutzerstatus wurde deaktiviert. Daher kann die Nutzung der Anwendung eingeschränkt sein.", 'warning');
@@ -85,7 +86,8 @@ export default function Dashboard() {
             updatePopUpProps(true, "Ein Fehler bei Laden der Daten ist aufgetreten. Bitte versuche die Seite erneut zu laden.", 'error');
         };
 
-    }, [authService.userDetailedData, 
+    }, [authService.userDetailedData,
+        authService.sessionTimeRemaining,
         authService.showSessionWarning, 
         authService.errorMsgRef, 
         configService.errorMsgRef, 
