@@ -39,6 +39,7 @@ export const ConfigurationProvider = ({ children }: { children: ReactNode }) => 
         }
         setConfigs(response);
         logger.debug('Konfiguration erfolgreich geladen.', response);
+        errorMsgRef.current = undefined;
         return response;
 
     }, [configApi]);
@@ -52,6 +53,7 @@ export const ConfigurationProvider = ({ children }: { children: ReactNode }) => 
         }
         setConfigs(response);
         logger.debug('Konfiguration erfolgreich aktualisiert.');
+        errorMsgRef.current = undefined;
         return response;
 
     }, [configApi]);

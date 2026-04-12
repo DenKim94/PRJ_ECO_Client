@@ -62,15 +62,13 @@
         color: var(--color-text-main, #333333); 
         font-size: var.$font-size-md; 
         transition: all 0.2s ease;
-        
-        // Verhindert, dass das Bild gestaucht wird
+
         img {
             flex-shrink: 0;
             object-fit: contain;
             margin-left: 10px;
         }
-        
-        // Hover-Effekt (leicht grauer Hintergrund, bevor man klickt)
+
         &:hover {
             background-color: var(--color-primary-hover); 
         }

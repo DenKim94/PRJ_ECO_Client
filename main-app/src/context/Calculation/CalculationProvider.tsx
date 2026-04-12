@@ -40,6 +40,7 @@ export const CalculationProvider = ({ children }: { children: ReactNode }) => {
         }
         setCalcData(response);
         logger.debug('Berechnungsergebnisse erfolgreich geladen.');
+        errorMsgRef.current = undefined;
         return response;
     }, [calcApi, setCalcData]);
 
@@ -52,6 +53,7 @@ export const CalculationProvider = ({ children }: { children: ReactNode }) => {
         }
         setCalcData(response);
         logger.debug('Berechnung erfolgreich ausgeführt. Ergebnisse wurden gespeichert.');
+        errorMsgRef.current = undefined;
         return response;
     }, [calcApi, setCalcData]);
 
@@ -64,6 +66,7 @@ export const CalculationProvider = ({ children }: { children: ReactNode }) => {
         }
         setCalcData([]);
         logger.debug('Alle Berechnungsergebnisse erfolgreich gelöscht.');
+        errorMsgRef.current = undefined;
         return response;
     }, [deleteApi, setCalcData]);
 

@@ -48,6 +48,7 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
         }
         logger.debug('Alle Tracking-Einträge erfolgreich geladen.');
         setEntryList(response);
+        errorMsgRef.current = undefined;
         return response;
 
     },[trackingDataList]);
@@ -61,6 +62,7 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
         }
         logger.debug('Neuesten Eintrag erfolgreich geladen.');
         setNewestEntry(response);
+        errorMsgRef.current = undefined;
         return response;
 
     },[trackingData]);
@@ -75,6 +77,7 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
         logger.debug('Neuer Eintrag erfolgreich hinzugefügt.', response);
         setNewestEntry(response);
         setEntryList(prev => [...prev, response]);
+        errorMsgRef.current = undefined;
         return response;
 
     },[trackingData]);
@@ -91,6 +94,7 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
         if (newestEntry?.id === id) {
             setNewestEntry(response);
         }
+        errorMsgRef.current = undefined;
         return response;
 
     },[trackingData, newestEntry]);
@@ -107,6 +111,7 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
         if (newestEntry?.id === id) {
             setNewestEntry(null);
         }
+        errorMsgRef.current = undefined;
         return response;
 
     },[deleteData, newestEntry]);
@@ -121,6 +126,7 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
         logger.debug('Alle Einträge erfolgreich gelöscht.', response);
         setEntryList([]);
         setNewestEntry(null);
+        errorMsgRef.current = undefined;
         return response;
 
     },[deleteData]);

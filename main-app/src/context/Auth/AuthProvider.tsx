@@ -146,6 +146,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         setWarningTimer(timerId);
         logger.debug('Token-Warntimer gestartet.');
+
     }, [warningTimer]);
 
     const clearSession = useCallback(() => {
@@ -161,6 +162,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(null);
         setShowSessionWarning(false);
         logger.debug('Aktuelle Session wurde zurückgesetzt.');
+        errorMsgRef.current = undefined;
 
     }, [warningTimer]);
 
@@ -231,6 +233,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         logger.debug('Login erfolgreich.', 
             { userName: response.userName, role: response.role, hasValidStatus: response.hasValidStatus });
 
+        errorMsgRef.current = undefined;
         return response;
     }, [authApi, setJWT]);
 
@@ -259,6 +262,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             hasValidStatus: (response.isEnabled && response.isValidatedEmail) });
 
         logger.debug('Benutzerdaten erfolgreich geladen.', { name: response.name, role: response.role });
+        errorMsgRef.current = undefined;
         return response;
     }, [userApi]);
 
@@ -280,6 +284,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             errorMsgRef.current = emailApi.errorMsg.current; 
             return { message: emailApi.errorMsg.current?.message  ?? 'Anfrage ist fehlgeschlagen.' };
         }
+        errorMsgRef.current = undefined;
         return response;
     }, [emailApi]);
 
@@ -291,6 +296,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             return { message: accountApi.errorMsg.current?.message  ?? 'Anfrage ist fehlgeschlagen.' };
         }
         logger.debug('Passwort erfolgreich zurückgesetzt.');
+        errorMsgRef.current = undefined;
         return response;
     }, [accountApi]);
 
@@ -304,6 +310,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setJWT(response.token, response.expiresIn);
         setUser({ name: response.userName, role: response.role as UserRoles, hasValidStatus: response.hasValidStatus });
         logger.debug('Token erfolgreich aktualisiert.');
+        errorMsgRef.current = undefined;
         return response;
     }, [authApi, setJWT, setUser]);
 
@@ -316,6 +323,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
         clearSession();
         logger.debug('Account erfolgreich gelöscht.');
+        errorMsgRef.current = undefined;
         return response;
     }, [accountApi, clearSession]);
 
@@ -335,6 +343,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             };
         });
         logger.debug('E-Mail erfolgreich verifiziert.');
+        errorMsgRef.current = undefined;
         return response;
     }, [accountApi]);
 
@@ -346,6 +355,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             return { message: emailApi.errorMsg.current?.message  ?? 'Anfrage ist fehlgeschlagen.' };
         }
         logger.debug(`${response.message}`);
+        errorMsgRef.current = undefined;
         return response;
     }, [emailApi]);
 
@@ -357,6 +367,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             errorMsgRef.current = accountApi.errorMsg.current; 
             return { message: accountApi.errorMsg.current?.message  ?? `Anfrage zum Löschen des Benutzers mit ID ${userId} ist fehlgeschlagen.` };
         }
+        errorMsgRef.current = undefined;
         logger.debug(`[Admin] - Benutzer mit ID ${userId} erfolgreich gelöscht.`);
         return response;
     }, [accountApi]);
@@ -369,6 +380,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             return { message: accountApi.errorMsg.current?.message  ?? `Anfrage zum Setzen des Status des Benutzers mit ID ${userId} ist fehlgeschlagen.` };
         }
         logger.debug(`[Admin] - Benutzer mit ID ${userId} wurde erfolgreich ${isEnabled ? 'aktiviert' : 'deaktiviert'}.`);
+        errorMsgRef.current = undefined;
         return response;
     }, [accountApi]);
 
@@ -381,6 +393,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
         logger.debug(`[Admin] - Alle Benutzerdaten erfolgreich abgerufen.`, response);
         setAdminUserData(response);
+        errorMsgRef.current = undefined;
         return response;
     }, [adminUserApi]);
 
@@ -392,6 +405,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             return { message: accountApi.errorMsg.current?.message  ?? `Anfrage zum Aktualisieren des Passworts ist fehlgeschlagen.` };
         }
         logger.debug(`[Admin] - Passwort erfolgreich aktualisiert.`);
+        errorMsgRef.current = undefined;
         return response;
     }, [accountApi]);
 
@@ -423,4 +437,3 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         </AuthContext.Provider>
     );
 };
-
