@@ -1,9 +1,20 @@
 @use '../styles/abstracts/variables' as var;
 
+.buttonContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: var.$spacing-sm;
+    min-width: var.$min-width-input;
+    max-width: var.$max-width-content;   
+}
+
 .customButton {
     padding: var.$spacing-sm;
     border: none;
     text-align: center;
+    width: 100%; 
     margin: var.$spacing-md 0;
     border-radius: var.$radius-sm;
     font-size: var.$font-size-md;
