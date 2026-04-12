@@ -73,7 +73,7 @@ const getInitialAuthData = (): { token: string | null; user: User | null; remain
  * * logout: () => Promise<ApiMessageMap>;
  * * register: (request: RegisterRequest) => Promise<ApiResponseMap | null>;
  * * getUserData: () => Promise<UserDataResponseModel | null>;
- * * refreshToken: () => Promise<AuthResponseModel | null>;
+ * * refreshToken: () => Promise<boolean>;
  * * deleteAccount: () => Promise<ApiMessageMap>;
  * * resendVerificationEmail: () => Promise<ApiMessageMap>;
  * * verifyEmail: (tfaCode: string) => Promise<ApiMessageMap>;
@@ -331,18 +331,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return response;
     }, [accountApi]);
 
-    const refreshToken = useCallback(async (): Promise<AuthResponseModel | null> => {
+    const refreshToken = useCallback(async (): Promise<boolean> => {
         logger.debug('Token aktualisieren ...');
         const response = await authApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/refresh-token` });
         if (!response) { 
             errorMsgRef.current = authApi.errorMsg.current; 
-            return null;
+            return false;
         }
         setJWT(response.token, response.expiresIn);
         setUser({ name: response.userName, role: response.role as UserRoles, hasValidStatus: response.hasValidStatus });
         logger.debug('Token erfolgreich aktualisiert.');
         errorMsgRef.current = undefined;
-        return response;
+        return true;
     }, [authApi, setJWT, setUser]);
 
     const deleteAccount = useCallback(async (): Promise<ApiMessageMap> => {
