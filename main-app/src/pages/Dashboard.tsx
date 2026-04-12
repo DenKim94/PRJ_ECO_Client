@@ -74,13 +74,13 @@ export default function Dashboard() {
         if (isLoading) return;
 
         if (authService.showSessionWarning){
-            updatePopUpProps(true, `Deine Sitzung läuft in ${authService.sessionTimeRemaining.current} s ab.`, 'warning');
+            updatePopUpProps(true, `Deine Sitzung läuft in ${authService.sessionTimeRemaining.current} Sekunden ab.`, 'warning');
         }
         else if (authService.userDetailedData?.isEnabled === false){
-            updatePopUpProps(true, "Dein Nutzerstatus wurde deaktiviert. Daher kann die Nutzung der Anwendung eingeschränkt sein.", 'warning');
+            updatePopUpProps(true, "Dein Account wurde deaktiviert. Daher ist die Nutzung der Anwendung eingeschränkt.", 'warning');
         }
         else if (authService.userDetailedData?.isValidatedEmail === false){
-            updatePopUpProps(true, "Deine E-Mail-Adresse ist nicht validiert. Daher kann die Nutzung der Anwendung eingeschränkt sein.", 'warning');
+            updatePopUpProps(true, "Deine E-Mail-Adresse ist nicht validiert. Daher ist die Nutzung der Anwendung eingeschränkt.", 'warning');
         }
         else if (authService.errorMsgRef.current || configService.errorMsgRef.current || trackingService.errorMsgRef.current || calcService.errorMsgRef.current){
             updatePopUpProps(true, "Ein Fehler bei Laden der Daten ist aufgetreten. Bitte versuche die Seite erneut zu laden.", 'error');
