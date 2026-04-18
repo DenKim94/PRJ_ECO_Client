@@ -11,6 +11,7 @@ import { PopUp, PopUpProps, PopUpMessageTypes } from "../components/PopUp";
 import { EmailValidation } from "../components/EmailValidation";
 import { useIsMobile } from "../hooks/useIsMobile";
 import DashboardHeader from "../components/DashboardHeader";
+import MobileMenuBar from "../components/MobileMenuBar";
 import MenuSideBar from "../components/MenuSideBar";
 
 
@@ -116,6 +117,14 @@ export default function Dashboard() {
                     <div className={styles.dashboardContentArea}>
                         <Outlet /> 
                     </div>
+                )}
+                {isMobile && (
+                    <MobileMenuBar 
+                        onAddClick={() => {
+                            logger.debug("Öffne Formular zur Erfassung neuer Datenpunkte");
+                            // Todo: Hier Logik für das Modal oder Navigation zu TrackingForm einbauen
+                        }} 
+                    />
                 )}
                 <PopUp 
                     isActive={activePopUp.isActive} 

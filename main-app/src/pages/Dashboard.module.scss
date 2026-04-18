@@ -24,6 +24,7 @@
     // Smartphone
     @media (max-width: var.$breakpoint-md) {
         padding: 0 var.$spacing-xs;
+        padding-bottom: calc(var.$height-mobile-menu-bar + 2px);
         min-width: var.$min-width-input;
         max-width: 370px;
         width: 100%; 
@@ -33,11 +34,13 @@
     // Smartphone (horizontal)
     @media (min-width: var.$breakpoint-sm) and (max-width: var.$breakpoint-lg) and (max-height: var.$breakpoint-height-sm) {
         padding: 0px var.$spacing-md;
+        padding-bottom: calc(var.$height-mobile-menu-bar + 2px);
     }
 
     // Smartphone Mini (vertikal)
     @media (min-width: var.$breakpoint-xs) and (max-width: var.$breakpoint-sm) and (max-height: 700px) {
         padding: 0 var.$spacing-xs;
+        padding-bottom: calc(var.$height-mobile-menu-bar + 2px);
         min-width: var.$min-width-input;
         max-width: 360px;
         width: 100%; 

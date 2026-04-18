@@ -1,33 +1,64 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from "../hooks/useAuth";
+import { useOutsideClick } from "../hooks/useOutsideClick"; 
 import { useIsMobile } from "../hooks/useIsMobile";
 import styles from "./UserProfileSkeleton.module.scss";
 import { useTheme } from "../hooks/useTheme";
+import { Logger } from "../utils/logger";
 
 export default function UserProfileSkeleton() {
     const authService = useAuth();
     const isMobile = useIsMobile();
+    const navigate = useNavigate();
+    const logger = new Logger('UserProfileSkeleton');
+
     // State für das Dropdown-Menü
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const themeObject = useTheme();
+
+    // Ref für den gesamten Container erstellen
+    const menuRef = useRef<HTMLDivElement>(null);
     
+    // Hook nutzen: Schließt das Menü bei Klick außerhalb
+    useOutsideClick(menuRef, () => {
+        if (isMobile && isMenuOpen) {
+            setIsMenuOpen(false);
+        }
+    });
+
     const iconSrcLightMode = authService.userDetailedData?.role === 'ADMIN' ? '/admin_icon_dark.svg' : '/account_circle_icon_dark.svg';
     const iconSrcDarkMode = authService.userDetailedData?.role === 'ADMIN' ? '/admin_icon_light.svg' : '/account_circle_icon_light.svg';
+    const logoutIconSrc = themeObject.theme === 'light' ? '/logout_icon_dark.png' : '/logout_icon_light.png'
 
-    // Toggle-Funktion für den Klick auf das Profil-Icon
+    // Dropdown öffnen bei Klick auf das Profil-Icon
     const toggleMenu = () => {
         if (isMobile) {
             setIsMenuOpen(prev => !prev);
         }
     };
 
-    const openSettings = () => {
-        console.log('Platzhalter: Einstellungen angeklickt');
+    async function logoutUser(): Promise<void> {
+        logger.debug('Logout angefordert.');
         setIsMenuOpen(false);
+        const result = await authService.logout();
+
+        if (authService.errorMsgRef.current?.message) {
+            logger.error(`${authService.errorMsgRef.current.message}`);
+            return;
+        } else {
+            logger.debug(`${result.message}`);
+            void navigate('/login', { replace: true })
+        }
+    }
+    
+    const openUserAdministration = () => {
+        setIsMenuOpen(false);
+        void navigate('/dashboard/admin');
     };
 
     return (
-        <div className={styles.userNameContainer}>
+        <div ref={menuRef} className={styles.userNameContainer}>
             <button 
                 className={styles.skeletonCircle}
                 aria-label='Profilmenü öffnen'
@@ -53,8 +84,23 @@ export default function UserProfileSkeleton() {
                     <span className={styles.dropdownUserName}>
                         {authService.user?.name ?? 'Benutzer'} 
                     </span>
-                    <div className={styles.dropdownItem} onClick={openSettings}>
-                        {'Einstellungen'}
+                    {authService.userDetailedData?.role === 'ADMIN' && (
+                        <div className={styles.dropdownItem} onClick={openUserAdministration}>
+                            <img src={themeObject.theme === 'light' ? '/manage_accounts_icon_dark.svg' : '/manage_accounts_icon_light.svg'} 
+                                alt="Nutzerverwaltung" 
+                                width={20} 
+                                height={20} />
+                            <span className={styles.label}>{'Nutzerverwaltung'}</span>
+                        </div>
+                    )}                    
+                    <div className={styles.dropdownItem} onClick={() => void logoutUser()}>
+                        <img 
+                            src={logoutIconSrc} 
+                            alt='Button-Icon'  
+                            width={20}
+                            height={20} 
+                        />
+                        {'Abmelden'}
                     </div>
                 </div>
             )}

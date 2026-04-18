@@ -8,6 +8,7 @@ import ProtectedRoute from '../routes-composer/ProtectedRoute';
 import Settings from '../pages/Settings';
 import Overview from '../pages/Overview';
 import Dataview from '../pages/Dataview';
+import CalculationView from '../pages/CalculationView';
 import AdminRoute from '../routes-composer/AdminRoute';
 import Adminview from '../pages/Adminview';
 
@@ -55,6 +56,11 @@ export const router = createBrowserRouter([
                           // URL: /dashboard/data
                           path: 'data', 
                           element: <Dataview />
+                      },
+                      {
+                          // URL: /dashboard/calculation
+                          path: 'calculation', 
+                          element: <CalculationView />
                       },
                       {
                           // URL: /dashboard/settings

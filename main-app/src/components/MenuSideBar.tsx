@@ -63,6 +63,13 @@ export default function MenuSideBar() {
                         <span>{'Daten'}</span>
                     </NavLink>
                     <NavLink 
+                    to="/dashboard/calculation" 
+                    className={({ isActive }) => isActive ? `${styles.menuItem} ${styles.active}` : styles.menuItem
+                    }>
+                        <img src={themeObject.theme === 'light' ? '/chart_data_icon_dark.svg' : '/chart_data_icon_light.svg'} alt="Diagramme" width={24} height={24} />
+                        <span className={styles.label}>{'Analysen'}</span>
+                    </NavLink>
+                    <NavLink 
                     to="/dashboard/settings" 
                     className={({ isActive }) => 
                         isActive ? `${styles.menuItem} ${styles.active}` : styles.menuItem
