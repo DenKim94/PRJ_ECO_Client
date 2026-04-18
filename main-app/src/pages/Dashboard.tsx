@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useConfig } from "../hooks/useConfig";
 import { useTracking } from "../hooks/useTracking";
@@ -13,6 +13,7 @@ import { useIsMobile } from "../hooks/useIsMobile";
 import DashboardHeader from "../components/DashboardHeader";
 import MobileMenuBar from "../components/MobileMenuBar";
 import MenuSideBar from "../components/MenuSideBar";
+import { RefreshTokenDialog } from "../components/RefreshTokenDialog";
 
 
 export default function Dashboard() {
@@ -27,6 +28,7 @@ export default function Dashboard() {
         duration: 0,
         message: ''
     });
+    const navigate = useNavigate();
     const isMobile = useIsMobile();
     const isLoading = authService.isLoading || configService.isLoading || trackingService.isLoading || calcService.isLoading;
     
@@ -106,6 +108,8 @@ export default function Dashboard() {
                     !authService.userDetailedData?.isValidatedEmail && 
                     !isLoading} 
                 />
+                <RefreshTokenDialog show={authService.showSessionWarning && !isLoading} />
+
                 {isLoading ? (
                     <LoadingSpinner 
                         isActive={true} 
@@ -114,15 +118,17 @@ export default function Dashboard() {
                         sxSpinner={{width: isMobile ? '50px' : '100px', height: isMobile ? '50px' : '100px'}}
                     />
                 ) : (
-                    <div className={styles.dashboardContentArea}>
-                        <Outlet /> 
-                    </div>
+                   !authService.showSessionWarning && (
+                        <div className={styles.dashboardContentArea}>
+                            <Outlet /> 
+                        </div>
+                    )
                 )}
                 {isMobile && (
                     <MobileMenuBar 
                         onAddClick={() => {
-                            logger.debug("Öffne Formular zur Erfassung neuer Datenpunkte");
-                            // Todo: Hier Logik für das Modal oder Navigation zu TrackingForm einbauen
+                            logger.debug("Ansicht zur Erfassung neuer Datenpunkte");
+                            void navigate('/dashboard/data/add-entry');
                         }} 
                     />
                 )}

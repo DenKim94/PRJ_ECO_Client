@@ -11,6 +11,7 @@ import Dataview from '../pages/Dataview';
 import CalculationView from '../pages/CalculationView';
 import AdminRoute from '../routes-composer/AdminRoute';
 import Adminview from '../pages/Adminview';
+import DataEntryMask from '../components/DataEntryMask';
 
 
 // Hier definieren wir den Router als Baumstruktur
@@ -55,7 +56,17 @@ export const router = createBrowserRouter([
                       {
                           // URL: /dashboard/data
                           path: 'data', 
-                          element: <Dataview />
+                          children:[
+                            {
+                                // URL: /dashboard/data (Standard, wenn nichts dahinter steht)
+                                index: true, 
+                                element: <Dataview />
+                            },
+                            {
+                                path: 'add-entry',
+                                element: <DataEntryMask/>
+                            }
+                          ],
                       },
                       {
                           // URL: /dashboard/calculation

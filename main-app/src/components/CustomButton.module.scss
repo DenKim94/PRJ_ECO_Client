@@ -11,10 +11,15 @@
 }
 
 .customButton {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
     padding: var.$spacing-sm;
     border: none;
     text-align: center;
     width: 100%; 
+    gap: var.$spacing-xs;
     margin: var.$spacing-md 0;
     border-radius: var.$radius-sm;
     font-size: var.$font-size-md;

@@ -33,22 +33,21 @@ export const CustomButton = ({
   };
 
   return (
-    <div className={styles.buttonContainer}>
-     {iconProps && 
-        <img 
-            src={iconProps.iconSrc} 
-            alt={iconProps.alt ?? 'Button-Icon'}  
-            width={iconProps.size ?? 24}
-            height={iconProps.size ?? 24} 
-            className={styles.icon}
-            aria-label={iconProps.ariaLabel ?? ''}
-            style={sx}
-        />}   
+    <div className={styles.buttonContainer}> 
         <button className={styles.customButton} 
                 onClick={handleClick} 
                 type={type} 
                 disabled={isDisabled}
                 style={sx}>
+            {iconProps && 
+            <img 
+                src={iconProps.iconSrc} 
+                alt={iconProps.alt ?? 'Button-Icon'}  
+                width={iconProps.size ?? 24}
+                height={iconProps.size ?? 24} 
+                className={styles.icon}
+                aria-label={iconProps.ariaLabel ?? ''}
+            />}                      
             {title}
         </button>
     </div>
