@@ -76,10 +76,7 @@ export default function Dashboard() {
     useEffect(() => {
         if (isLoading) return;
 
-        if (authService.showSessionWarning){
-            updatePopUpProps(true, `Deine Sitzung läuft in ${authService.sessionTimeRemaining.current} Sekunden ab.`, 'warning');
-        }
-        else if (authService.userDetailedData?.isEnabled === false){
+        if (authService.userDetailedData?.isEnabled === false){
             updatePopUpProps(true, "Dein Account wurde deaktiviert. Daher ist die Nutzung der Anwendung eingeschränkt.", 'warning');
         }
         else if (authService.userDetailedData?.isValidatedEmail === false){
@@ -128,7 +125,7 @@ export default function Dashboard() {
                     <MobileMenuBar 
                         onAddClick={() => {
                             logger.debug("Ansicht zur Erfassung neuer Datenpunkte");
-                            void navigate('/dashboard/data/add-entry');
+                            void navigate('/dashboard/add-entry');
                         }} 
                     />
                 )}

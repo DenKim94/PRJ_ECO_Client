@@ -55,18 +55,8 @@ export const router = createBrowserRouter([
                       },
                       {
                           // URL: /dashboard/data
-                          path: 'data', 
-                          children:[
-                            {
-                                // URL: /dashboard/data (Standard, wenn nichts dahinter steht)
-                                index: true, 
-                                element: <Dataview />
-                            },
-                            {
-                                path: 'add-entry',
-                                element: <DataEntryMask/>
-                            }
-                          ],
+                          path: 'data',                           
+                          element: <Dataview />
                       },
                       {
                           // URL: /dashboard/calculation
@@ -77,6 +67,11 @@ export const router = createBrowserRouter([
                           // URL: /dashboard/settings
                           path: 'settings', 
                           element: <Settings />
+                      },
+                      {
+                          // URL: /dashboard/add-entry
+                          path: 'add-entry', 
+                          element: <DataEntryMask/>
                       },
                       {
                           // Der AdminRoute-Guard sichert diesen Bereich ab
