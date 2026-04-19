@@ -33,30 +33,11 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     return prefersDark ? 'dark' : 'light';
   });
 
-  // Effekt, der bei jeder Theme-Änderung läuft
   useEffect(() => {
-    const root = document.documentElement;
-    const metaThemeColor = document.getElementById('meta-theme-color');
-
-    // Attribut setzen, das unser SCSS triggert
-    root.setAttribute('data-theme', theme);
-    
-    // Speichern für den nächsten Besuch
+    document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('app-theme', theme);
-    
-    if (metaThemeColor) {
-      // Farbe anpassen
-      const color = theme === 'light' ? '#ebebeb' : '#324F56'; 
-      metaThemeColor.setAttribute('content', color);
-    }
-    logger.debug(`Theme gesetzt auf '${theme}'`);
-
+    logger.debug(`System-Theme angewendet: '${theme}'`);
   }, [theme]);
-
-  // Hilfsfunktion zum Umschalten (z.B. für einen Toggle-Button)
-  const toggleTheme = () => {
-    setThemeState((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
-  };
 
   useEffect(() => {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -64,15 +45,21 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
       const handleChange = (e: MediaQueryListEvent) => {
         const newSystemTheme = e.matches ? 'dark' : 'light';
         setThemeState(newSystemTheme);
-        logger.debug(`Theme gesetzt auf '${newSystemTheme}'`);
       };
-        mediaQuery.addEventListener('change', handleChange);
+      
+      // Listener registrieren
+      mediaQuery.addEventListener('change', handleChange);
 
       // Cleanup beim Unmount
       return () => {
         mediaQuery.removeEventListener('change', handleChange);
       };
   }, []);
+
+  // Hilfsfunktion zum Umschalten (z.B. für einen Toggle-Button)
+  const toggleTheme = () => {
+    setThemeState((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
+  };
 
   // Funktion zum expliziten Setzen
   const setTheme = (newTheme: Theme) => {
