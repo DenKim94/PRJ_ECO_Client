@@ -63,8 +63,9 @@ export default function Dashboard() {
             await configService.loadConfiguration();
             await trackingService.getAllEntries();
             await authService.getUserData();
+            await calcService.loadResults();
             logger.debug('Initialisierung abgeschlossen.');
-            logger.debug(`Token läuft in ${authService.sessionTimeRemaining.current} s ab.`);
+            logger.debug(`Token läuft in ${authService.sessionTimeRemaining.current} Sekunden ab.`);
         }
         performInitialDataLoad().catch((error) => {
             logger.error('Fehler bei der initialen Datenladung:', error);
@@ -81,6 +82,9 @@ export default function Dashboard() {
         }
         else if (authService.userDetailedData?.isValidatedEmail === false){
             updatePopUpProps(true, "Deine E-Mail-Adresse ist nicht validiert. Daher ist die Nutzung der Anwendung eingeschränkt.", 'warning');
+        }
+        else if (calcService.errorMsgRef.current?.code === 404){
+            updatePopUpProps(true, "In der Datenbank liegen bisher keine Berechnungsdaten vor.", 'warning');
         }
         else if (authService.errorMsgRef.current || configService.errorMsgRef.current || trackingService.errorMsgRef.current || calcService.errorMsgRef.current){
             updatePopUpProps(true, "Ein Fehler bei Laden der Daten ist aufgetreten. Bitte versuche die Seite erneut zu laden.", 'error');
