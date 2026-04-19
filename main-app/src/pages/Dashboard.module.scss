@@ -21,14 +21,19 @@
     overflow-y: auto;
     z-index: 1;
     
-    // Smartphone
-    @media (max-width: var.$breakpoint-md) {
+    // Smartphone (standard)
+    @media (max-width: var.$breakpoint-sm) {
         padding: 0 var.$spacing-xs;
         padding-bottom: calc(var.$height-mobile-menu-bar + 2px);
         min-width: var.$min-width-input;
         max-width: 370px;
         width: 100%; 
         height: 100%;
+    }
+    
+    // Smartphone (max)
+    @media (min-width: 400px) and (max-width: var.$breakpoint-sm) {
+        max-width: 395px;
     }
 
     // Smartphone (horizontal)
