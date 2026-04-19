@@ -8,7 +8,6 @@ export const RefreshTokenDialog = ({show}: {show: boolean}) => {
     const authService = useAuth();
     const themeObject = useTheme();
     const logger = new Logger('RefreshTokenDialog');
-    const iconSrc = themeObject.theme === 'light' ? '/refresh_icon_dark.svg' : '/refresh_icon_light.svg';
 
     if (!show) return null;
 
@@ -34,7 +33,7 @@ export const RefreshTokenDialog = ({show}: {show: boolean}) => {
             </div>
             
             <CustomButton
-                iconProps={{iconSrc: iconSrc, size: 24, alt: 'Icon - Session verlängern', ariaLabel: 'Icon - Session verlängern'}}   
+                iconProps={{iconSrc: '/refresh_icon_light.svg', size: 24, alt: 'Icon - Session verlängern', ariaLabel: 'Icon - Session verlängern'}}   
                 title="Session verlängern" 
                 type="button"
                 onClickCallback={refreshToken} 

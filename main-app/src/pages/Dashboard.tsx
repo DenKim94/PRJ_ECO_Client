@@ -121,6 +121,7 @@ export default function Dashboard() {
                 ) : (
                    !authService.showSessionWarning && (
                         <div className={styles.dashboardContentArea}>
+                            {/* TODO [19.04.2026]: Styling-Eigenschaften für dashboardContentArea anpassen */}
                             <Outlet /> 
                         </div>
                     )
