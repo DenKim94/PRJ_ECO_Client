@@ -107,9 +107,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     const [showSessionWarning, setShowSessionWarning] = useState(false);
-    const [warningTimer, setWarningTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
+    const warningTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const sessionTimeRemaining = useRef<number>(initialAuthData.remainingTimeMs ?? 0);
-    const [countdownInterval, setCountdownInterval] = useState<ReturnType<typeof setInterval> | null>(null);
+    const countdownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const errorMsgRef = useRef<ErrorMessage | undefined>(undefined);
 
     // --- API Hooks für jede Aktion ---
@@ -129,8 +129,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         adminUserApi.isLoading;
 
     const clearSession = useCallback(() => {
-        if (warningTimer) { clearTimeout(warningTimer); } 
-        if (countdownInterval) { clearInterval(countdownInterval); }
+    if (warningTimerRef.current) { clearTimeout(warningTimerRef.current) };
+    if (countdownIntervalRef.current) { clearInterval(countdownIntervalRef.current) };
 
         localStorage.removeItem('token');
         localStorage.removeItem('userName');
@@ -142,59 +142,64 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         logger.debug('Aktuelle Session wurde zurückgesetzt.');
         errorMsgRef.current = undefined;
 
-    }, [warningTimer, countdownInterval]);
+    }, []);
 
     const startWarningTimer = useCallback((expiresInMs: number) => {
-        if (warningTimer){ clearTimeout(warningTimer) };
-        if (countdownInterval) clearInterval(countdownInterval);
+    if (warningTimerRef.current) {
+        clearTimeout(warningTimerRef.current);
+        warningTimerRef.current = null;
+    }
+    if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+        countdownIntervalRef.current = null;
+    }
 
         const warningThresholdMs = 60000; // Warnung 60 Sekunden vor Ablauf
         setShowSessionWarning(false);
-        sessionTimeRemaining.current = 0;
+        sessionTimeRemaining.current = Math.floor(expiresInMs / 1000);
         const timeUntilWarning = expiresInMs - warningThresholdMs;
 
         // Hilfsfunktion für den sekündlichen Countdown
         const startCountdown = (initialRemainingMs: number) => {
+            logger.warn(`Token läuft in ${initialRemainingMs/1000} Sekunden ab.`);
             setShowSessionWarning(true);
             let currentRemainingMs = initialRemainingMs;
             sessionTimeRemaining.current = Math.floor(currentRemainingMs / 1000);
 
-            const intervalId = setInterval(() => {
+            countdownIntervalRef.current = setInterval(() => {
                 currentRemainingMs -= 1000;
                 
                 if (currentRemainingMs <= 0) {
                     logger.debug('Token ist abgelaufen.');
-                    clearInterval(intervalId);
+                    if (countdownIntervalRef.current) {
+                        clearInterval(countdownIntervalRef.current);
+                        countdownIntervalRef.current = null;
+                    }
                     sessionTimeRemaining.current = 0;
                     setShowSessionWarning(false);
-                    clearSession(); // Token ist abgelaufen -> User ausloggen
+                    clearSession(); // User ausloggen
 
                 } else {
-                    sessionTimeRemaining.current = Math.floor(currentRemainingMs / 1000);
+                    sessionTimeRemaining.current = Math.floor(currentRemainingMs/1000);
                 }
             }, 1000);
-        
-            setCountdownInterval(intervalId);
         };
 
         // Fall 1: Token läuft in weniger als warningThresholdMs ab -> Sofort Countdown starten
         if (timeUntilWarning <= 0) {
-            logger.warn(`Token läuft in weniger als ${warningThresholdMs / 1000} Sekunden ab. Starte Countdown sofort.`);
             startCountdown(expiresInMs);
             return;
         }
 
         // Fall 2: Genug Zeit übrig -> Timer setzen, der später den Countdown startet
-        const timerId = setTimeout(() => {
-            logger.warn(`Token läuft in ${timeUntilWarning} ms ab.`);
+        warningTimerRef.current = setTimeout(() => {
             setShowSessionWarning(true);
             startCountdown(warningThresholdMs);
         }, timeUntilWarning);
 
-        setWarningTimer(timerId);
-        logger.debug('Token-Warntimer gestartet.');
+        logger.debug(`Token-Warntimer wurde gestartet. Token läuft in ${expiresInMs/1000} Sekunden ab.`);
 
-    }, [warningTimer, countdownInterval, clearSession]);
+    }, [clearSession]);
 
     const setJWT = useCallback((newToken: string, expiresInMs: number) => {
         localStorage.setItem('token', newToken);

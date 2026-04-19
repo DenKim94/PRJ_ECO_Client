@@ -30,7 +30,7 @@ export const RefreshTokenDialog = ({show}: {show: boolean}) => {
                     alt="Achtung-Icon" 
                     width={40} 
                     height={40} />
-                <p className={styles.dialogText}>{'Deine Session läuft gleich ab und du wirst automatisch abgemeldet. Klicke auf den Button, um die Session zu verlängern.'}</p>
+                <p className={styles.dialogText}>{`Deine Sitzung läuft in ${authService.sessionTimeRemaining.current} Sekunden ab und du wirst automatisch abgemeldet. Klicke auf den Button, um die Sitzung zu verlängern.`}</p>
             </div>
             
             <CustomButton
