@@ -9,6 +9,7 @@
     padding-left: var.$spacing-sm;
     height: 100%;
     width: 95%;
+    overflow-y: scroll;
 }
 
 .infoBox {
@@ -24,5 +25,160 @@
         font-family: var.$font-family-base;
         margin: 0;
         width: 100%;
+    }
+}
+
+.formContainer {
+    display: flex;
+    flex-direction: column;
+    gap: var.$spacing-sm;
+    margin: var.$spacing-lg 0;
+    background-color: var(--color-surface);
+    padding: var.$spacing-lg;
+    border-radius: var.$radius-md;
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-border-glow);
+    max-width: var.$max-width-content;
+}
+
+.settingRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var.$spacing-sm;
+    border-bottom: 1px solid var(--color-border);
+
+    &:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    // Auf sehr kleinen Displays (Smartphones) Felder untereinander stapeln
+    @media (max-width: var.$breakpoint-xs) {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var.$spacing-sm;
+    }
+}
+
+.settingLabel {
+    flex: 1;
+    font-size: var.$font-size-sm;
+    font-weight: var.$font-weight-medium;
+    color: var(--color-text-main);
+}
+
+.inputWrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var.$spacing-sm;
+    flex: 1;
+    justify-content: flex-end;
+    
+    @media (max-width: var.$breakpoint-xs) {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+.settingInput {
+    width: 120px;
+    padding: var.$spacing-xs var.$spacing-sm;
+    border: 1px solid var(--color-border);
+    border-radius: var.$radius-sm;
+    background-color: var(--color-background);
+    color: var(--color-text-main);
+    font-family: var.$font-family-base;
+    font-size: var.$font-size-md;
+    text-align: right;
+    transition: border-color 0.2s ease;
+
+    &:focus {
+        outline: none;
+        border-color: var(--color-primary);
+    }
+
+    // Pfeile in Input Type Number verstecken (optional, oft gewünscht für sauberes UI)
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    &[type="date"] {
+        // Text rechtsbündig halten (wie bei den Zahlen)
+        text-align: right;
+        // Sorgt dafür, dass der Text im Feld gut aussieht, wenn kein Value gesetzt ist
+        font-family: inherit; 
+    }
+
+    // 1. Das Kalender-Icon (Indicator) in Chrome/Edge/Safari entfernen
+    &::-webkit-calendar-picker-indicator {
+        display: none;
+        -webkit-appearance: none;
+    }
+
+    // 2. Den "Clear" Button (das kleine X) in Chrome/Edge/Safari entfernen (optional)
+    &::-webkit-clear-button {
+        display: none;
+        -webkit-appearance: none;
+    }
+}
+
+/* --- CSS Tooltip Logik --- */
+.tooltipContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: help;
+
+    .infoIcon {
+        opacity: 0.7;
+        transition: opacity 0.2s ease;
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    .tooltipText {
+        visibility: hidden;
+        width: 220px;
+        background-color: var(--color-text-main);
+        color: var(--color-background);
+        text-align: center;
+        border-radius: var.$radius-sm;
+        padding: var.$spacing-sm;
+        font-size: var.$font-size-xs;
+        
+        /* Positionierung über dem Icon */
+        position: absolute;
+        z-index: 100;
+        bottom: 125%; 
+        left: 40%;
+        margin-left: -110px; /* Zentrierung (Hälfte der width) */
+        
+        /* Animation */
+        opacity: 0;
+        transition: opacity 0.3s;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    // Pfeil nach unten für die Sprechblase
+    .tooltipText::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: var(--color-text-main) transparent transparent transparent;
+    }
+
+    &:hover .tooltipText {
+        visibility: visible;
+        opacity: 1;
     }
 }
