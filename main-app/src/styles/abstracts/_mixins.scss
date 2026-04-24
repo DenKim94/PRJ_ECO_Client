@@ -23,3 +23,63 @@
         margin: 10px auto;
     }
 }
+
+@mixin responsive-page-container {
+    // Smartphone (standard)
+    @media (max-width: var.$breakpoint-sm) {
+        padding: 0 var.$spacing-xs;
+        padding-bottom: calc(var.$height-mobile-menu-bar);
+        min-width: var.$min-width-input;
+        max-width: 370px;
+        width: 100%; 
+        height: 100%;
+    }
+    
+    // Smartphone (max)
+    @media (min-width: 400px) and (max-width: var.$breakpoint-sm) {
+        max-width: 395px;
+    }
+
+    // Smartphone (horizontal)
+    @media (min-width: var.$breakpoint-sm) and (max-width: var.$breakpoint-lg) and (max-height: var.$breakpoint-height-sm) {
+        padding: 0px var.$spacing-md;
+        padding-bottom: calc(var.$height-mobile-menu-bar + 2px);
+    }
+
+    // Smartphone Mini (vertikal)
+    @media (min-width: var.$breakpoint-xs) and (max-width: var.$breakpoint-sm) and (max-height: 700px) {
+        padding: 0 var.$spacing-xs;
+        padding-bottom: calc(var.$height-mobile-menu-bar + 2px);
+        min-width: var.$min-width-input;
+        max-width: 360px;
+        width: 100%; 
+        height: 100%;
+    }
+
+    // Tablet
+    @media (max-width: var.$breakpoint-xl) and (min-width: var.$breakpoint-md) {
+        min-width: var.$breakpoint-md;
+        max-width: var.$breakpoint-xl;
+        width: 90%; 
+    }
+    
+    // Tablet Mini
+    @media (max-width: var.$breakpoint-md) and (min-width: var.$breakpoint-sm) {
+        padding: var.$spacing-sm;
+        min-width: var.$breakpoint-sm;
+        max-width: var.$breakpoint-md;
+        width: 95%; 
+    }
+
+    // Tablet (horizontal)
+    @media (max-height: var.$breakpoint-lg) and (min-width: var.$breakpoint-xl) {
+        padding: var.$spacing-sm;
+        min-width: var.$breakpoint-md;
+        max-width: var.$breakpoint-xl;
+        width: 100%; 
+    }
+}
+
+// @mixin responsive-content-container {
+
+// }

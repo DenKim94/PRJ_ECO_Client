@@ -22,7 +22,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL;
  * 
  * Der Provider implementiert folgende Funktionen:
  * * loadConfiguration: () => Promise<ConfigModel | null>;
- * * updateConfiguration: (request: ConfigModel) => Promise<ConfigModel | null>;
+ * * updateConfiguration: (request: ConfigModel) => Promise<boolean>;
  */
 export const ConfigurationProvider = ({ children }: { children: ReactNode }) => {
     const configApi = useApiCall<ConfigModel>();
@@ -44,17 +44,17 @@ export const ConfigurationProvider = ({ children }: { children: ReactNode }) => 
 
     }, [configApi]);
 
-    const updateConfiguration = useCallback(async (request: ConfigModel): Promise<ConfigModel | null> => {
+    const updateConfiguration = useCallback(async (request: ConfigModel): Promise<boolean> => {
         logger.debug('Aktualisiere Konfiguration...');
         const response = await configApi.fetchData({ method: 'PUT', url: `${API_BASE_URL}/api/config`, data: request });
         if (!response) {
             errorMsgRef.current = configApi.errorMsg.current;
-            return null;
+            return false;
         }
         setConfigs(response);
         logger.debug('Konfiguration erfolgreich aktualisiert.');
         errorMsgRef.current = undefined;
-        return response;
+        return true;
 
     }, [configApi]);
 
