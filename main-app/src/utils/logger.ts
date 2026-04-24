@@ -1,7 +1,14 @@
 /**
- * Prüft, ob die Anwendung im Debug-Mode aktiv ist.
+ * Log-Level für die Log-Ausgaben definieren:
+ * INFO: 1000
+ * DEBUG: 2000
+ * WARNING: 3000
+ * ERROR: 4000
+ * ALL: 5000
+ * 
  */
-const IS_DEBUG = import.meta.env.VITE_ENABLE_DEBUG_LOGS === 'true';
+const LOG_LEVEL = import.meta.env.VITE_LOG_LEVEL ? Number(import.meta.env.VITE_LOG_LEVEL) : 1000;
+
 
 /**
  * Standard-Logger für konsistentes und typsicheres Logging.
@@ -22,7 +29,7 @@ export class Logger {
   }
 
   public debug(message: string, data?: unknown): void {
-    if (IS_DEBUG) {
+    if (LOG_LEVEL === 2000 || LOG_LEVEL === 5000) {
       const style = 'color: #299be2; font-weight: normal;';
       console.groupCollapsed(`%cDEBUG ${this.formatMessage(message)}`, style);
       if (data !== undefined) {
@@ -33,20 +40,26 @@ export class Logger {
   }
 
   public info(message: string, data?: unknown): void {
-    const style = 'color: #21f352; font-weight: normal;';
-    console.info(`%cINFO  ${this.formatMessage(message)}`, style, data ?? '');
+    if (LOG_LEVEL === 1000 || LOG_LEVEL === 5000) {
+      const style = 'color: #21f352; font-weight: normal;';
+      console.info(`%cINFO  ${this.formatMessage(message)}`, style, data ?? '');
+    }
   }
 
   public warn(message: string, data?: unknown): void {
-    const style = 'color: #ff9800; font-weight: normal;';
-    console.warn(`%cWARN  ${this.formatMessage(message)}`, style, data ?? '');
+    if (LOG_LEVEL === 3000 || LOG_LEVEL === 5000) {
+      const style = 'color: #ff9800; font-weight: normal;';
+      console.warn(`%cWARN  ${this.formatMessage(message)}`, style, data ?? '');
+    }
   }
 
   public error(message: string, error?: unknown): void {
-    const style = 'color: #f44336; font-weight: normal;';
-    console.error(`%cERROR ${this.formatMessage(message)}`, style);
-    if (error) {
-      console.error(error); // Stack Trace wird hier ausgegeben
+    if (LOG_LEVEL === 4000 || LOG_LEVEL === 5000) {
+      const style = 'color: #f44336; font-weight: normal;';
+      console.error(`%cERROR ${this.formatMessage(message)}`, style);
+      if (error) {
+        console.error(error); // Stack Trace wird hier ausgegeben
+      }
     }
   }
 }
