@@ -1,11 +1,11 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useConfig } from "../hooks/useConfig";
 import { useTheme } from "../hooks/useTheme";
 import { ConfigModel } from "../types/ConfigTypes";
-import { Logger } from "../utils/logger";
 import styles from "./Settings.module.scss";
 import { CustomButton } from "../components/CustomButton";
+import { MessageContainer, MessageContainerProps } from "../components/MessageContainer";
 
 interface ConfigFieldDef {
     name: keyof ConfigModel;
@@ -87,36 +87,63 @@ const configFields: ConfigFieldDef[] = [
     },
 ];
 
+
 export default function Settings() {
-    const logger = new Logger('Settings');
     const authService = useAuth();
     const themeObject = useTheme();
     const configService = useConfig();
-    const [formData, setFormData] = useState<Partial<ConfigModel>>(configService.configs ?? {});
+
+    const [formData, setFormData] = useState<Partial<ConfigModel>>(() => {
+        const initial = { ...(configService.configs ?? {}) };
+        if (initial.referenceDate) {
+            initial.referenceDate = configService.formatDateForClient(initial.referenceDate);
+        }
+        return initial;
+    });
     const iconSrc = (themeObject.theme === 'light') ? '/info_icon_dark.svg' : '/info_icon_light.svg';
+    
+    const message: MessageContainerProps = useMemo(() => {
+        if (configService.saveResult === 'success') {
+            return {
+                message: 'Einstellungen wurden erfolgreich gespeichert.',
+                type: 'success',
+                isVisible: true,
+            };
+        }
+        if (configService.saveResult === 'error') {
+            return {
+                message: configService.errorMsgRef.current?.message ?? 'Ein Fehler bei der Aktualisierung der Konfiguration ist aufgetreten.',
+                type: 'error',
+                isVisible: true,
+            };
+        }
+
+        return { message: '', type: 'info', isVisible: false };
+    }, [configService.saveResult, configService.errorMsgRef]);
+
+    const handleSave = useCallback(async () => {
+        const payload = { ...formData };
+        if (payload.referenceDate) {
+            payload.referenceDate = configService.formatDateForServer(payload.referenceDate);
+        }
+        await configService.updateConfiguration(payload as ConfigModel);
+    }, [formData, configService]);
+    
+    const handleInputChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        const { name, value, type } = e.target;
+        if (configService.saveResult !== 'idle') {
+            configService.resetSaveResult();
+        }
+
+        setFormData(prev => ({
+            ...prev,
+            [name]: type === 'number' ? (value === '' ? '' : Number(value)) : value,
+        }));
+    }, [configService]); 
 
     if(!authService.userDetailedData?.isValidatedEmail) {
         return null;
     }
-
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value, type } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'number' ? (value === '' ? '' : Number(value)) : value
-        }));
-    };
-
-    const handleSave = async() => {
-        // TODO [24.04.2026]: Bugfix - Änderung des Referenzdatums führt zur serverseitig zur Exception
-        const success = await configService.updateConfiguration(formData as ConfigModel);
-        if (success) {
-            logger.debug('Konfiguration erfolgreich gespeichert: ', configService.configs);
-        } else {
-            // TODO [24.04.2026]: Fehlerhandling verbessern, z.B. durch Anzeige einer Fehlermeldung
-            logger.error(configService.errorMsgRef.current?.message ?? 'Unbekannter Fehler bei der Aktualisierung der Konfiguration.');
-        }
-    };
 
     return (
         <div className={styles.settingsContainer}>
@@ -154,13 +181,18 @@ export default function Settings() {
                     </div>
                 ))}
             </div>
+            <MessageContainer
+                message={message.message}
+                type={message.type}
+                isVisible={message.isVisible}
+            />
             <CustomButton
                 title="Speichern" 
                 type="button"
                 onClickCallback={handleSave} 
                 isDisabled={authService.isLoading || configService.isLoading}
                 sx={{marginTop: '0px', width: '250px'}} 
-            />     
+            />
         </div>
     );
 }
