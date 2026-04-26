@@ -26,8 +26,8 @@ const API_BASE_URL = import.meta.env.VITE_API_URL;
  * * loadConfiguration: () => Promise<ConfigModel | null>;
  * * resetSaveResult: () => void;
  * * updateConfiguration: (request: ConfigModel) => Promise<boolean>;
- * * formatDateForServer: (dateStr?: string) => string;
- * * formatDateForClient: (dateStr?: string) => string;
+ * * formatDateForServer: (dateStr: string) => string;
+ * * formatDateForClient: (dateStr: string) => string;
  *  
  * */
 export const ConfigurationProvider = ({ children }: { children: ReactNode }) => {
