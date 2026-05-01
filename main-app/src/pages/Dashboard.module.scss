@@ -48,4 +48,9 @@
     min-width: var.$breakpoint-xs;
     max-width: var.$breakpoint-md;
     width: 100%;
+
+    // Smartphone (horizontal)
+    @media (min-width: var.$breakpoint-sm) and (max-width: var.$breakpoint-lg) and (max-height: var.$breakpoint-height-xs) {
+        padding-bottom: calc(var.$height-mobile-menu-bar + 2px);
+    }
 }

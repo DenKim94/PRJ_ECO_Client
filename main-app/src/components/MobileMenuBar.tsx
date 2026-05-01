@@ -37,6 +37,13 @@ export default function MobileBottomBar({ onAddClick }: MobileBottomBarProps) {
             >
                 +
             </button>
+            <NavLink 
+                to="/dashboard/calculation" 
+                className={({ isActive }) => isActive ? `${styles.menuItem} ${styles.active}` : styles.menuItem}
+            >
+                <img src={theme === 'light' ? '/chart_data_icon_dark.svg' : '/chart_data_icon_light.svg'} alt="Diagramme" width={24} height={24} />
+                <span className={styles.label}>{'Analysen'}</span>
+            </NavLink>
 
             <NavLink 
                 to="/dashboard/settings" 
@@ -44,14 +51,6 @@ export default function MobileBottomBar({ onAddClick }: MobileBottomBarProps) {
             >
                 <img src={theme === 'light' ? '/settings_icon_dark.svg' : '/settings_icon_light.svg'} alt="Einstellungen" width={24} height={24} />
                 <span className={styles.label}>{'Settings'}</span>
-            </NavLink>
-
-            <NavLink 
-                to="/dashboard/calculation" 
-                className={({ isActive }) => isActive ? `${styles.menuItem} ${styles.active}` : styles.menuItem}
-            >
-                <img src={theme === 'light' ? '/chart_data_icon_dark.svg' : '/chart_data_icon_light.svg'} alt="Diagramme" width={24} height={24} />
-                <span className={styles.label}>{'Analysen'}</span>
             </NavLink>
         </nav>
     );

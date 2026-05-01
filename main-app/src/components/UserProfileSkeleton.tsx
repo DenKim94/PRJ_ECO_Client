@@ -33,9 +33,10 @@ export default function UserProfileSkeleton() {
 
     // Dropdown öffnen bei Klick auf das Profil-Icon
     const toggleMenu = () => {
-        if (isMobile) {
-            setIsMenuOpen(prev => !prev);
-        }
+        // if (isMobile) {
+        //     setIsMenuOpen(prev => !prev);
+        // }
+        setIsMenuOpen(prev => !prev);
     };
 
     async function logoutUser(): Promise<void> {
@@ -54,8 +55,23 @@ export default function UserProfileSkeleton() {
     
     const openUserAdministration = () => {
         setIsMenuOpen(false);
+        logger.debug('Nutzerverwaltung angefordert.');
         void navigate('/dashboard/admin');
     };
+
+    const deleteAccount = async () => {
+        setIsMenuOpen(false);
+        logger.debug('Profil löschen angefordert.');
+        const result = await authService.deleteAccount();
+
+        if (authService.errorMsgRef.current?.message) {
+            logger.error(`${authService.errorMsgRef.current.message}`);
+            return;
+        } else {
+            logger.debug(`${result.message}`);
+            void navigate('/login', { replace: true })
+        }
+    }
 
     return (
         <div ref={menuRef} className={styles.userNameContainer}>
@@ -63,7 +79,7 @@ export default function UserProfileSkeleton() {
                 className={styles.skeletonCircle}
                 aria-label='Profilmenü öffnen'
                 onClick={toggleMenu}
-                disabled={!isMobile} // Auf der Desktop-Ansicht bleibt der Button inaktiv
+                // disabled={!isMobile} // Auf der Desktop-Ansicht bleibt der Button inaktiv
             >
                 <img 
                     src={themeObject.theme === 'light' ? iconSrcLightMode : iconSrcDarkMode}
@@ -79,7 +95,7 @@ export default function UserProfileSkeleton() {
             )}
 
             {/* Mobile Ansicht: Dropdown-Menü, wenn geöffnet */}
-            {isMobile && isMenuOpen && (
+            {isMenuOpen && (
                 <div className={styles.dropdownMenu}>
                     <span className={styles.dropdownUserName}>
                         {authService.user?.name ?? 'Benutzer'} 
@@ -92,16 +108,27 @@ export default function UserProfileSkeleton() {
                                 height={20} />
                             <span className={styles.label}>{'Nutzerverwaltung'}</span>
                         </div>
-                    )}                    
-                    <div className={styles.dropdownItem} onClick={() => void logoutUser()}>
-                        <img 
-                            src={logoutIconSrc} 
-                            alt='Button-Icon'  
-                            width={20}
-                            height={20} 
-                        />
-                        {'Abmelden'}
-                    </div>
+                    )}     
+                    {authService.userDetailedData?.role !== 'ADMIN' && (
+                        <div className={styles.dropdownItem} onClick={() => void deleteAccount()}>
+                            <img src={themeObject.theme === 'light' ? '/delete_icon_dark.svg' : '/delete_icon_light.svg'} 
+                                alt="Profil löschen" 
+                                width={20} 
+                                height={20} />
+                            <span className={styles.label}>{'Profil löschen'}</span>
+                        </div>
+                    )}                
+                    {isMobile && (
+                        <div className={styles.dropdownItem} onClick={() => void logoutUser()}>
+                            <img 
+                                src={logoutIconSrc} 
+                                alt='Button-Icon'  
+                                width={20}
+                                height={20} 
+                            />
+                            {'Abmelden'}
+                        </div>
+                    )} 
                 </div>
             )}
         </div>
