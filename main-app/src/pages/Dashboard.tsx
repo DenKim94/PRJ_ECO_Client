@@ -14,6 +14,7 @@ import DashboardHeader from "../components/DashboardHeader";
 import MobileMenuBar from "../components/MobileMenuBar";
 import MenuSideBar from "../components/MenuSideBar";
 import { RefreshTokenDialog } from "../components/RefreshTokenDialog";
+import { DeleteAccountDialog } from "../components/DeleteAccountDialog";
 
 
 export default function Dashboard() {
@@ -106,11 +107,14 @@ export default function Dashboard() {
             <div className={styles.overViewContainer}>
                 <DashboardHeader/>
                 <EmailValidation show={
+                    !authService.deleteAccountRequested && 
+                    !authService.showSessionWarning &&
                     !authService.userDetailedData?.isValidatedEmail && 
                     !isLoading} 
                 />
                 <RefreshTokenDialog show={authService.showSessionWarning && !isLoading} />
-
+                <DeleteAccountDialog show={authService.deleteAccountRequested && !authService.showSessionWarning && !isLoading} />
+                       
                 {isLoading ? (
                     <LoadingSpinner 
                         isActive={true} 
@@ -119,9 +123,8 @@ export default function Dashboard() {
                         sxSpinner={{width: isMobile ? '50px' : '100px', height: isMobile ? '50px' : '100px'}}
                     />
                 ) : (
-                   !authService.showSessionWarning && (
+                    !authService.deleteAccountRequested && !authService.showSessionWarning && (
                         <div className={styles.dashboardContentArea}>
-                            {/* TODO [19.04.2026]: Styling-Eigenschaften für dashboardContentArea anpassen */}
                             <Outlet /> 
                         </div>
                     )

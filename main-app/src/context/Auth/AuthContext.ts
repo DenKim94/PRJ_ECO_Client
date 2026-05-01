@@ -14,6 +14,7 @@ export interface AuthContextType {
   showSessionWarning: boolean;
   sessionTimeRemaining: RefObject<number>;
   isLoading: boolean;
+  deleteAccountRequested: boolean;
   errorMsgRef: RefObject<ErrorMessage | undefined>;
   isTokenValid: () => boolean;
   login: (request: LogInRequest) => Promise<AuthResponseModel | null>;
@@ -21,6 +22,7 @@ export interface AuthContextType {
   register: (request: RegisterRequest) => Promise<ApiResponseMap | null>;
   getUserData: () => Promise<UserDataResponseModel | null>;
   refreshToken: () => Promise<boolean>;
+  setDeleteAccountRequested: (requested: boolean) => void;
   deleteAccount: () => Promise<ApiMessageMap>;
   resendVerificationEmail: () => Promise<ApiMessageMap>;
   verifyEmail: (tfaCode: string) => Promise<ApiMessageMap>;

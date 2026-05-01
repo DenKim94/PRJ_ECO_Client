@@ -66,6 +66,7 @@ const getInitialAuthData = (): { token: string | null; user: User | null; remain
  * * showSessionWarning: boolean;
  * * sessionTimeRemaining: RefObject<number>;
  * * isLoading: boolean;
+ * * deleteAccountRequested: boolean;
  * * errorMsgRef: RefObject<ErrorMessage | undefined>;
  *
  * Der Provider implementiert folgende Funktionen:
@@ -74,6 +75,7 @@ const getInitialAuthData = (): { token: string | null; user: User | null; remain
  * * register: (request: RegisterRequest) => Promise<ApiResponseMap | null>;
  * * getUserData: () => Promise<UserDataResponseModel | null>;
  * * refreshToken: () => Promise<boolean>;
+ * * setDeleteAccountRequested: (requested: boolean) => void;
  * * deleteAccount: () => Promise<ApiMessageMap>;
  * * resendVerificationEmail: () => Promise<ApiMessageMap>;
  * * verifyEmail: (tfaCode: string) => Promise<ApiMessageMap>;
@@ -107,6 +109,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     const [showSessionWarning, setShowSessionWarning] = useState(false);
+    const [deleteAccountRequested, setDeleteAccountRequested] = useState(false);
     const warningTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const sessionTimeRemaining = useRef<number>(initialAuthData.remainingTimeMs ?? 0);
     const countdownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -477,12 +480,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             showSessionWarning,
             sessionTimeRemaining,
             isLoading: isLoadingSevice,
+            deleteAccountRequested,
             errorMsgRef, 
             isTokenValid,
             login,
             logout,
             register,
             getUserData,
+            setDeleteAccountRequested,
             sendPasswordVerificationEmail,
             resetPassword,
             refreshToken,

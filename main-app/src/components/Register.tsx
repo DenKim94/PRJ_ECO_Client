@@ -48,9 +48,7 @@ export default function Register() {
             setPassword("");
             setEMail("");
             setAcceptedPrivacy(false);
-            setTimeout(() => {
-                void navigate("/login", { replace: true });
-            }, 2500);
+            void navigate("/login", { replace: true });
 
         } catch (err) {
             setMessage({ message: "Ein Fehler ist aufgetreten.", type: "error" });

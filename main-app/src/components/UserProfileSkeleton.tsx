@@ -33,9 +33,6 @@ export default function UserProfileSkeleton() {
 
     // Dropdown öffnen bei Klick auf das Profil-Icon
     const toggleMenu = () => {
-        // if (isMobile) {
-        //     setIsMenuOpen(prev => !prev);
-        // }
         setIsMenuOpen(prev => !prev);
     };
 
@@ -59,18 +56,10 @@ export default function UserProfileSkeleton() {
         void navigate('/dashboard/admin');
     };
 
-    const deleteAccount = async () => {
+    const deleteAccount = () => {
         setIsMenuOpen(false);
-        logger.debug('Profil löschen angefordert.');
-        const result = await authService.deleteAccount();
-
-        if (authService.errorMsgRef.current?.message) {
-            logger.error(`${authService.errorMsgRef.current.message}`);
-            return;
-        } else {
-            logger.debug(`${result.message}`);
-            void navigate('/login', { replace: true })
-        }
+        logger.debug('Konto löschen angefordert.');
+        authService.setDeleteAccountRequested(true);
     }
 
     return (
@@ -79,7 +68,6 @@ export default function UserProfileSkeleton() {
                 className={styles.skeletonCircle}
                 aria-label='Profilmenü öffnen'
                 onClick={toggleMenu}
-                // disabled={!isMobile} // Auf der Desktop-Ansicht bleibt der Button inaktiv
             >
                 <img 
                     src={themeObject.theme === 'light' ? iconSrcLightMode : iconSrcDarkMode}
@@ -94,7 +82,6 @@ export default function UserProfileSkeleton() {
                 <span className={styles.userName}>{authService.user?.name}</span>
             )}
 
-            {/* Mobile Ansicht: Dropdown-Menü, wenn geöffnet */}
             {isMenuOpen && (
                 <div className={styles.dropdownMenu}>
                     <span className={styles.dropdownUserName}>
@@ -110,12 +97,12 @@ export default function UserProfileSkeleton() {
                         </div>
                     )}     
                     {authService.userDetailedData?.role !== 'ADMIN' && (
-                        <div className={styles.dropdownItem} onClick={() => void deleteAccount()}>
+                        <div className={styles.dropdownItem} onClick={deleteAccount}>
                             <img src={themeObject.theme === 'light' ? '/delete_icon_dark.svg' : '/delete_icon_light.svg'} 
-                                alt="Profil löschen" 
+                                alt="Konto löschen" 
                                 width={20} 
                                 height={20} />
-                            <span className={styles.label}>{'Profil löschen'}</span>
+                            <span className={styles.label}>{'Konto löschen'}</span>
                         </div>
                     )}                
                     {isMobile && (
