@@ -132,7 +132,6 @@ export default function Dashboard() {
                 {isMobile && (
                     <MobileMenuBar 
                         onAddClick={() => {
-                            logger.debug("Ansicht zur Erfassung neuer Datenpunkte");
                             void navigate('/dashboard/add-entry');
                         }} 
                     />

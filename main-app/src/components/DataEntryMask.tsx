@@ -1,8 +1,11 @@
 import { useAuth } from "../hooks/useAuth";
+import { Logger } from "../utils/logger";
 
 export default function DataEntryMask() {
+    const logger = new Logger('DataEntryMask');
     const authService = useAuth();
-    
+    logger.debug("Ansicht zur Erfassung neuer Datenpunkte");
+
     if(!authService.userDetailedData?.isValidatedEmail) {
         return null;
     }
