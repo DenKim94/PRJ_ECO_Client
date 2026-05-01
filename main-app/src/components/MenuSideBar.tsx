@@ -82,23 +82,6 @@ export default function MenuSideBar() {
                         />
                         <span>{'Einstellungen'}</span>
                     </NavLink>
-
-                    {/* Nur der Admin sieht diesen Menüpunkt */}
-                    {authService.userDetailedData?.role === 'ADMIN' && (
-                        <NavLink 
-                        to="/dashboard/admin"
-                        className={({ isActive }) => 
-                        isActive ? `${styles.menuItem} ${styles.active}` : styles.menuItem
-                        }>
-                            <img
-                                src={themeObject.theme === 'light' ? '/manage_accounts_icon_dark.svg' : '/manage_accounts_icon_light.svg'}
-                                alt={'Icon für die Nutzerverwaltung (Admin-Only)'}
-                                width={24}
-                                height={24}
-                            />
-                            <span>{'Nutzerverwaltung'}</span>
-                        </NavLink>
-                    )}
                 </nav>
                         <button
                             type='button'
