@@ -1,0 +1,18 @@
+@use '../styles/abstracts/variables' as var;
+@use '../styles/abstracts/mixins' as mixin;
+
+.infoBox {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: var.$spacing-sm;
+    height: 100%;
+    width: 100%;
+
+    h4 {
+        font-family: var.$font-family-base;
+        margin: 0;
+        width: 100%;
+    }
+}

@@ -67,12 +67,12 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
 
     },[trackingData]);
 
-    const addEntry = useCallback(async (request: TrackingEntityRequest): Promise<TrackingEntityResponse> => {
+    const addEntry = useCallback(async (request: TrackingEntityRequest): Promise<TrackingEntityResponse | null> => {
         logger.debug('Füge neuen Eintrag hinzu ...', request);
         const response = await trackingData.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/tracking/add`, data: request });
         if (!response) {
             errorMsgRef.current = trackingData.errorMsg.current;
-            throw new Error(errorMsgRef.current?.message ?? 'Fehler beim Hinzufügen des Eintrags.');
+            return null;
         }
         logger.debug('Neuer Eintrag erfolgreich hinzugefügt.', response);
         setNewestEntry(response);
@@ -82,12 +82,12 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
 
     },[trackingData]);
 
-    const updateEntryById = useCallback(async (id: number, request: TrackingEntityRequest): Promise<TrackingEntityResponse> => {
+    const updateEntryById = useCallback(async (id: number, request: TrackingEntityRequest): Promise<TrackingEntityResponse | null> => {
         logger.debug(`Aktualisiere Eintrag mit ID ${id} ...`, request);
         const response = await trackingData.fetchData({ method: 'PUT', url: `${API_BASE_URL}/api/tracking/${id}/update`, data: request });
         if (!response) {
             errorMsgRef.current = trackingData.errorMsg.current;
-            throw new Error(errorMsgRef.current?.message ?? `Fehler beim Aktualisieren des Eintrags mit ID ${id}.`);
+            return null;
         }
         logger.debug(`Eintrag mit ID ${id} erfolgreich aktualisiert.`, response);
         setEntryList(prev => prev.map(entry => entry.id === id ? response : entry));
@@ -99,7 +99,7 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
 
     },[trackingData, newestEntry]);
 
-    const deleteEntryById = useCallback(async (id: number): Promise<ApiMessageMap> => {
+    const deleteEntryById = useCallback(async (id: number): Promise<ApiMessageMap | null> => {
         logger.debug(`Lösche Eintrag mit ID ${id} ...`);
         const response = await deleteData.fetchData({ method: 'DELETE', url: `${API_BASE_URL}/api/tracking/${id}/delete` });
         if (!response) {

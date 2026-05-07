@@ -20,9 +20,9 @@ export interface TrackingContextType {
     isLoading: boolean;
     getAllEntries: () => Promise<TrackingEntityResponse[]>;
     getNewestEntry: () => Promise<TrackingEntityResponse | null>;
-    addEntry: (request: TrackingEntityRequest) => Promise<TrackingEntityResponse>;
-    updateEntryById: (id: number, request: TrackingEntityRequest) => Promise<TrackingEntityResponse>;
-    deleteEntryById: (id: number) => Promise<ApiMessageMap>;
+    addEntry: (request: TrackingEntityRequest) => Promise<TrackingEntityResponse | null>;
+    updateEntryById: (id: number, request: TrackingEntityRequest) => Promise<TrackingEntityResponse | null>;
+    deleteEntryById: (id: number) => Promise<ApiMessageMap | null>;
     deleteAllEntries: () => Promise<ApiMessageMap>;
 }
 

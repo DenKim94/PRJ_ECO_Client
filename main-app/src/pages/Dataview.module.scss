@@ -1,32 +1,33 @@
 @use '../styles/abstracts/variables' as var;
 @use '../styles/abstracts/mixins' as mixin;
 
-
 .dataviewContainer {
     width: 95%;
-    padding: var.$spacing-md;
+    padding: var.$spacing-md var.$spacing-sm;
     display: flex;
     flex-direction: column;
-    gap: var.$spacing-md;
-    overflow-x: hidden;
+    gap: var.$spacing-sm;
+    overflow-x: auto;    
 }
 
 .dataTable {
     width: 100%;
-    border-collapse: collapse; // Essenziell: Verbindet die Ränder der Zellen
+    table-layout: fixed; // Erzwingt, dass alle Spalten exakt gleich breit sind
+    border-collapse: collapse; 
     background-color: var(--color-surface);
-    border-radius: var.$radius-md;
-    overflow: hidden; // Hält Ränder an den Ecken abgerundet (benötigt ggf. extra Wrapper)
-
-    th, td {
-        border: 1px solid var(--color-border); // Setzt die gewünschten Trennlinien
-        padding: var.$spacing-sm var.$spacing-md;
-        text-align: left;
-    }
 
     th {
+        border: 1px solid var(--color-border);
+        padding: var.$spacing-sm var.$spacing-md;
+        text-align: left;
         font-weight: var.$font-weight-bold;
-        background-color: rgba(0, 0, 0, 0.05); // Leichte Abhebung des Headers
+        background-color: rgba(0, 0, 0, 0.05); 
+    }
+
+    td {
+        border: 1px solid var(--color-border);
+        padding: var.$spacing-sm var.$spacing-md;
+        text-align: left;
     }
 
     tr {
@@ -39,25 +40,39 @@
     }
 }
 
-.actionCells {
-    display: flex;
-    gap: var.$spacing-sm;
-
-    button {
-        cursor: pointer;
-        padding: 4px 8px;
+// Eingabefelder im Edit-Modus
+.editingCell {
+    input {
+        width: 100%;
+        box-sizing: border-box; // Stellt sicher, dass Padding die Input-Breite nicht über die Zelle hinaus drückt
+        padding: 4px;
         border: 1px solid var(--color-border);
         border-radius: var.$radius-sm;
-        background: transparent;
-        
-        &:hover {
-            background-color: rgba(0, 0, 0, 0.1);
-        }
+        font-family: inherit;
+        font-size: inherit;
+    }
+}
+
+.actionCell {
+    display: flex;
+    gap: var.$spacing-sm;
+    flex-direction: row;
+    align-items: center; 
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: flex-start;
+    border: none;
+
+    // Smartphone
+    @media (max-width: var.$breakpoint-sm) {
+        flex-direction: column;
+        align-items: flex-start; 
+        justify-content: center;
     }
 }
 
 .hintText {
-    color: gray;
+    color: var(--color-text-muted);
     font-size: var.$font-size-sm;
     font-style: italic;
 }

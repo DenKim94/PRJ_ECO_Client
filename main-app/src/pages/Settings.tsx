@@ -6,6 +6,7 @@ import { ConfigModel } from "../types/ConfigTypes";
 import styles from "./Settings.module.scss";
 import { CustomButton } from "../components/CustomButton";
 import { MessageContainer, MessageContainerProps } from "../components/MessageContainer";
+import { InfoBox } from "../components/InfoBox";
 
 interface ConfigFieldDef {
     name: keyof ConfigModel;
@@ -147,13 +148,7 @@ export default function Settings() {
 
     return (
         <div className={styles.settingsContainer}>
-            <div className={styles.infoBox}>
-                <img src={iconSrc} 
-                    alt="Info-Icon" 
-                    width={28} 
-                    height={28} />
-                <h4>{'Hier können die spezifischen Konfigurationsparameter für die Kostenberechnung angepasst werden.'}</h4>
-            </div>
+            <InfoBox message={'Hier können die spezifischen Konfigurationsparameter für die Kostenberechnung angepasst werden.'}/>
             <div className={styles.formContainer}>
                 {configFields.map((field) => (
                     <div key={field.name} className={styles.settingRow}>
