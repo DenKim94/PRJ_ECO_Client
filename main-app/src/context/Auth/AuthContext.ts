@@ -2,7 +2,7 @@ import { createContext, RefObject } from 'react';
 import { LogInRequest, RegisterRequest, 
   PasswordResetRequest, AuthResponseModel, 
   User, UserDataResponseModel, 
-  ErrorMessage, AllUserDataResponse, 
+  ResponseMessage, AllUserDataResponse, 
   ApiMessageMap, ApiResponseMap } from '../../types/AuthTypes'; 
 
 
@@ -15,7 +15,7 @@ export interface AuthContextType {
   sessionTimeRemaining: RefObject<number>;
   isLoading: boolean;
   deleteAccountRequested: boolean;
-  errorMsgRef: RefObject<ErrorMessage | undefined>;
+  errorMsgRef: RefObject<ResponseMessage | undefined>;
   isTokenValid: () => boolean;
   login: (request: LogInRequest) => Promise<AuthResponseModel | null>;
   logout: () => Promise<ApiMessageMap>;

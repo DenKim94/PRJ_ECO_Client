@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useMemo, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useConfig } from "../hooks/useConfig";
 import { useTheme } from "../hooks/useTheme";
@@ -7,6 +7,7 @@ import styles from "./Settings.module.scss";
 import { CustomButton } from "../components/CustomButton";
 import { MessageContainer, MessageContainerProps } from "../components/MessageContainer";
 import { InfoBox } from "../components/InfoBox";
+import { useTracking } from "../hooks/useTracking";
 
 interface ConfigFieldDef {
     name: keyof ConfigModel;
@@ -93,6 +94,7 @@ export default function Settings() {
     const authService = useAuth();
     const themeObject = useTheme();
     const configService = useConfig();
+    const trackingService = useTracking();
 
     const [formData, setFormData] = useState<Partial<ConfigModel>>(() => {
         const initial = { ...(configService.configs ?? {}) };
@@ -102,7 +104,12 @@ export default function Settings() {
         return initial;
     });
     const iconSrc = (themeObject.theme === 'light') ? '/info_icon_dark.svg' : '/info_icon_light.svg';
-    
+        
+    useEffect(() => {
+        trackingService.resetResponseMsg();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+        
     const message: MessageContainerProps = useMemo(() => {
         if (configService.saveResult === 'success') {
             return {

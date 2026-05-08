@@ -1,11 +1,16 @@
 import { createContext, RefObject } from 'react';
 import { TrackingEntityRequest, TrackingEntityResponse } from "../../types/TrackingTypes";
-import { ErrorMessage } from '../../types/AuthTypes';
+import { ResponseMessage } from '../../types/AuthTypes';
 import { ApiMessageMap } from '../../types/AuthTypes';
+import { MessageContainerProps } from '../../components/MessageContainer';
 
 /**
  * * newestEntry: TrackingEntityResponse | null;
  * * entryList: TrackingEntityResponse[];
+ * * errorMsgRef: RefObject<ResponseMessage | undefined>;
+ * * responseMsg: MessageContainerProps | null;
+ * * isLoading: boolean;
+ * * resetResponseMsg: () => void;
  * * getAllEntries: () => Promise<TrackingEntityResponse[]>;
  * * addEntry: (request: TrackingEntityRequest) => Promise<TrackingEntityResponse>;
  * * getNewestEntry: () => Promise<TrackingEntityResponse | null>;
@@ -16,8 +21,10 @@ import { ApiMessageMap } from '../../types/AuthTypes';
 export interface TrackingContextType {
     newestEntry: TrackingEntityResponse | null;
     entryList: TrackingEntityResponse[];
-    errorMsgRef: RefObject<ErrorMessage | undefined>;
+    errorMsgRef: RefObject<ResponseMessage | undefined>;
+    responseMsg: MessageContainerProps | null;
     isLoading: boolean;
+    resetResponseMsg: () => void;
     getAllEntries: () => Promise<TrackingEntityResponse[]>;
     getNewestEntry: () => Promise<TrackingEntityResponse | null>;
     addEntry: (request: TrackingEntityRequest) => Promise<TrackingEntityResponse | null>;

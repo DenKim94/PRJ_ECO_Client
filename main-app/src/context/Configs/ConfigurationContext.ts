@@ -1,11 +1,14 @@
 import { createContext, RefObject } from 'react';
 import { ConfigModel } from '../../types/ConfigTypes';
-import { ErrorMessage } from '../../types/AuthTypes';
+import { ResponseMessage } from '../../types/AuthTypes';
 
 export type SaveResult = 'success' | 'error' | 'idle';
 
 /** 
  * * configs: ConfigModel | null;
+ * * errorMsgRef: RefObject<ResponseMessage | undefined>;
+ * * isLoading: boolean;
+ * * saveResult: SaveResult;
  * * loadConfiguration: () => Promise<ConfigModel | null>;
  * * updateConfiguration: (request: ConfigModel) => Promise<boolean>;
  * * formatDateForServer: (dateStr: string) => string;
@@ -14,7 +17,7 @@ export type SaveResult = 'success' | 'error' | 'idle';
 */
 export interface ConfigurationContextType {
     configs: ConfigModel | null;
-    errorMsgRef: RefObject<ErrorMessage | undefined>;
+    errorMsgRef: RefObject<ResponseMessage | undefined>;
     isLoading: boolean;
     saveResult: SaveResult;
     loadConfiguration: () => Promise<ConfigModel | null>;

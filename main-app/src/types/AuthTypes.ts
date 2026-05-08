@@ -43,7 +43,7 @@ export interface UserDataResponseModel{
   isValidatedEmail: boolean;
 }
 
-export interface ErrorMessage {
+export interface ResponseMessage {
   code?: number;
   message: string;
 }

@@ -3,7 +3,7 @@ import { Logger } from "../../utils/logger";
 import { CalculationContext } from "./CalculationContext";
 import { useApiCall } from "../../hooks/useApiCall";
 import { CalculationDataResponse, CalcultationRequest } from "../../types/CalculationTypes";
-import { ApiMessageMap, ErrorMessage } from "../../types/AuthTypes";
+import { ApiMessageMap, ResponseMessage } from "../../types/AuthTypes";
 
 
 const logger = new Logger('CalculationProvider');
@@ -17,7 +17,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL;
  * Der Provider beinhaltet folgende Daten:
  * * calcData: CalculationEntry[];
  * * isLoading: boolean;
- * * errorMsgRef: RefObject<ErrorMessage | undefined>;
+ * * errorMsgRef: RefObject<ResponseMessage | undefined>;
  * 
  * Der Provider implementiert folgende Funktionen:
  * * loadResults: () => Promise<CalculationDataResponse[]>;
@@ -27,7 +27,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL;
 export const CalculationProvider = ({ children }: { children: ReactNode }) => {
     const calcApi = useApiCall<CalculationDataResponse[]>();
     const deleteApi = useApiCall<ApiMessageMap>();
-    const errorMsgRef = useRef<ErrorMessage | undefined>(undefined);
+    const errorMsgRef = useRef<ResponseMessage | undefined>(undefined);
     const [calcData, setCalcData] = useState<CalculationDataResponse[]>([]);
     const isLoading : boolean = calcApi.isLoading || deleteApi.isLoading;
 

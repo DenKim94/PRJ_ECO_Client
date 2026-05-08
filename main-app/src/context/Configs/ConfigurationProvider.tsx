@@ -3,7 +3,7 @@ import { Logger } from "../../utils/logger";
 import { ConfigurationContext, SaveResult } from "./ConfigurationContext";
 import { ConfigModel } from "../../types/ConfigTypes";
 import { useApiCall } from "../../hooks/useApiCall";
-import { ErrorMessage } from "../../types/AuthTypes";
+import { ResponseMessage } from "../../types/AuthTypes";
 
 
 const logger = new Logger('ConfigurationProvider');
@@ -19,7 +19,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL;
  * Der Provider beinhaltet folgende Daten:
  * * configs: ConfigModel | null;
  * * saveResult: 'success' | 'error' | 'idle';
- * * errorMsgRef: RefObject<ErrorMessage | undefined>;
+ * * errorMsgRef: RefObject<ResponseMessage | undefined>;
  * * isLoading: boolean;
  * 
  * Der Provider implementiert folgende Funktionen:
@@ -32,7 +32,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL;
  * */
 export const ConfigurationProvider = ({ children }: { children: ReactNode }) => {
     const configApi = useApiCall<ConfigModel>();
-    const errorMsgRef = useRef<ErrorMessage | undefined>(undefined);
+    const errorMsgRef = useRef<ResponseMessage | undefined>(undefined);
     const [configs, setConfigs] = useState<ConfigModel | null>(null);
     const [saveResult, setSaveResult] = useState<SaveResult>('idle');
     const isLoading : boolean = configApi.isLoading;

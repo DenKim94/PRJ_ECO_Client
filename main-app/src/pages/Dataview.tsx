@@ -2,12 +2,13 @@ import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useTracking } from "../hooks/useTracking";
 import { Logger } from "../utils/logger";
+import { HelperClass } from "../utils/helper";
 import styles from "./Dataview.module.scss";
 import { TrackingEntityResponse } from "../types/TrackingTypes";
 import { IconButton } from "../components/IconButton";
 import { useTheme } from "../hooks/useTheme";
 import { InfoBox } from "../components/InfoBox";
-import { MessageContainer, MessageContainerProps } from "../components/MessageContainer";
+import { MessageContainer } from "../components/MessageContainer";
 
 export default function Dataview() {
     const logger = new Logger('Dataview');
@@ -17,7 +18,6 @@ export default function Dataview() {
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editDate, setEditDate] = useState("");
     const [editKWhValue, setEditKWhValue] = useState<number | null>(null);
-    const [message, setMessage] = useState<{ message: string, type?: MessageContainerProps['type'] }  | null>(null);
 
     const saveIconSrc = (themeObject.theme === 'light') ?  "/check_circle_icon_dark.svg" : "/check_circle_icon_light.svg";
     const deleteIconSrc = (themeObject.theme === 'light') ?  "/delete_icon_dark.svg" : "/delete_icon_light.svg";
@@ -28,43 +28,28 @@ export default function Dataview() {
     }
 
     const handleRowClick = (entry: TrackingEntityResponse) => {
+        trackingService.resetResponseMsg();
         setEditingId(entry.id);
-        setEditDate(entry.timestamp);
+        setEditDate(HelperClass.formatDateForClient(entry.timestamp));
         setEditKWhValue(entry.readingValue);
     };
 
     const handleSave = async (id: number) => {
-        if(isNaN(Number(editKWhValue))) {
-            logger.error("Ungültiger Wert: ", editKWhValue);
-            setMessage({ message: `Ungültiger Wert: ${editKWhValue}`, type: "error" });
-            return;
-        }
-        // TODO [07.05.2026]: Datum muss formatiert werden, damit es vom Server akzeptiert wird
-        const response = await trackingService.updateEntryById(id, { date: editDate, value_kWh: Number(editKWhValue) });
-
+        const response = await trackingService.updateEntryById(id, { date: HelperClass.formatDateForServer(editDate), value_kWh: Number(editKWhValue) });
         if (!response) {
-            const errMsg = trackingService.errorMsgRef.current?.message ?? "Unbekannter Fehler beim Speichern.";
-            logger.error(`${errMsg}`);
-            setMessage({ message: `${errMsg}`, type: "error" });
+            logger.error(`${trackingService.errorMsgRef.current?.message ?? 'Unbekannter Fehler beim Speichern.'}`);
             return;
         }
-
-        setMessage({ message: "Eintrag wurde gespeichert.", type: "success" });
         setEditingId(null);
     };
 
     const handleDelete = async (id: number) => {
         const response = await trackingService.deleteEntryById(id);
         setEditingId(null);
-
         if (!response) {
-            const errMsg = trackingService.errorMsgRef.current?.message ?? "Unbekannter Fehler beim Löschen.";
-            logger.error(`${errMsg}`);
-            setMessage({ message: `${errMsg}`, type: "error" });
+            logger.error(`${trackingService.errorMsgRef.current?.message ?? 'Unbekannter Fehler beim Löschen.'}`);
             return;
         }
-
-        setMessage({ message: `${response?.message}`, type: "success" });
     };
 
     return (
@@ -89,7 +74,7 @@ export default function Dataview() {
                                             type="date" 
                                             value={editDate} 
                                             placeholder={`${entry.timestamp}`}
-                                            onChange={(e) => setEditDate(e.target.value)} 
+                                            onChange={(e) => setEditDate(HelperClass.formatDateForClient(e.target.value))} 
                                             onClick={(e) => e.stopPropagation()} // Verhindert das Schließen durch Zeilen-Klick
                                         />
                                     </td>
@@ -151,7 +136,7 @@ export default function Dataview() {
                     ))}
                 </tbody>
             </table>
-            <MessageContainer message={message?.message ?? ""} type={message?.type} isVisible={message !== null} />
+            <MessageContainer message={trackingService.responseMsg?.message ?? ""} type={trackingService.responseMsg?.type} isVisible={trackingService.responseMsg !== null} />
         </div>
     );
 }

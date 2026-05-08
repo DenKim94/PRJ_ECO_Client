@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback, ReactNode, useRef } from 'react';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { Logger } from '../../utils/logger';
 import { AuthContext } from './AuthContext';
-import {ApiMessageMap, ApiResponseMap } from '../../types/AuthTypes';
+import { ApiMessageMap, ApiResponseMap } from '../../types/AuthTypes';
 import { useApiCall } from '../../hooks/useApiCall';
-import { LogInRequest, RegisterRequest, PasswordResetRequest, AuthResponseModel, User, UserRoles, UserDataResponseModel, ErrorMessage, AllUserDataResponse } from '../../types/AuthTypes'; 
+import { LogInRequest, RegisterRequest, PasswordResetRequest, AuthResponseModel, User, UserRoles, UserDataResponseModel, ResponseMessage, AllUserDataResponse } from '../../types/AuthTypes'; 
 
 
 export interface CustomJwtPayload extends JwtPayload {
@@ -67,7 +67,7 @@ const getInitialAuthData = (): { token: string | null; user: User | null; remain
  * * sessionTimeRemaining: RefObject<number>;
  * * isLoading: boolean;
  * * deleteAccountRequested: boolean;
- * * errorMsgRef: RefObject<ErrorMessage | undefined>;
+ * * errorMsgRef: RefObject<ResponseMessage | undefined>;
  *
  * Der Provider implementiert folgende Funktionen:
  * * login: (request: LogInRequest) => Promise<AuthResponseModel | null>;
@@ -113,7 +113,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const warningTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const sessionTimeRemaining = useRef<number>(initialAuthData.remainingTimeMs ?? 0);
     const countdownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-    const errorMsgRef = useRef<ErrorMessage | undefined>(undefined);
+    const errorMsgRef = useRef<ResponseMessage | undefined>(undefined);
 
     // --- API Hooks für jede Aktion ---
     const authApi = useApiCall<AuthResponseModel>(); // Für Login und Token Refresh

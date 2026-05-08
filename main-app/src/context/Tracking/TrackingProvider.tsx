@@ -3,9 +3,9 @@ import { Logger } from "../../utils/logger";
 import { TrackingContext } from "./TrackingContext";
 import { TrackingEntityRequest, TrackingEntityResponse } from "../../types/TrackingTypes";
 import { useApiCall } from "../../hooks/useApiCall";
-import { ErrorMessage } from "../../types/AuthTypes";
+import { ResponseMessage } from "../../types/AuthTypes";
 import { ApiMessageMap } from '../../types/AuthTypes';
-
+import { MessageContainerProps } from "../../components/MessageContainer";
 
 const logger = new Logger('TrackingProvider');
 const API_BASE_URL = import.meta.env.VITE_API_URL;
@@ -18,10 +18,12 @@ const API_BASE_URL = import.meta.env.VITE_API_URL;
  * Der Provider beinhaltet folgende Daten:
  * * newestEntry: TrackingEntityResponse | null;
  * * entryList: TrackingEntityResponse[];
- * * errorMsgRef: RefObject<ErrorMessage | undefined>;
+ * * errorMsgRef: RefObject<ResponseMessage | undefined>;
+ * * responseMsg: MessageContainerProps | null;
  * * isLoading: boolean;
  * 
  * Der Provider implementiert folgende Funktionen:
+ * * resetResponseMsg: () => void;
  * * getAllEntries: () => Promise<TrackingEntityResponse[]>;
  * * addEntry: (request: TrackingEntityRequest) => Promise<TrackingEntityResponse>;
  * * getNewestEntry: () => Promise<TrackingEntityResponse | null>;
@@ -33,11 +35,16 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
     const trackingData = useApiCall<TrackingEntityResponse>();
     const trackingDataList = useApiCall<TrackingEntityResponse[]>();
     const deleteData = useApiCall<ApiMessageMap>();
-    const errorMsgRef = useRef<ErrorMessage | undefined>(undefined);
+    const errorMsgRef = useRef<ResponseMessage | undefined>(undefined);
     const [entryList, setEntryList] = useState<TrackingEntityResponse[]>([]);
     const [newestEntry, setNewestEntry] = useState<TrackingEntityResponse | null>(null);
+    const [responseMsg, setResponseMsg] = useState<MessageContainerProps | null>(null);
 
     const isLoading : boolean = trackingData.isLoading || trackingDataList.isLoading || deleteData.isLoading;
+
+    const resetResponseMsg = useCallback(() => {
+        setResponseMsg(null);
+    }, []);
 
     const getAllEntries = useCallback(async (): Promise<TrackingEntityResponse[]> => {
         logger.debug('Lade alle Tracking-Einträge vom Server ...');
@@ -72,6 +79,7 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
         const response = await trackingData.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/tracking/add`, data: request });
         if (!response) {
             errorMsgRef.current = trackingData.errorMsg.current;
+            setResponseMsg({message: `${errorMsgRef.current?.message ?? 'Fehler beim Hinzufügen des Eintrags.'}`, type: 'error'});
             return null;
         }
         logger.debug('Neuer Eintrag erfolgreich hinzugefügt.', response);
@@ -83,13 +91,15 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
     },[trackingData]);
 
     const updateEntryById = useCallback(async (id: number, request: TrackingEntityRequest): Promise<TrackingEntityResponse | null> => {
-        logger.debug(`Aktualisiere Eintrag mit ID ${id} ...`, request);
+        logger.debug(`Aktualisiere Eintrag mit ID: ${id} ...`, request);
         const response = await trackingData.fetchData({ method: 'PUT', url: `${API_BASE_URL}/api/tracking/${id}/update`, data: request });
         if (!response) {
             errorMsgRef.current = trackingData.errorMsg.current;
+            setResponseMsg({message: `${errorMsgRef.current?.message ?? 'Fehler beim Aktualisieren des Eintrags.'}`, type: 'error'});
             return null;
         }
         logger.debug(`Eintrag mit ID ${id} erfolgreich aktualisiert.`, response);
+        setResponseMsg({message: 'Eintrag erfolgreich aktualisiert.', type: 'success'});
         setEntryList(prev => prev.map(entry => entry.id === id ? response : entry));
         if (newestEntry?.id === id) {
             setNewestEntry(response);
@@ -136,7 +146,9 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
             entryList, 
             newestEntry,
             errorMsgRef,
+            responseMsg,
             isLoading,
+            resetResponseMsg,
             getAllEntries,
             getNewestEntry,
             addEntry,
