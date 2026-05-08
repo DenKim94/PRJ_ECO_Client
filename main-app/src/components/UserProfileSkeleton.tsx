@@ -22,7 +22,7 @@ export default function UserProfileSkeleton() {
     
     // Hook nutzen: Schließt das Menü bei Klick außerhalb
     useOutsideClick(menuRef, () => {
-        if (isMobile && isMenuOpen) {
+        if (isMenuOpen) {
             setIsMenuOpen(false);
         }
     });

@@ -3,6 +3,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useConfig } from "../hooks/useConfig";
 import { useTheme } from "../hooks/useTheme";
 import { ConfigModel } from "../types/ConfigTypes";
+import { HelperClass } from "../utils/helper";
 import styles from "./Settings.module.scss";
 import { CustomButton } from "../components/CustomButton";
 import { MessageContainer, MessageContainerProps } from "../components/MessageContainer";
@@ -95,11 +96,11 @@ export default function Settings() {
     const themeObject = useTheme();
     const configService = useConfig();
     const trackingService = useTracking();
-
+    const [dataChanged, setDataChanged] = useState(false);
     const [formData, setFormData] = useState<Partial<ConfigModel>>(() => {
         const initial = { ...(configService.configs ?? {}) };
         if (initial.referenceDate) {
-            initial.referenceDate = configService.formatDateForClient(initial.referenceDate);
+            initial.referenceDate = HelperClass.formatDateForClient(initial.referenceDate);
         }
         return initial;
     });
@@ -132,9 +133,10 @@ export default function Settings() {
     const handleSave = useCallback(async () => {
         const payload = { ...formData };
         if (payload.referenceDate) {
-            payload.referenceDate = configService.formatDateForServer(payload.referenceDate);
+            payload.referenceDate = HelperClass.formatDateForServer(payload.referenceDate);
         }
         await configService.updateConfiguration(payload as ConfigModel);
+        setDataChanged(false);
     }, [formData, configService]);
     
     const handleInputChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -147,7 +149,9 @@ export default function Settings() {
             ...prev,
             [name]: type === 'number' ? (value === '' ? '' : Number(value)) : value,
         }));
-    }, [configService]); 
+
+        if (!dataChanged) { setDataChanged(true); }
+    }, [configService, dataChanged]); 
 
     if(!authService.userDetailedData?.isValidatedEmail) {
         return null;
@@ -192,7 +196,7 @@ export default function Settings() {
                 title="Speichern" 
                 type="button"
                 onClickCallback={handleSave} 
-                isDisabled={authService.isLoading || configService.isLoading}
+                isDisabled={authService.isLoading || configService.isLoading || !dataChanged}
                 sx={{marginTop: '0px', width: '250px'}} 
             />
         </div>

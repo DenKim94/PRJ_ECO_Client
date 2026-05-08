@@ -11,9 +11,6 @@ export type SaveResult = 'success' | 'error' | 'idle';
  * * saveResult: SaveResult;
  * * loadConfiguration: () => Promise<ConfigModel | null>;
  * * updateConfiguration: (request: ConfigModel) => Promise<boolean>;
- * * formatDateForServer: (dateStr: string) => string;
- * * formatDateForClient: (dateStr: string) => string;
- *
 */
 export interface ConfigurationContextType {
     configs: ConfigModel | null;
@@ -23,8 +20,6 @@ export interface ConfigurationContextType {
     loadConfiguration: () => Promise<ConfigModel | null>;
     resetSaveResult: () => void;
     updateConfiguration: (request: ConfigModel) => Promise<boolean>;
-    formatDateForServer: (dateStr: string) => string;
-    formatDateForClient: (dateStr: string) => string;
 }
 
 export const ConfigurationContext = createContext<ConfigurationContextType | undefined>(undefined);

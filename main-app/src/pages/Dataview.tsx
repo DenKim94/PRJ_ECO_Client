@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useTracking } from "../hooks/useTracking";
 import { Logger } from "../utils/logger";
@@ -9,12 +9,14 @@ import { IconButton } from "../components/IconButton";
 import { useTheme } from "../hooks/useTheme";
 import { InfoBox } from "../components/InfoBox";
 import { MessageContainer } from "../components/MessageContainer";
+import { useConfig } from "../hooks/useConfig";
 
 export default function Dataview() {
     const logger = new Logger('Dataview');
     const authService = useAuth();
     const themeObject = useTheme();
-    const trackingService = useTracking();     
+    const trackingService = useTracking();
+    const configService = useConfig();     
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editDate, setEditDate] = useState("");
     const [editKWhValue, setEditKWhValue] = useState<number | null>(null);
@@ -23,6 +25,11 @@ export default function Dataview() {
     const deleteIconSrc = (themeObject.theme === 'light') ?  "/delete_icon_dark.svg" : "/delete_icon_light.svg";
     const cancelIconSrc = (themeObject.theme === 'light') ?  "/cancel_circle_icon_dark.svg" : "/cancel_circle_icon_light.svg";
 
+    useEffect(() => {
+        configService.resetSaveResult();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+        
     if(!authService.userDetailedData?.isValidatedEmail) {
         return null;
     }
