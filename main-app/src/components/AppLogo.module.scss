@@ -3,4 +3,13 @@
   flex-direction: column;
   object-fit: contain;
   padding: 10px;
+
+  a {
+    display: inline-block;
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
 }

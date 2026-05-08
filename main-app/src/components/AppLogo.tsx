@@ -2,6 +2,8 @@
 import React from 'react';
 import styles from './AppLogo.module.scss';
 
+const gitHubRepoUrl = 'https://github.com/DenKim94/PRJ_ECO_Client';
+
 type LogoSize = 'xs' | 's' | 'm' | 'l' | 'xl';
 
 interface LogoProps{
@@ -27,13 +29,20 @@ export const AppLogo: React.FC<LogoProps> = ({
 
   return (
     <div className={styles.logoContainer}>
-      <img
-        src={src}
-        alt={alt}
-        width={width}
-        height={height}
-        className={styles.logo}
-      />
+      <a 
+        href={gitHubRepoUrl} 
+        target="_blank" 
+        rel="noopener noreferrer"
+        aria-label="Zum GitHub Repository" // Gut für die Barrierefreiheit (Screenreader)
+      >
+        <img
+          src={src}
+          alt={alt}
+          width={width}
+          height={height}
+          className={styles.logo}
+        />
+      </a>
     </div>
   )
 };
