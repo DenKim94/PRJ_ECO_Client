@@ -10,7 +10,6 @@ export const RefreshTokenDialog = ({show}: {show: boolean}) => {
     const logger = new Logger('RefreshTokenDialog');
 
     if (!show) return null;
-
     const refreshToken = async () => {
         logger.debug('Aktualisiere Session ... ');
         const refreshDone = await authService.refreshToken();
@@ -38,7 +37,7 @@ export const RefreshTokenDialog = ({show}: {show: boolean}) => {
                 type="button"
                 onClickCallback={refreshToken} 
                 isDisabled={authService.isLoading}
-                sx={{marginTop: '0px'}} 
+                sx={{marginTop: '0px', color:'white'}} 
             />
         </div>
     );

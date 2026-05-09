@@ -29,10 +29,10 @@
     transition: all 0.2s ease;
 
     &.active {
-        color: var(--color-primary);
+        color: var(--color-primary-hover);
         font-weight: var.$font-weight-bold;
         img {
-            filter: drop-shadow(0 0 4px var(--color-primary));
+            filter: drop-shadow(0 0 4px var(--color-primary-hover));
         }
     }
 }
@@ -41,7 +41,7 @@
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background-color: var(--color-primary);
+    background-color: var(--color-primary-hover);
     color: var(--color-button-text);
     font-size: 32px;
     line-height: 1;

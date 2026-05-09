@@ -19,7 +19,7 @@ $popup-colors: (
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  background-color: #ffffff;
+  background-color: var.$color-surface-light;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   padding: 12px 16px 12px 12px;
@@ -57,7 +57,7 @@ $popup-colors: (
 .content {
   flex-grow: 1;
   font-size: 16px;
-  color: #333;
+  color: var.$color-text-muted-light;
   line-height: 1.4;
   white-space: pre-line;
   padding-right: 15px;
@@ -71,12 +71,12 @@ $popup-colors: (
   background: none;
   border: none;
   font-size: 20px;
-  color: #999;
+  color: var.$color-text-muted-light;
   cursor: pointer;
   margin-left: 12px;
   
   &:hover {
-    color: #333;
+    color: var(--color-text-main);
   }
 }
 

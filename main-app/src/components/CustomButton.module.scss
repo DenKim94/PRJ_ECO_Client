@@ -7,7 +7,7 @@
     justify-content: center;
     gap: var.$spacing-sm;
     min-width: var.$min-width-input;
-    max-width: var.$max-width-content;   
+    // max-width: var.$max-width-content;   
 }
 
 .customButton {
@@ -25,13 +25,15 @@
     font-size: var.$font-size-md;
     font-weight: var.$font-weight-medium;
     font-family: var.$font-family-base;
-    background-color: var(--color-primary);
-    color: var(--color-button-text);
+    background-color: var(--color-primary-hover);
+    color: var(--color-text-main, #333333); 
     cursor: pointer;
     
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    
     &:hover{
-        background-color: var(--color-primary-hover);
+        background-color: var(--color-primary);
         box-shadow: var(--shadow-border-glow);
+        color: var(--color-button-text);
     }
 }

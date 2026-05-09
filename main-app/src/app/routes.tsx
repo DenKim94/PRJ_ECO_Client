@@ -11,8 +11,8 @@ import Dataview from '../pages/Dataview';
 import CalculationView from '../pages/CalculationView';
 import AdminRoute from '../routes-composer/AdminRoute';
 import Adminview from '../pages/Adminview';
-import DataEntryMask from '../components/DataEntryMask';
 import PrivacyPolicy from '../components/PrivacyPolicy';
+import AddData from '../components/AddData';
 
 
 // Hier definieren wir den Router als Baumstruktur
@@ -76,7 +76,7 @@ export const router = createBrowserRouter([
                       {
                           // URL: /dashboard/add-entry
                           path: 'add-entry', 
-                          element: <DataEntryMask/>
+                          element: <AddData/>
                       },
                       {
                           // Der AdminRoute-Guard sichert diesen Bereich ab

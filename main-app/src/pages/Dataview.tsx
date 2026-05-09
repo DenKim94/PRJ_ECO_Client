@@ -10,13 +10,18 @@ import { useTheme } from "../hooks/useTheme";
 import { InfoBox } from "../components/InfoBox";
 import { MessageContainer } from "../components/MessageContainer";
 import { useConfig } from "../hooks/useConfig";
+import { CustomButton } from "../components/CustomButton";
+import { useIsMobile } from "../hooks/useIsMobile";
+import { useNavigate } from "react-router-dom";
 
 export default function Dataview() {
     const logger = new Logger('Dataview');
     const authService = useAuth();
     const themeObject = useTheme();
     const trackingService = useTracking();
-    const configService = useConfig();     
+    const configService = useConfig();   
+    const isMobile = useIsMobile(); 
+    const navigate = useNavigate(); 
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editDate, setEditDate] = useState("");
     const [editKWhValue, setEditKWhValue] = useState<number | null>(null);
@@ -50,6 +55,11 @@ export default function Dataview() {
         setEditingId(null);
     };
 
+    const handleAddData = () => {
+        logger.debug('Neuen Datenpunkt hinzufügen ...');
+        void navigate('/dashboard/add-entry');
+    };
+
     const handleDelete = async (id: number) => {
         const response = await trackingService.deleteEntryById(id);
         setEditingId(null);
@@ -61,7 +71,6 @@ export default function Dataview() {
 
     return (
         <div className={styles.dataviewContainer}>
-            <h1>{'Datenübersicht'}</h1>
             <InfoBox message={'Hier kannst du deine Zählerdaten einsehen und bearbeiten.'} sx={{ marginBottom: '20px' }} />
             <table className={styles.dataTable}>
                 <thead>
@@ -144,6 +153,17 @@ export default function Dataview() {
                 </tbody>
             </table>
             <MessageContainer message={trackingService.responseMsg?.message ?? ""} type={trackingService.responseMsg?.type} isVisible={trackingService.responseMsg !== null} />
+            
+            { !isMobile && 
+                <CustomButton
+                    title="Datenpunkt hinzufügen" 
+                    type="button"
+                    onClickCallback={handleAddData} 
+                    aria-label="Neuen Datenpunkt aufnehmen"
+                    isDisabled={authService.isLoading || configService.isLoading || trackingService.isLoading}
+                    sx={{width: '250px', marginTop: '20px'}} 
+                /> 
+            }
         </div>
     );
 }

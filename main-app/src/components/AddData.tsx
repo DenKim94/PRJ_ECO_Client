@@ -1,8 +1,8 @@
 import { useAuth } from "../hooks/useAuth";
 import { Logger } from "../utils/logger";
 
-export default function DataEntryMask() {
-    const logger = new Logger('DataEntryMask');
+export default function AddData() {
+    const logger = new Logger('AddData');
     const authService = useAuth();
     logger.debug("Ansicht zur Erfassung neuer Datenpunkte");
 
@@ -12,7 +12,7 @@ export default function DataEntryMask() {
 
     return (
         <div>
-            <h1>DataEntryMask</h1>
+            <h1>AddData</h1>
             <p>Platzhalter: Hier kannst du neue getrackten Werte zur Datenbank hinzufügen.</p>
         </div>
     );

@@ -45,13 +45,14 @@ export const DeleteAccountDialog = ({show}: {show: boolean}) => {
                 type="button"
                 onClickCallback={() => void handleDeleteAccount()} 
                 isDisabled={authService.isLoading}
+                sx={{color:'white'}}
             />
             <CustomButton 
                 title="Abbrechen" 
                 type="button"
                 onClickCallback={() => {authService.setDeleteAccountRequested(false);}} 
                 isDisabled={authService.isLoading}
-                sx={{backgroundColor:'var(--color-logout-button)'}}
+                sx={{backgroundColor:'var(--color-logout-button)', color:'white'}}
             />
             </div>
         </div>
