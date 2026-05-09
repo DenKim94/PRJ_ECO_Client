@@ -17,7 +17,7 @@ export default function PrivacyPolicy() {
             <p>Verantwortlich für die Verarbeitung Ihrer personenbezogenen Daten im Rahmen dieser Webseite bin ich:</p>
             <p><strong>Denis Kim</strong><br /></p>
             <p>
-                c/o Online-Impressum.de #4784 <br />
+                c/o Online-Impressum.de<br />
                 Europaring 90 <br />
                 53757 Sankt Augustin<br />
             </p>
