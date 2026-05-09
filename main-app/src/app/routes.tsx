@@ -12,6 +12,7 @@ import CalculationView from '../pages/CalculationView';
 import AdminRoute from '../routes-composer/AdminRoute';
 import Adminview from '../pages/Adminview';
 import DataEntryMask from '../components/DataEntryMask';
+import PrivacyPolicy from '../components/PrivacyPolicy';
 
 
 // Hier definieren wir den Router als Baumstruktur
@@ -37,6 +38,10 @@ export const router = createBrowserRouter([
           {
               path: 'password-reset',
               element: <PasswordReset />,
+          },
+          {
+              path: 'datenschutz',
+              element: <PrivacyPolicy />,
           },
       {
         // Geschützter Bereich (nur für eingeloggte User)
