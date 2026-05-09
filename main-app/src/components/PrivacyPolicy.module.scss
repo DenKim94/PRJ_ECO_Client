@@ -4,7 +4,6 @@
   max-width: var.$max-width-container;
   min-width: var.$breakpoint-xs;
   width: 90%;
-  margin: 40px auto; 
   height: 100%;
   padding: 20px;
   overflow-y: auto;
@@ -15,20 +14,18 @@
     color: var(--color-text-main);
   }
 
-  // Ergänzt: h2 und h3 für eine saubere Hierarchie
   h2 {
-    font-size: var.$font-size-lg; // Gerne durch eine passende var.$... ersetzen
+    font-size: var.$font-size-lg;
     margin: 32px 0 16px;
     color: var(--color-text-main);
   }
 
   h3 {
-    font-size: var.$font-size-md; // Gerne durch eine passende var.$... ersetzen
+    font-size: var.$font-size-md;
     margin: 24px 0 12px;
     color: var(--color-text-main);
   }
-  
-  // Ergänzt: 'li' mit aufgenommen, da deine Komponente Listen nutzt
+
   p, li {
     font-size: var.$font-size-md;
     font-family: var.$font-family-base;
@@ -41,13 +38,11 @@
     }
   }
 
-  // Ergänzt: Einrückung für Listen
   ul {
     padding-left: 24px;
     margin-bottom: 16px;
   }
 
-  // Neue Anforderung: Styling der Links
   a {
     color: inherit; 
     text-decoration: underline;
@@ -59,11 +54,10 @@
     }
   }
 
-    // 1. Standard-Syntax (für Firefox)
-  scrollbar-width: thin; // Macht den Balken schmal
-  scrollbar-color: rgba(0, 0, 0, 0.2) transparent; // Daumenfarbe (halbtransparentes Grau) und Spurfarbe (unsichtbar)
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 
-  // 2. WebKit-Syntax (für Chrome, Edge, Safari)
+  // WebKit-Syntax (für Chrome, Edge, Safari)
   &::-webkit-scrollbar {
     width: 6px; // Bestimmt die Breite des vertikalen Scrollbalkens
   }
@@ -74,7 +68,7 @@
 
   &::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, 0.2); // Dezentes, leicht transparentes Grau
-    border-radius: 10px; // Abgerundete Kanten wirken moderner
+    border-radius: 10px;
     
     // Optional: Ein leichtes visuelles Feedback, wenn der User den Balken greift
     &:hover {
