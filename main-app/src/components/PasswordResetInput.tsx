@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { CustomButton } from "./CustomButton";
-import styles from "./PasswordResetInput.module.scss";
+import styles from "./CredentialsUpdateInput.module.scss";
 import { Logger } from "../utils/logger";
 import { HelperClass } from "../utils/helper";
 import { useTheme } from "../hooks/useTheme";
@@ -41,10 +41,15 @@ export default function PasswordResetInput({ eMail }: { eMail: string }) {
                     return;
                 }
                 setMessage({ message: result.message, type: "success" });
+
+                if (auth.isAuthenticated) {
+                    await auth.logout();
+                }
+
                 setTimeout(() => {
                     void navigate("/login", { replace: true });
-                }, 2500);
-    
+                }, 2000);  
+
             } catch (err) {
                 setMessage({ message: err instanceof Error ? err.message : "Unbekannter Fehler ist aufgetreten.", type: "error" });
                 logger.error(`Ein Fehler ist aufgetreten: ${err instanceof Error ? err.message : "Unbekannter Fehler ist aufgetreten."}`);
@@ -52,6 +57,9 @@ export default function PasswordResetInput({ eMail }: { eMail: string }) {
     
             } finally {
                 setSubmitting(false);
+                setCode("");
+                setPassword("");
+                setApprovePassword("");
             }
         };
     

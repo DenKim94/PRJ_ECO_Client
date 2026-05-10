@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styles from "./PasswordReset.module.scss";
+import styles from "./CredentialsUpdate.module.scss";
 import { useAuth } from "../hooks/useAuth";
 import { Logger } from "../utils/logger";
 import { HelperClass } from "../utils/helper";

@@ -1,0 +1,67 @@
+@use '../styles/abstracts/variables' as var;
+
+.pageContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: var.$spacing-lg;
+    height: 100%;
+    width: 90%;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    // Smartphone (standard)
+    @media (max-width: var.$breakpoint-sm) {
+        max-width: 370px;
+    }
+    
+    // Smartphone (max)
+    @media (min-width: 400px) and (max-width: var.$breakpoint-sm) {
+        max-width: 380px;
+    }
+
+    // Smartphone (horizontal)
+    @media (min-width: var.$breakpoint-sm) and (max-width: var.$breakpoint-lg) and (max-height: var.$breakpoint-height-sm) {
+        max-width: 480px;
+    }
+}
+
+.formContainer{
+    display: flex;
+    flex-direction: column;
+    gap: var.$spacing-md;
+    align-self: stretch;
+    justify-content: center;
+    width: 100%;
+}
+
+.inputField {
+    padding: var.$spacing-sm;
+    border: 1px solid var(--color-border);
+    border-radius: var.$radius-sm;
+    font-size: var.$font-size-md;
+    font-family: var.$font-family-base;
+    background-color: transparent;
+    color: var(--color-text-main);
+}
+
+.inputField:focus-within {
+    outline: none;
+    box-shadow: none;
+    border-color: var(--color-primary);
+}
+
+
+.infoText {
+    font-size: var.$font-size-md;
+    font-family: var.$font-family-base;
+    color: var(--color-text-secondary);
+    margin-bottom: var.$spacing-md;
+    text-align: left;
+    min-width: var.$min-width-input;
+
+    @media (max-width: var.$breakpoint-md) {
+        margin-bottom: var.$spacing-sm;
+    }
+}

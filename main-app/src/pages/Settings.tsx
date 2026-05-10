@@ -25,14 +25,14 @@ const configFields: ConfigFieldDef[] = [
         label: 'Grundpreis (EUR/Monat)', 
         type: 'number', 
         step: '0.01', 
-        infoText: 'Fixer monatlicher Basisbetrag des Stromanbieters, unabhängig von deinem tatsächlichen Verbrauch (inkl. MwSt.).' 
+        infoText: 'Fixer monatlicher Basisbetrag des Stromanbieters, unabhängig von dem tatsächlichen Verbrauch (inkl. MwSt.).' 
     },
     { 
         name: 'energyPrice', 
         label: 'Verbrauchspreis (EUR/kWh)', 
         type: 'number', 
         step: '0.0001', 
-        infoText: 'Kosten pro verbrauchter Kilowattstunde Strom (inkl. MwSt.).' 
+        infoText: 'Kosten pro verbrauchter Kilowattstunde (inkl. MwSt.).' 
     },
     { 
         name: 'energyTax', 
@@ -56,13 +56,6 @@ const configFields: ConfigFieldDef[] = [
         infoText: 'Die Vorauszahlung, die dein Anbieter jeden Monat abbucht. Dient zur Berechnung deiner späteren Nachzahlung oder Gutschrift.' 
     },
     { 
-        name: 'additionalCredit', 
-        label: 'Zusätzliches Guthaben (EUR)', 
-        type: 'number', 
-        step: '0.01', 
-        infoText: 'Boni (z.B. Neukundenbonus) oder offenes Guthaben aus Vorjahren, die am Vertragsende verrechnet werden sollen.' 
-    },
-    { 
         name: 'dueDay', 
         label: 'Fälligkeitstag (optional)', 
         type: 'number', 
@@ -70,12 +63,19 @@ const configFields: ConfigFieldDef[] = [
         infoText: 'Der Tag im Monat (1-31), an dem der Abschlag fällig wird. Relevant für präzisesere Vorausberechnung.' 
     },
     { 
-        name: 'sepaProcessingDays', 
-        label: 'SEPA-Verarbeitungstage (optional)', 
+        name: 'additionalCredit', 
+        label: 'Zusätzliches Guthaben (EUR)', 
         type: 'number', 
-        step: '1', 
-        infoText: 'Verzögerung (in Tagen), bis die Abbuchung tatsächlich auf dem Bankkonto sichtbar ist. Relevant für präzisesere Vorausberechnung.' 
+        step: '0.01', 
+        infoText: 'Boni (z.B. Neukundenbonus) oder offenes Guthaben aus Vorjahren, die am Vertragsende verrechnet werden sollen.' 
     },
+    // { 
+    //     name: 'sepaProcessingDays', 
+    //     label: 'SEPA-Verarbeitungstage (optional)', 
+    //     type: 'number', 
+    //     step: '1', 
+    //     infoText: 'Verzögerung (in Tagen), bis die Abbuchung tatsächlich auf dem Bankkonto sichtbar ist. Relevant für präzisesere Vorausberechnung.' 
+    // },
     { 
         name: 'meterIdentifier', 
         label: 'Zählernummer (optional)', 
@@ -84,9 +84,9 @@ const configFields: ConfigFieldDef[] = [
     },
     { 
         name: 'referenceDate', 
-        label: 'Referenzdatum (optional)', 
+        label: 'Referenzdatum', 
         type: 'date', 
-        infoText: 'Das Startdatum deiner aktuellen Abrechnungsperiode (z.B. Vertragsbeginn). Ab hier beginnt die Berechnung deiner Kosten.' 
+        infoText: 'Das Startdatum der Abrechnungsperiode (z.B. Vertragsbeginn). Ab hier beginnt die Berechnung der Energiekosten.' 
     },
 ];
 

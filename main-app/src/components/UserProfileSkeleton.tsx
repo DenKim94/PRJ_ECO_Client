@@ -62,6 +62,27 @@ export default function UserProfileSkeleton() {
         authService.setDeleteAccountRequested(true);
     }
 
+    const changePassword = () => {
+        setIsMenuOpen(false);
+        logger.debug('Passwort ändern angefordert.');
+        void navigate('/password-reset');
+    }
+
+    const updateUserName = async() => {
+        setIsMenuOpen(false);
+        const result = await authService.resendVerificationEmail();
+
+        if (authService.errorMsgRef.current?.message) {
+            logger.error(`${authService.errorMsgRef.current.message}`);
+            void navigate('/dashboard');
+            return;
+
+        } else {
+            logger.debug(`${result.message}`);
+            void navigate('/dashboard/username-update');
+        }
+    }
+
     return (
         <div ref={menuRef} className={styles.userNameContainer}>
             <button 
@@ -97,6 +118,21 @@ export default function UserProfileSkeleton() {
                         </div>
                     )}     
                     {authService.userDetailedData?.role !== 'ADMIN' && (
+                     <>
+                        <div className={styles.dropdownItem} onClick={() => void updateUserName()}>
+                            <img src={themeObject.theme === 'light' ? '/change_username_icon_dark.svg' : '/change_username_icon_light.svg'} 
+                                alt="Benutzernamen ändern" 
+                                width={20} 
+                                height={20} />
+                            <span className={styles.label}>{'Name ändern'}</span>
+                        </div>
+                        <div className={styles.dropdownItem} onClick={changePassword}>
+                            <img src={themeObject.theme === 'light' ? '/change_password_icon_dark.svg' : '/change_password_icon_light.svg'} 
+                                alt="Passwort ändern" 
+                                width={20} 
+                                height={20} />
+                            <span className={styles.label}>{'Passwort ändern'}</span>
+                        </div>
                         <div className={styles.dropdownItem} onClick={deleteAccount}>
                             <img src={themeObject.theme === 'light' ? '/delete_icon_dark.svg' : '/delete_icon_light.svg'} 
                                 alt="Konto löschen" 
@@ -104,6 +140,7 @@ export default function UserProfileSkeleton() {
                                 height={20} />
                             <span className={styles.label}>{'Konto löschen'}</span>
                         </div>
+                     </>   
                     )}                
                     {isMobile && (
                         <div className={styles.dropdownItem} onClick={() => void logoutUser()}>

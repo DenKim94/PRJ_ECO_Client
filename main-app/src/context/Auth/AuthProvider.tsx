@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, ReactNode, useRef } from 'react';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { Logger } from '../../utils/logger';
 import { AuthContext } from './AuthContext';
-import { ApiMessageMap, ApiResponseMap } from '../../types/AuthTypes';
+import { ApiMessageMap, ApiResponseMap, UserNameUpdateRequest } from '../../types/AuthTypes';
 import { useApiCall } from '../../hooks/useApiCall';
 import { LogInRequest, RegisterRequest, PasswordResetRequest, AuthResponseModel, User, UserRoles, UserDataResponseModel, ResponseMessage, AllUserDataResponse } from '../../types/AuthTypes'; 
 
@@ -78,6 +78,7 @@ const getInitialAuthData = (): { token: string | null; user: User | null; remain
  * * setDeleteAccountRequested: (requested: boolean) => void;
  * * deleteAccount: () => Promise<ApiMessageMap>;
  * * resendVerificationEmail: () => Promise<ApiMessageMap>;
+ * * updateUserNameWithLogout: (request: UserNameUpdateRequest) => Promise<ApiMessageMap>;
  * * verifyEmail: (tfaCode: string) => Promise<ApiMessageMap>;
  * * sendPasswordVerificationEmail: (request: {email: string}) => Promise<ApiMessageMap>;
  * * resetPassword: (request: PasswordResetRequest) => Promise<ApiMessageMap>;
@@ -339,6 +340,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return response;
     }, [accountApi]);
 
+    const updateUserNameWithLogout = useCallback(async (request: UserNameUpdateRequest): Promise<ApiMessageMap> => {
+        logger.debug('Benutzernamen ändern ...', { newUserName: request.newUserName });
+        const response = await accountApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/user/update-name`, data: request });
+        if (!response) { 
+            errorMsgRef.current = accountApi.errorMsg.current; 
+            return { message: accountApi.errorMsg.current?.message  ?? 'Anfrage ist fehlgeschlagen.' };
+        }
+        logger.debug('Benutzername erfolgreich geändert.');
+        errorMsgRef.current = undefined;
+        
+        setTimeout(() => {
+                void clearSession();
+        }, 2000);
+
+        return response;
+    }, [accountApi, clearSession]);
+
     const refreshToken = useCallback(async (): Promise<boolean> => {
         logger.debug('Token aktualisieren ...');
         const response = await authApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/refresh-token` });
@@ -491,6 +509,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             sendPasswordVerificationEmail,
             resetPassword,
             refreshToken,
+            updateUserNameWithLogout,
             resendVerificationEmail,
             deleteAccount,
             verifyEmail,

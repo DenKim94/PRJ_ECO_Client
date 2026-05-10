@@ -3,7 +3,8 @@ import { LogInRequest, RegisterRequest,
   PasswordResetRequest, AuthResponseModel, 
   User, UserDataResponseModel, 
   ResponseMessage, AllUserDataResponse, 
-  ApiMessageMap, ApiResponseMap } from '../../types/AuthTypes'; 
+  ApiMessageMap, ApiResponseMap, 
+  UserNameUpdateRequest} from '../../types/AuthTypes'; 
 
 
 export interface AuthContextType {
@@ -24,6 +25,7 @@ export interface AuthContextType {
   refreshToken: () => Promise<boolean>;
   setDeleteAccountRequested: (requested: boolean) => void;
   deleteAccount: () => Promise<ApiMessageMap>;
+  updateUserNameWithLogout: (request: UserNameUpdateRequest) => Promise<ApiMessageMap>;
   resendVerificationEmail: () => Promise<ApiMessageMap>;
   verifyEmail: (tfaCode: string) => Promise<ApiMessageMap>;
   sendPasswordVerificationEmail: (request: {email: string}) => Promise<ApiMessageMap>;

@@ -10,6 +10,11 @@ export interface PasswordResetRequest {
   tfaCode: string;
 }
 
+export interface UserNameUpdateRequest {
+    newUserName: string;
+    tfaCode: string;
+  };
+
 export interface LogInRequest {
   username: string;
   password: string;

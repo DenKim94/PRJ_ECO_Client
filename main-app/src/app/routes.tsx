@@ -13,6 +13,7 @@ import AdminRoute from '../routes-composer/AdminRoute';
 import Adminview from '../pages/Adminview';
 import PrivacyPolicy from '../components/PrivacyPolicy';
 import AddData from '../components/AddData';
+import UserNameUpdate from '../components/UserNameUpdate';
 
 
 // Hier definieren wir den Router als Baumstruktur
@@ -77,6 +78,11 @@ export const router = createBrowserRouter([
                           // URL: /dashboard/add-entry
                           path: 'add-entry', 
                           element: <AddData/>
+                      },
+                      {
+                          // URL: /dashboard/username-update
+                          path: 'username-update',
+                          element: <UserNameUpdate />,
                       },
                       {
                           // Der AdminRoute-Guard sichert diesen Bereich ab
