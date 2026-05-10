@@ -14,8 +14,8 @@ $popup-colors: (
 
 .popUp {
   position: fixed;
-  bottom: 130px;
-  left: 50%;
+  bottom: 120px;
+  left: 60%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
@@ -44,12 +44,14 @@ $popup-colors: (
 
     // Smartphone (vertikal)
     @media (min-width: var.$breakpoint-xs) and (max-width: var.$breakpoint-sm){
-      bottom: 50px;
+      bottom: 95px;
+      left: 50%;
     }
 
     // Smartphone (horizontal)
     @media (min-width: var.$breakpoint-sm) and (max-width: var.$breakpoint-lg) and (max-height: var.$breakpoint-height-sm) {
       bottom: 50px;
+      left: 50%;
     }
 
 }

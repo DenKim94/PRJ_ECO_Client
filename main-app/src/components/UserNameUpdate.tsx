@@ -4,13 +4,12 @@ import { CustomButton } from "./CustomButton";
 import styles from "./UserNameUpdate.module.scss";
 import { Logger } from "../utils/logger";
 import { UserNameUpdateRequest } from "../types/AuthTypes";
-import { useNavigate } from "react-router-dom";
+import { MessageContainer } from "./MessageContainer";
 
 
 export default function UserNameUpdate() {
         const auth = useAuth();
         const [code, setCode] = useState("");
-        const navigate = useNavigate();
         const [submitting, setSubmitting] = useState(false);
         const [newUserName, setNewUserName] = useState("");
         const logger = new Logger('UserNameUpdate');
@@ -22,11 +21,11 @@ export default function UserNameUpdate() {
             try {
                 const request: UserNameUpdateRequest = { tfaCode: code, newUserName: newUserName };
                 const response = await auth.updateUserNameWithLogout(request);
-    
                 if (!response) {
                     logger.error(`${auth.errorMsgRef.current?.message}`);
                     return;
                 }
+                logger.debug(`${response.message}`);
 
             } catch (err) {
                 logger.error(`Ein Fehler ist aufgetreten: ${err instanceof Error ? err.message : "Unbekannter Fehler ist aufgetreten."}`);
@@ -36,10 +35,6 @@ export default function UserNameUpdate() {
                 setSubmitting(false);
                 setCode("");
                 setNewUserName("");
-
-                setTimeout(() => {
-                    void navigate("/login", { replace: true });
-                }, 2000);
             }
         };
     
@@ -48,7 +43,6 @@ export default function UserNameUpdate() {
             <span className={styles.infoText}>
                 {'Bitte gib deinen Verfifizierungscode und den neuen Benutzernamen ein. Du wirst anschließend automatisch ausgeloggt.'}
             </span>
-
             <form onSubmit={(e) => void onSubmit(e)} className={styles.formContainer}>
                 <input
                     id="code-reset"
@@ -82,5 +76,6 @@ export default function UserNameUpdate() {
                     sx={{width: '280px'}} 
                 />
             </form>
+            <MessageContainer message={auth.errorMsgRef.current?.message ?? ""} type={"error"} isVisible={auth.errorMsgRef.current?.message !== null} />
         </div>
     );}
