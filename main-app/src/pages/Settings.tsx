@@ -193,11 +193,12 @@ export default function Settings() {
                 isVisible={message.isVisible}
             />
             <CustomButton
+                iconProps={{iconSrc: '/save_icon_light.svg', size: 22, alt: 'Icon - Einstellungen speichern', ariaLabel: 'Icon - Einstellungen speichern'}}
                 title="Speichern" 
                 type="button"
                 onClickCallback={handleSave} 
                 isDisabled={authService.isLoading || configService.isLoading || !dataChanged}
-                sx={{marginTop: '0px', width: '250px'}} 
+                sx={{marginTop: '0px', width: '250px', color:'white', gap: '10px'}} 
             />
         </div>
     );

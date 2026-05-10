@@ -51,6 +51,7 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
         const response = await trackingDataList.fetchData({ method: 'GET', url: `${API_BASE_URL}/api/tracking/get-all`});
         if (!response) { 
             errorMsgRef.current = trackingDataList.errorMsg.current; 
+            setResponseMsg({message: 'Fehler beim Laden der Daten.', type: 'error'});
             return [];
         }
         logger.debug('Alle Tracking-Einträge erfolgreich geladen.');
@@ -64,7 +65,8 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
         logger.debug('Lade den neuesten Eintrag vom Server ...');
         const response = await trackingData.fetchData({ method: 'GET', url: `${API_BASE_URL}/api/tracking/get-newest`});
         if (!response) { 
-            errorMsgRef.current = trackingData.errorMsg.current; 
+            errorMsgRef.current = trackingData.errorMsg.current;
+            setResponseMsg({message: errorMsgRef.current?.message ?? 'Fehler beim Laden des neuesten Eintrags.', type: 'error'}); 
             return null;
         }
         logger.debug('Neuesten Eintrag erfolgreich geladen.');
@@ -86,6 +88,7 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
         setNewestEntry(response);
         setEntryList(prev => [...prev, response]);
         errorMsgRef.current = undefined;
+        setResponseMsg({message: 'Eintrag erfolgreich hinzugefügt.', type: 'success'});
         return response;
 
     },[trackingData]);
@@ -114,6 +117,7 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
         const response = await deleteData.fetchData({ method: 'DELETE', url: `${API_BASE_URL}/api/tracking/${id}/delete` });
         if (!response) {
             errorMsgRef.current = deleteData.errorMsg.current;
+            setResponseMsg({message: `${errorMsgRef.current?.message ?? 'Fehler beim Löschen des Eintrags.'}`, type: 'error'});
             return { message: deleteData.errorMsg.current?.message ?? `Fehler beim Löschen des Eintrags mit ID ${id}.` };
         }
         logger.debug(`Eintrag mit ID ${id} erfolgreich gelöscht.`, response);
@@ -121,6 +125,7 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
         if (newestEntry?.id === id) {
             setNewestEntry(null);
         }
+        setResponseMsg({message: 'Eintrag erfolgreich gelöscht.', type: 'success'});
         errorMsgRef.current = undefined;
         return response;
 
@@ -131,11 +136,13 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
         const response = await deleteData.fetchData({ method: 'DELETE', url: `${API_BASE_URL}/api/tracking/delete-all` });
         if (!response) {
             errorMsgRef.current = deleteData.errorMsg.current;
+            setResponseMsg({message: `${errorMsgRef.current?.message ?? 'Fehler beim Löschen der Einträge.'}`, type: 'error'});
             return { message: deleteData.errorMsg.current?.message ?? 'Fehler beim Löschen aller Einträge.' };
         }
         logger.debug('Alle Einträge erfolgreich gelöscht.', response);
         setEntryList([]);
         setNewestEntry(null);
+        setResponseMsg({message: 'Alle Einträge erfolgreich gelöscht.', type: 'success'});
         errorMsgRef.current = undefined;
         return response;
 

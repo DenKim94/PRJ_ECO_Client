@@ -47,6 +47,7 @@ export default function Dataview() {
     };
 
     const handleSave = async (id: number) => {
+        trackingService.resetResponseMsg();
         const response = await trackingService.updateEntryById(id, { date: HelperClass.formatDateForServer(editDate), value_kWh: Number(editKWhValue) });
         if (!response) {
             logger.error(`${trackingService.errorMsgRef.current?.message ?? 'Unbekannter Fehler beim Speichern.'}`);
@@ -57,10 +58,12 @@ export default function Dataview() {
 
     const handleAddData = () => {
         logger.debug('Neuen Datenpunkt hinzufügen ...');
+        trackingService.resetResponseMsg();
         void navigate('/dashboard/add-entry');
     };
 
     const handleDelete = async (id: number) => {
+        trackingService.resetResponseMsg();
         const response = await trackingService.deleteEntryById(id);
         setEditingId(null);
         if (!response) {
