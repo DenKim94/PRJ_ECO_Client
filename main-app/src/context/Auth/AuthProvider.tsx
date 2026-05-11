@@ -352,7 +352,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         
         setTimeout(() => {
                 void clearSession();
-        }, 2000);
+        }, 1500);
 
         return response;
     }, [accountApi, clearSession]);
@@ -435,7 +435,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         const currentTimeInSeconds = Date.now() / 1000;
         
-        // true zurückgeben, wenn die Expiration-Time in der Zukunft liegt
+        // true zurückgeben, wenn die Ablaufzeit in der Zukunft liegt, andernfalls false
         return decoded.exp > currentTimeInSeconds;
     };
 
