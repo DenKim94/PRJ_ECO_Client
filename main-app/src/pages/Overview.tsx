@@ -32,7 +32,7 @@ export default function Overview() {
 
     return (
         <div className={styles.pageContainer}>
-            <InfoBox message={'Datenübersicht zum Energieverbrauch und den zugehörigen Kosten'}/>
+            <InfoBox message={'Datenübersicht zum Energieverbrauch und zu den zugehörigen Kosten'}/>
             <div className={styles.trackedEnergyCard}>
                 <h3 className={styles.chartTitle}>{'Erfasste Zählerstände'}</h3>
                 {/* ResponsiveContainer sorgt für die automatische Anpassung an alle Displaygrößen */}
