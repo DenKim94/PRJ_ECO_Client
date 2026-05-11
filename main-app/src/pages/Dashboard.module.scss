@@ -43,11 +43,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     overflow-y: auto;;
     min-width: var.$breakpoint-xs;
-    max-width: var.$breakpoint-md;
+    max-width: var.$breakpoint-lg;
     width: 100%;
+    height: 100%;
 
     // Smartphone (horizontal)
     @media (min-width: var.$breakpoint-sm) and (max-width: var.$breakpoint-lg) and (max-height: var.$breakpoint-height-xs) {

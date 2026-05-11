@@ -32,6 +32,7 @@ export default function Dataview() {
 
     useEffect(() => {
         configService.resetSaveResult();
+        logger.debug('Tracking-Daten: ', trackingService.entryList);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
         

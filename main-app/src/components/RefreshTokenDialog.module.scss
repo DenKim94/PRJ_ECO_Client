@@ -2,23 +2,7 @@
 @use '../styles/abstracts/mixins' as mixin;
 
 .dialogContainer{
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    gap: 20px;
-    align-items: center;
-    min-height: 10vh;
-    min-width: calc(var.$breakpoint-sm - (2.65 * var.$spacing-lg));
-    max-width: 100%;
-    border: 1px solid var(--color-border);
-    border-radius: var.$radius-md;
-    padding: var.$spacing-lg;
-    margin: auto;
-    background-image: var(--app-background-image);
-    background-color: var.$color-surface-light;
-    box-shadow: var(--shadow-border-glow);
-    z-index: 100;
-    @include mixin.responsive-input-container;
+    @include mixin.responsive-dialog-container;
 }
 
 .textContainer {

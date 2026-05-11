@@ -89,7 +89,7 @@ export default function UserProfileSkeleton() {
                 className={styles.skeletonCircle}
                 aria-label='Profilmenü öffnen'
                 onClick={toggleMenu}
-                disabled={!authService.userDetailedData?.isValidatedEmail || authService.isLoading}
+                disabled={!authService.userDetailedData?.isValidatedEmail || authService.isLoading || authService.deleteAccountRequested}
             >
                 <img 
                     src={themeObject.theme === 'light' ? iconSrcLightMode : iconSrcDarkMode}

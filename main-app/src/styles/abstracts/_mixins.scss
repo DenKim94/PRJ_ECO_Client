@@ -79,3 +79,27 @@
         width: 100%; 
     }
 }
+
+@mixin responsive-dialog-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 20px;
+    align-items: center;
+    min-width: var.$breakpoint-xs;
+    max-width: 500px;
+    border: 1px solid var(--color-border);
+    border-radius: var.$radius-md;
+    padding: var.$spacing-md;
+    margin: 40px 0;
+    background-image: var(--app-background-image);
+    background-color: var.$color-surface-light;
+    box-shadow: var(--shadow-border-glow);
+    z-index: 100;
+
+    // Smartphone (standard)
+    @media (min-width: var.$breakpoint-xs) and (max-width: var.$breakpoint-sm) {
+        min-width: var.$min-width-input;
+        max-width: var.$breakpoint-xs;
+    }
+}
