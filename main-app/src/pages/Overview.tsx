@@ -3,19 +3,10 @@ import styles from "./Overview.module.scss";
 import { useAuth } from "../hooks/useAuth";
 import { useTracking } from "../hooks/useTracking";
 import { useConfig } from "../hooks/useConfig";
-import {
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    Label
-} from "recharts";
 import { InfoBox } from "../components/InfoBox";
 import { LineDiagram } from "../components/LineDiagram";
 import { BarDiagram } from "../components/BarDiagram";
+
 
 export default function Overview() {
     const authService = useAuth();
@@ -36,7 +27,19 @@ export default function Overview() {
         <div className={styles.pageContainer}>
             <InfoBox message={'Datenübersicht zum Energieverbrauch und zu den zugehörigen Kosten'}/>
             <LineDiagram
-                title={'Erfasste Zählerstände'} 
+                title={'Diagram 1'} 
+                dataList={trackingService.entryList}
+                xAxis={{dataKey: 'timestamp', label: 'Datum'}}
+                yAxis={{dataKey: 'readingValue', label: 'kWh'}}
+            />
+            <BarDiagram
+                title={'Diagram 2'} 
+                dataList={trackingService.entryList}
+                xAxis={{dataKey: 'timestamp', label: 'Datum'}}
+                yAxis={{dataKey: 'readingValue', label: 'kWh'}}
+            />
+            <LineDiagram
+                title={'Diagram 3'} 
                 dataList={trackingService.entryList}
                 xAxis={{dataKey: 'timestamp', label: 'Datum'}}
                 yAxis={{dataKey: 'readingValue', label: 'kWh'}}

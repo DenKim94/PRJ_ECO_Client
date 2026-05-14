@@ -103,3 +103,27 @@
         max-width: var.$breakpoint-xs;
     }
 }
+
+@mixin custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+
+    // WebKit-Syntax (für Chrome, Edge, Safari)
+    &::-webkit-scrollbar {
+        width: 6px; // Bestimmt die Breite des vertikalen Scrollbalkens
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent; // Der Hintergrund der Scroll-Spur bleibt unsichtbar/dezent
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2); // Dezentes, leicht transparentes Grau
+        border-radius: 10px;
+        
+        // Optional: Ein leichtes visuelles Feedback, wenn der User den Balken greift
+        &:hover {
+        background-color: rgba(0, 0, 0, 0.4); 
+        }
+    }
+}

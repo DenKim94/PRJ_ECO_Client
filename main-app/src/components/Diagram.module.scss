@@ -25,6 +25,11 @@
     :global(.recharts-surface) {
         outline: none !important;
     }
+    
+    :global(.recharts-wrapper) * { // Der Stern (*) wendet es auf alle Kind-Elemente (Balken, Punkte, etc.) an
+        outline: none !important;
+        -webkit-tap-highlight-color: transparent; // Entfernt zusätzlich den blauen Tap-Hintergrund auf Smartphones
+    }
 }
 
 .chartTitle {
