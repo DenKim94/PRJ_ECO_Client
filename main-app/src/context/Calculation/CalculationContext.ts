@@ -1,12 +1,15 @@
 import { createContext, RefObject } from 'react';
 import { CalcultationRequest, CalculationDataResponse } from '../../types/CalculationTypes';
 import { ApiMessageMap, ResponseMessage } from '../../types/AuthTypes';
+import { MessageContainerProps } from '../../components/MessageContainer';
 
 
 export interface CalculationContextType {
     calcData: CalculationDataResponse[];
     isLoading: boolean;
     errorMsgRef: RefObject<ResponseMessage | undefined>;
+    responseMsg: MessageContainerProps | null;
+    resetResponseMsg: () => void;
     executeCalculation: (request: CalcultationRequest) => Promise<CalculationDataResponse[]>;
     loadResults: () => Promise<CalculationDataResponse[]>;
     deleteAllResults: () => Promise<ApiMessageMap>;

@@ -67,6 +67,7 @@ export default function Dashboard() {
             await calcService.loadResults();
             trackingService.resetResponseMsg();
             configService.resetSaveResult();
+            calcService.resetResponseMsg();
             logger.debug('Initialisierung abgeschlossen.');
             logger.debug(`Token läuft in ${authService.sessionTimeRemaining.current} Sekunden ab.`);
         }

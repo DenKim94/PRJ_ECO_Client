@@ -12,9 +12,19 @@ import styles from "./Diagram.module.scss";
 import { DiagramProps } from "../types/DiagramTypes";
 
 
-export const BarDiagram = <T,>({ dataList, title, xAxis, yAxis, widthPercent=100, heightPx=320, minHeightPx=280 }: DiagramProps<T>)=> {
+export const BarDiagram = <T,>({ 
+    dataList, 
+    title,
+    infoText=undefined, 
+    xAxis, 
+    yAxis, 
+    widthPercent=100, 
+    heightPx=320, 
+    minHeightPx=280 
+    }: DiagramProps<T>) => {
+    const yAxisUnit = yAxis.unit ? ` ${yAxis.unit}` : '';
 
-    return(
+    return (
             <div className={styles.trackedEnergyCard}>
                 {dataList.length === 0 ? 
                 (<div className={styles.noData}>{'Keine Daten zur Visualisierung vorhanden.'}</div>) : (
@@ -49,7 +59,7 @@ export const BarDiagram = <T,>({ dataList, title, xAxis, yAxis, widthPercent=100
                                 {/* Y-Achse: Zählerstand */}
                                 <YAxis 
                                     dataKey={yAxis.dataKey} 
-                                    domain={['dataMin - 50', 'dataMax + 50']} 
+                                    domain={['auto', 'auto']}
                                     stroke="var(--color-text-muted)"
                                     tick={{ fill: 'var(--color-text-muted)', fontSize: 12 }}
                                     tickFormatter={(value) => `${value}`}
@@ -80,12 +90,11 @@ export const BarDiagram = <T,>({ dataList, title, xAxis, yAxis, widthPercent=100
                                         if (value === undefined) return ['NaN', 'Datenpunkt'];
                                         
                                         // Reguläre Formatierung des Zahlenwertes
-                                        return [`${value.toLocaleString('de-DE')} kWh`, 'Datenpunkt'];
+                                        return [`${value.toLocaleString('de-DE')} ${yAxisUnit}`, 'Datenpunkt'];
                                     }}
-                                />
-                                
+                                />  
                                 <Bar 
-                                    dataKey="readingValue" 
+                                    dataKey={yAxis.dataKey}
                                     fill="var(--color-primary)" 
                                     // Rundet die oberen beiden Ecken der Balken ab [Top-Left, Top-Right, Bottom-Right, Bottom-Left]
                                     radius={[4, 4, 0, 0]} 
@@ -94,6 +103,7 @@ export const BarDiagram = <T,>({ dataList, title, xAxis, yAxis, widthPercent=100
                                 />
                             </BarChart>
                         </ResponsiveContainer>
+                        { infoText && <p className={styles.infoText}> {infoText} </p> }
                     </>
                 )}
             </div>

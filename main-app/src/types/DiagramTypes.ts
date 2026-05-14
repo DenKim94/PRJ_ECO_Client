@@ -4,6 +4,7 @@ export interface DiagramProps<T> {
   widthPercent?: number,
   heightPx?: number,
   minHeightPx?: number,
+  infoText?: string,
   xAxis: {
     dataKey: string;
     label?: string;
@@ -11,5 +12,6 @@ export interface DiagramProps<T> {
   yAxis: {
     dataKey: string;
     label?: string;
+    unit?: string;
   }
 };

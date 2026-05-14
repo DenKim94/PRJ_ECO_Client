@@ -6,15 +6,26 @@ import {
     CartesianGrid,
     Tooltip,
     ResponsiveContainer,
-    Label
+    Label,
 } from "recharts";
 import styles from "./Diagram.module.scss";
 import { DiagramProps } from "../types/DiagramTypes";
 
 
-export const LineDiagram = <T,>({ dataList, title, xAxis, yAxis, widthPercent=100, heightPx=320, minHeightPx=280 }: DiagramProps<T>)=> {
+export const LineDiagram = <T,>({ 
+    dataList, 
+    title, 
+    infoText=undefined, 
+    xAxis, 
+    yAxis, 
+    widthPercent=100, 
+    heightPx=320, 
+    minHeightPx=280 
+    }: DiagramProps<T>) => {
+    console.log(dataList);
+    const yAxisUnit = yAxis.unit ? ` ${yAxis.unit}` : '';
 
-    return(
+    return (
             <div className={styles.trackedEnergyCard}>
                 {dataList.length === 0 ? 
                 (<div className={styles.noData}>{'Keine Daten zur Visualisierung vorhanden.'}</div>) : (
@@ -49,7 +60,7 @@ export const LineDiagram = <T,>({ dataList, title, xAxis, yAxis, widthPercent=10
                                 {/* Y-Achse: Zählerstand */}
                                 <YAxis 
                                     dataKey={yAxis.dataKey} 
-                                    domain={['dataMin - 50', 'dataMax + 50']} 
+                                    domain={['auto', 'auto']}
                                     stroke="var(--color-text-muted)"
                                     tick={{ fill: 'var(--color-text-muted)', fontSize: 12 }}
                                     tickFormatter={(value) => `${value}`}
@@ -79,13 +90,13 @@ export const LineDiagram = <T,>({ dataList, title, xAxis, yAxis, widthPercent=10
                                         if (value === undefined) return ['NaN', 'Datenpunkt'];
                                         
                                         // Reguläre Formatierung des Zahlenwertes
-                                        return [`${value.toLocaleString('de-DE')} kWh`, 'Datenpunkt'];
+                                        return [`${value.toLocaleString('de-DE')} ${yAxisUnit}`, 'Datenpunkt'];
                                     }}
                                 />
                                 
                                 <Line 
                                     type="monotone"
-                                    dataKey="readingValue" 
+                                    dataKey={yAxis.dataKey}
                                     stroke="var(--color-primary)" 
                                     strokeWidth={3}
                                     dot={{ r: 4, fill: 'var(--color-surface)', stroke: 'var(--color-primary)', strokeWidth: 2 }}
@@ -95,6 +106,7 @@ export const LineDiagram = <T,>({ dataList, title, xAxis, yAxis, widthPercent=10
                                 />
                             </LineChart>
                         </ResponsiveContainer>
+                        { infoText && <p className={styles.infoText}> {infoText} </p> }
                     </>
                 )}
             </div>

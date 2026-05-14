@@ -2,15 +2,18 @@ import { useEffect } from "react";
 // import { useAuth } from "../hooks/useAuth";
 import { useTracking } from "../hooks/useTracking";
 import { useConfig } from "../hooks/useConfig";
+import { useCalculation } from "../hooks/useCalculation";
 
 export default function Adminview() {
     // const authService = useAuth();
     const configService = useConfig(); 
     const trackingService = useTracking();
+    const calcService = useCalculation();
     
     useEffect(() => {
         trackingService.resetResponseMsg();
         configService.resetSaveResult();
+        calcService.resetResponseMsg();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 

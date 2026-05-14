@@ -5,17 +5,19 @@ import { useTracking } from "../hooks/useTracking";
 import { useConfig } from "../hooks/useConfig";
 import { InfoBox } from "../components/InfoBox";
 import { LineDiagram } from "../components/LineDiagram";
-import { BarDiagram } from "../components/BarDiagram";
+import { useCalculation } from "../hooks/useCalculation";
 
 
 export default function Overview() {
     const authService = useAuth();
     const configService = useConfig();
+    const calcService = useCalculation();
     const trackingService = useTracking();
     
     useEffect(() => {
         trackingService.resetResponseMsg();
         configService.resetSaveResult();
+        calcService.resetResponseMsg();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -28,18 +30,6 @@ export default function Overview() {
             <InfoBox message={'Datenübersicht zum Energieverbrauch und zu den zugehörigen Kosten'}/>
             <LineDiagram
                 title={'Diagram 1'} 
-                dataList={trackingService.entryList}
-                xAxis={{dataKey: 'timestamp', label: 'Datum'}}
-                yAxis={{dataKey: 'readingValue', label: 'kWh'}}
-            />
-            <BarDiagram
-                title={'Diagram 2'} 
-                dataList={trackingService.entryList}
-                xAxis={{dataKey: 'timestamp', label: 'Datum'}}
-                yAxis={{dataKey: 'readingValue', label: 'kWh'}}
-            />
-            <LineDiagram
-                title={'Diagram 3'} 
                 dataList={trackingService.entryList}
                 xAxis={{dataKey: 'timestamp', label: 'Datum'}}
                 yAxis={{dataKey: 'readingValue', label: 'kWh'}}

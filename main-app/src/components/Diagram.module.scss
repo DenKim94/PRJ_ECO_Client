@@ -55,3 +55,16 @@
     font-size: var.$font-size-md;
     font-weight: var.$font-weight-medium;
 }
+
+.infoText {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: left;
+    white-space: pre-line;
+    padding-left: var.$spacing-lg;
+    width: 100%;
+    min-height: 50px;
+    font-size: var.$font-size-sm;
+    font-weight: var.$font-weight-light;
+}

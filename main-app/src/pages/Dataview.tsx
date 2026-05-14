@@ -13,10 +13,12 @@ import { useConfig } from "../hooks/useConfig";
 import { CustomButton } from "../components/CustomButton";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { useNavigate } from "react-router-dom";
+import { useCalculation } from "../hooks/useCalculation";
 
 export default function Dataview() {
     const logger = new Logger('Dataview');
     const authService = useAuth();
+    const calcService = useCalculation();
     const themeObject = useTheme();
     const trackingService = useTracking();
     const configService = useConfig();   
@@ -32,6 +34,7 @@ export default function Dataview() {
 
     useEffect(() => {
         configService.resetSaveResult();
+        calcService.resetResponseMsg();
         logger.debug('Tracking-Daten: ', trackingService.entryList);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

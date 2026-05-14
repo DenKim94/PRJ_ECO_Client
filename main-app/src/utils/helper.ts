@@ -11,8 +11,10 @@ export class HelperClass {
 
     static formatDateForServer (dateStr: string): string {
         if (!dateStr || dateStr.includes('.')) return dateStr ?? '';
-
-        const [year, month, day] = dateStr.split('-');
+        
+        // Wenn ein T enthalten ist (z.B. "2026-04-26T14:30:00"), dann nur den das Datum verwenden
+        const datePart = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
+        const [year, month, day] = datePart.split('-');
 
         // Fallback
         if (!year || !month || !day) return dateStr;

@@ -9,6 +9,7 @@ import { CustomButton } from "../components/CustomButton";
 import { MessageContainer, MessageContainerProps } from "../components/MessageContainer";
 import { InfoBox } from "../components/InfoBox";
 import { useTracking } from "../hooks/useTracking";
+import { useCalculation } from "../hooks/useCalculation";
 
 interface ConfigFieldDef {
     name: keyof ConfigModel;
@@ -95,6 +96,7 @@ export default function Settings() {
     const authService = useAuth();
     const themeObject = useTheme();
     const configService = useConfig();
+    const calcService = useCalculation();
     const trackingService = useTracking();
     const [dataChanged, setDataChanged] = useState(false);
     const [formData, setFormData] = useState<Partial<ConfigModel>>(() => {
@@ -108,6 +110,7 @@ export default function Settings() {
         
     useEffect(() => {
         trackingService.resetResponseMsg();
+        calcService.resetResponseMsg();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
         
