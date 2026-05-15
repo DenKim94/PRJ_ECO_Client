@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useTracking } from "../hooks/useTracking";
 import { useConfig } from "../hooks/useConfig";
@@ -11,6 +11,7 @@ import { TrackingEntityResponse } from "../types/TrackingTypes";
 import { MessageContainer } from "../components/MessageContainer";
 import { BarDiagram } from "../components/BarDiagram";
 import { LineDiagram } from "../components/LineDiagram";
+import { ConfirmDialog } from "../components/ConfirmDialog";
 
 export default function CalculationView() {
     const authService = useAuth();
@@ -18,11 +19,13 @@ export default function CalculationView() {
     const trackingService = useTracking();
     const calcService = useCalculation();
     const logger = new Logger('CalculationView');
+    const [openDialog, setOpenDialog] = useState(false);
 
     useEffect(() => {
         trackingService.resetResponseMsg();
         configService.resetSaveResult();
-        logger.debug('Ergebnisse aus calcService.calcData: ', calcService.calcData);
+        logger.debug('calcService.calcData: ', calcService.calcData);
+        
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -39,40 +42,78 @@ export default function CalculationView() {
         }
     };
 
+    const handleDeleteAll = async() => {
+        calcService.resetResponseMsg();
+        logger.debug('Lösche alle Berechnungen ...');
+        const response = await calcService.deleteAllResults();
+        if (!response) {
+            logger.error(`${calcService.errorMsgRef.current?.message ?? 'Unbekannter Fehler beim Löschen.'}`);
+            return;
+        }
+        setOpenDialog(false);
+    };
+
     return (
         <div className={styles.pageContainer}>
             <InfoBox message={'Berechunng und Analyse der Enerigiekosten anhand der erfassten Zählerdaten und Kofigurationen. Alle Geldbeträge sind als brutto angegeben.'}/>
-            <LineDiagram
-                title={'Durchschnittlicher Tagesverbrauch'} 
-                dataList={calcService.calcData}
-                xAxis={{dataKey: 'periodEnd', label: 'Datum'}}
-                yAxis={{dataKey: 'usedEnergyPerDay', label: 'kWh', unit: 'kWh/Tag'}}
-            />
+            {!openDialog ? (
+            <>
+                <LineDiagram
+                    title={'Durchschnittlicher Tagesverbrauch'} 
+                    dataList={calcService.calcData}
+                    xAxis={{dataKey: 'periodEnd', label: 'Datum'}}
+                    yAxis={{
+                        dataKey: ['usedEnergyPerDay'], label: 'kWh', unit: 'kWh/Tag',
+                        dataStyleProps: [{legendName: 'Energieverbrauch', color: 'var(--color-primary-hover)'}]
+                    }}
+                />
 
-            <BarDiagram
-                title={'Saldobetrag'} 
-                dataList={calcService.calcData}
-                infoText="Positiver Wert = Guthaben; Negativer Wert = Nachzahlung"
-                xAxis={{dataKey: 'periodEnd', label: 'Datum'}}
-                yAxis={{dataKey: 'costDiffPeriod', label: 'EUR', unit: '€'}}
-            />
+                <LineDiagram
+                    title={'Gesamtkosten über den Abrechnungszeitraum'} 
+                    dataList={calcService.calcData}
+                    xAxis={{dataKey: 'periodEnd', label: 'Datum'}}
+                    yAxis={
+                        { dataKey: ['totalCostsPeriod', 'paidAmountPeriod'], label: 'EUR', unit: '€',
+                        dataStyleProps: [{legendName: 'Fällige Gesamtkosten', color: 'var(--color-warning)'}, {legendName: 'Einzahlungen', color: 'var(--color-primary-hover)'}]
+                        }
+                    }
+                />
 
-            <BarDiagram
-                title={'Gesamtkosten anhand der verbrauchten Energiemenge'} 
-                dataList={calcService.calcData}
-                xAxis={{dataKey: 'periodEnd', label: 'Datum'}}
-                yAxis={{dataKey: 'totalCostsPeriod', label: 'EUR', unit: '€'}}
-            />
-
-            <CustomButton
-                iconProps={{iconSrc: '/play_icon_light.svg', size: 22, alt: 'Icon - Analysen anzeigen', ariaLabel: 'Icon - Analysen anzeigen'}}
-                title="Berechnung starten" 
-                type="button"
-                onClickCallback={runCalculation} 
-                isDisabled={calcService.isLoading}
-                sx={{marginTop: '10px', width: '250px', color:'white', gap: '10px'}} 
-            />
-            <MessageContainer message={calcService.responseMsg?.message ?? ""} type={calcService.responseMsg?.type} isVisible={calcService.responseMsg !== null} />
+                <BarDiagram
+                    title={'Saldo'} 
+                    dataList={calcService.calcData}
+                    infoText="Positiver Wert = Guthaben; Negativer Wert = Nachzahlung"
+                    xAxis={{dataKey: 'periodEnd', label: 'Datum'}}
+                    yAxis={{dataKey: 'costDiffPeriod', label: 'EUR', unit: '€'}}
+                />
+                <MessageContainer message={calcService.responseMsg?.message ?? ""} type={calcService.responseMsg?.type} isVisible={calcService.responseMsg !== null} />
+                <div className={styles.calculationButtonContainer}>
+                    <CustomButton
+                        iconProps={{iconSrc: '/play_icon_light.svg', size: 22, alt: 'Icon - Analysen anzeigen', ariaLabel: 'Icon - Analysen anzeigen'}}
+                        title="Berechnung starten" 
+                        type="button"
+                        onClickCallback={runCalculation} 
+                        isDisabled={calcService.isLoading}
+                        sx={{marginTop: '0px', width: '250px', color:'white', gap: '10px'}} 
+                    />                
+                    <CustomButton
+                        iconProps={{iconSrc: '/delete_icon_light.svg', size: 22, alt: 'Icon - Berechnungen löschen', ariaLabel: 'Icon - Berechnungen löschen'}}
+                        title="Ergebnisse löschen" 
+                        type="button"
+                        onClickCallback={() => setOpenDialog(true)} 
+                        isDisabled={calcService.isLoading}
+                        sx={{marginTop: '0px', width: '250px', color:'white', gap: '10px', backgroundColor: 'var(--color-logout-button)'}} 
+                    />
+                </div>        
+            </>    
+            ) : (
+                <ConfirmDialog
+                    show={!authService.isLoading}
+                    text="Sollen wirklich alle Ergebnisse gelöscht werden?"
+                    callbackConfirm={handleDeleteAll}
+                    callbackCancel={() => setOpenDialog(false)}
+                />
+            ) }
         </div>
     );
 }

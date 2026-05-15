@@ -22,3 +22,17 @@
 
     @include mixin.custom-scrollbar;
 }
+
+.calculationButtonContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+    gap: var.$spacing-lg;
+
+    // Smartphone
+    @media (max-width: var.$breakpoint-sm) {
+        flex-direction: column;
+        gap: 0px;
+    }
+}

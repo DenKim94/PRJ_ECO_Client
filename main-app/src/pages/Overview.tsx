@@ -32,7 +32,7 @@ export default function Overview() {
                 title={'Diagram 1'} 
                 dataList={trackingService.entryList}
                 xAxis={{dataKey: 'timestamp', label: 'Datum'}}
-                yAxis={{dataKey: 'readingValue', label: 'kWh'}}
+                yAxis={{dataKey: ['readingValue'], label: 'kWh'}}
             />
         </div>
     );

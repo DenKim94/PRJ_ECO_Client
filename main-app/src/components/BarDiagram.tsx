@@ -9,7 +9,7 @@ import {
     Label
 } from "recharts";
 import styles from "./Diagram.module.scss";
-import { DiagramProps } from "../types/DiagramTypes";
+import { BarDiagramProps } from "../types/DiagramTypes";
 
 
 export const BarDiagram = <T,>({ 
@@ -21,7 +21,7 @@ export const BarDiagram = <T,>({
     widthPercent=100, 
     heightPx=320, 
     minHeightPx=280 
-    }: DiagramProps<T>) => {
+    }: BarDiagramProps<T>) => {
     const yAxisUnit = yAxis.unit ? ` ${yAxis.unit}` : '';
 
     return (
@@ -83,7 +83,7 @@ export const BarDiagram = <T,>({
                                         borderRadius: '8px',
                                         boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
                                     }}
-                                    itemStyle={{ color: 'var(--color-primary)' }}
+                                    itemStyle={{ color: 'var(--color-primary-hover)' }}
                                     labelStyle={{ color: 'var(--color-text-main)', fontWeight: 'bold', marginBottom: '4px' }}
                                     formatter={(value: number | undefined) => {
                                         // Fallback, falls ein Datenpunkt undefined sein sollte
@@ -95,7 +95,7 @@ export const BarDiagram = <T,>({
                                 />  
                                 <Bar 
                                     dataKey={yAxis.dataKey}
-                                    fill="var(--color-primary)" 
+                                    fill="var(--color-primary-hover)" 
                                     // Rundet die oberen beiden Ecken der Balken ab [Top-Left, Top-Right, Bottom-Right, Bottom-Left]
                                     radius={[4, 4, 0, 0]} 
                                     animationDuration={800} 

@@ -5,6 +5,7 @@ import { useTheme } from "../hooks/useTheme";
 import { Logger } from "../utils/logger";
 import { useNavigate } from "react-router";
 
+
 export const DeleteAccountDialog = ({show}: {show: boolean}) => {
     const authService = useAuth();
     const themeObject = useTheme();
@@ -40,20 +41,20 @@ export const DeleteAccountDialog = ({show}: {show: boolean}) => {
                 <p className={styles.dialogText}>{'Bist du sicher, dass du dein Konto löschen willst? Deine Daten werden dauerhaft entfernt.'}</p>
             </div>
             <div className={styles.buttonContainer}>
-            <CustomButton   
-                title="Löschen" 
-                type="button"
-                onClickCallback={() => void handleDeleteAccount()} 
-                isDisabled={authService.isLoading}
-                sx={{color:'white'}}
-            />
-            <CustomButton 
-                title="Abbrechen" 
-                type="button"
-                onClickCallback={() => {authService.setDeleteAccountRequested(false);}} 
-                isDisabled={authService.isLoading}
-                sx={{backgroundColor:'var(--color-logout-button)', color:'white'}}
-            />
+                <CustomButton   
+                    title="Löschen" 
+                    type="button"
+                    onClickCallback={() => void handleDeleteAccount()} 
+                    isDisabled={authService.isLoading}
+                    sx={{color:'white' , backgroundColor:'var(--color-error)'}}
+                />
+                <CustomButton 
+                    title="Abbrechen" 
+                    type="button"
+                    onClickCallback={() => {authService.setDeleteAccountRequested(false);}} 
+                    isDisabled={authService.isLoading}
+                    sx={{color:'white'}}
+                />
             </div>
         </div>
     );

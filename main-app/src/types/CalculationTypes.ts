@@ -7,7 +7,7 @@ export interface CalcultationRequest {
 };
 
 /**
- * - meterid: Zählernummer
+ * - id: Zählernummer
  * - periodStart: Startdatum der Abrechnungszeit
  * - periodEnd: Enddatum der Abrechnungszeit
  * - daysPeriod: Anzahl der Tage in der Abrechnungszeit
@@ -19,7 +19,7 @@ export interface CalcultationRequest {
  * - logMessage: Log-Nachricht mit Details zur Berechnung (optional)
  */
 export interface CalculationDataResponse {
-    meterid: string;                
+    id: string;                
     periodStart: string;             
     periodEnd: string;
     daysPeriod: number;

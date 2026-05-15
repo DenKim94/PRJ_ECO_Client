@@ -7,9 +7,17 @@ import {
     Tooltip,
     ResponsiveContainer,
     Label,
+    Legend,
 } from "recharts";
 import styles from "./Diagram.module.scss";
-import { DiagramProps } from "../types/DiagramTypes";
+import { LineDiagramProps } from "../types/DiagramTypes";
+
+const CHART_COLORS = [
+    "var(--color-primary-hover)",
+    "var(--color-warning)",
+    "var(--color-success)",
+    "var(--color-error)"
+];
 
 
 export const LineDiagram = <T,>({ 
@@ -21,8 +29,7 @@ export const LineDiagram = <T,>({
     widthPercent=100, 
     heightPx=320, 
     minHeightPx=280 
-    }: DiagramProps<T>) => {
-    console.log(dataList);
+    }: LineDiagramProps<T>) => {
     const yAxisUnit = yAxis.unit ? ` ${yAxis.unit}` : '';
 
     return (
@@ -58,8 +65,7 @@ export const LineDiagram = <T,>({
                                 </XAxis>
                                 
                                 {/* Y-Achse: Zählerstand */}
-                                <YAxis 
-                                    dataKey={yAxis.dataKey} 
+                                <YAxis  
                                     domain={['auto', 'auto']}
                                     stroke="var(--color-text-muted)"
                                     tick={{ fill: 'var(--color-text-muted)', fontSize: 12 }}
@@ -83,27 +89,40 @@ export const LineDiagram = <T,>({
                                         borderRadius: '8px',
                                         boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
                                     }}
-                                    itemStyle={{ color: 'var(--color-primary)' }}
+                                    itemStyle={{ color: 'var(--color-primary-hover)' }}
                                     labelStyle={{ color: 'var(--color-text-main)', fontWeight: 'bold', marginBottom: '4px' }}
-                                    formatter={(value: number | undefined) => {
+                                    formatter={(value: number | undefined, name) => {
                                         // Fallback, falls ein Datenpunkt undefined sein sollte
-                                        if (value === undefined) return ['NaN', 'Datenpunkt'];
+                                        if (value === undefined) return ['NaN', name];
                                         
                                         // Reguläre Formatierung des Zahlenwertes
-                                        return [`${value.toLocaleString('de-DE')} ${yAxisUnit}`, 'Datenpunkt'];
+                                        return [`${value.toLocaleString('de-DE')} ${yAxisUnit}`, name];
                                     }}
                                 />
+                               
+                            {/* Legende: Wird nur gerendert, wenn mehr als eine Linie vorhanden ist */}
+                            {yAxis.dataKey.length > 1 && (
+                                <Legend verticalAlign="top" height={36} iconType="circle" />
+                            )}
+                            
+                            {yAxis.dataKey.map((key, index) => {
+                                const lineColor = yAxis.dataStyleProps?.[index]?.color ?? CHART_COLORS[index % CHART_COLORS.length];
                                 
-                                <Line 
-                                    type="monotone"
-                                    dataKey={yAxis.dataKey}
-                                    stroke="var(--color-primary)" 
-                                    strokeWidth={3}
-                                    dot={{ r: 4, fill: 'var(--color-surface)', stroke: 'var(--color-primary)', strokeWidth: 2 }}
-                                    activeDot={{ r: 7, fill: 'var(--color-primary-hover)', stroke: 'var(--color-surface)' }} 
-                                    animationDuration={800} 
-                                    animationEasing="ease-out"
-                                />
+                                return (
+                                    <Line 
+                                        key={key}          
+                                        type="monotone"
+                                        dataKey={key}
+                                        name={yAxis.dataStyleProps?.[index]?.legendName ?? key} 
+                                        stroke={lineColor} 
+                                        strokeWidth={3}
+                                        dot={{ r: 4, fill: 'var(--color-surface)', stroke: lineColor, strokeWidth: 2 }}
+                                        activeDot={{ r: 7, fill: lineColor, stroke: 'var(--color-surface)' }} 
+                                        animationDuration={800} 
+                                        animationEasing="ease-out"
+                                    />
+                                );
+                            })}
                             </LineChart>
                         </ResponsiveContainer>
                         { infoText && <p className={styles.infoText}> {infoText} </p> }
