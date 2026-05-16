@@ -33,12 +33,12 @@
 }
 
 .chartTitle {
-    // Abstand nach unten zum Diagramm, andere Margins auf 0
-    margin: var.$spacing-sm 0;  
+    margin: var.$spacing-md 0;  
     text-align: center; 
     font-size: var.$font-size-lg;
     font-weight: var.$font-weight-bold;
-    padding-left: calc(2*var.$spacing-sm);
+    padding-left: calc(var.$spacing-sm);
+    width: 100%;
 
     // Farbe passt sich automatisch an Light/Dark Theme an
     color: var(--color-text-main); 
@@ -60,11 +60,17 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    text-align: left;
+    text-align: center;
     white-space: pre-line;
     padding-left: var.$spacing-lg;
     width: 100%;
     min-height: 50px;
     font-size: var.$font-size-sm;
     font-weight: var.$font-weight-light;
+
+    // Smartphone (standard)
+    @media (min-width: var.$breakpoint-xs) and (max-width: var.$breakpoint-sm)  {
+        padding-left: var.$spacing-sm;
+        margin-top: 0px;
+    }
 }

@@ -12,6 +12,7 @@ import { MessageContainer } from "../components/MessageContainer";
 import { BarDiagram } from "../components/BarDiagram";
 import { LineDiagram } from "../components/LineDiagram";
 import { ConfirmDialog } from "../components/ConfirmDialog";
+import { HelperClass } from "../utils/helper";
 
 export default function CalculationView() {
     const authService = useAuth();
@@ -20,11 +21,17 @@ export default function CalculationView() {
     const calcService = useCalculation();
     const logger = new Logger('CalculationView');
     const [openDialog, setOpenDialog] = useState(false);
+    const usedEnergyPerPeriod = trackingService.getUsedEnergyPerPeriod();
+
+    const infoTextLineChartCalcData = configService.configs?.referenceDate ? 
+    'Info: Der normierte Verbrauchswert bezieht sich jeweils auf das eingestellte Referenzdatum (' + HelperClass.formatDateForServer(configService.configs.referenceDate) + ').'
+    : 'Info: Der normierte Verbrauchswert bezieht sich jeweils auf das eingestellte Referenzdatum.'
 
     useEffect(() => {
         trackingService.resetResponseMsg();
         configService.resetSaveResult();
-        logger.debug('calcService.calcData: ', calcService.calcData);
+        console.log('calcService.calcData: ', calcService.calcData);
+        console.log('usedEnergyPerPeriod: ', usedEnergyPerPeriod);
         
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -55,34 +62,53 @@ export default function CalculationView() {
 
     return (
         <div className={styles.pageContainer}>
-            <InfoBox message={'Berechunng und Analyse der Enerigiekosten anhand der erfassten Zählerdaten und Kofigurationen. Alle Geldbeträge sind als brutto angegeben.'}/>
+            <InfoBox message={'Berechung und Analyse der Stromkosten anhand der erfassten Zählerdaten und Kofigurationen. Alle Geldbeträge sind als brutto angegeben.'}/>
             {!openDialog ? (
             <>
                 <LineDiagram
-                    title={'Durchschnittlicher Tagesverbrauch'} 
-                    dataList={calcService.calcData}
-                    xAxis={{dataKey: 'periodEnd', label: 'Datum'}}
-                    yAxis={{
-                        dataKey: ['usedEnergyPerDay'], label: 'kWh', unit: 'kWh/Tag',
-                        dataStyleProps: [{legendName: 'Energieverbrauch', color: 'var(--color-primary-hover)'}]
-                    }}
-                />
-
+                title={'Durchschnittlicher Tagesverbrauch je Messperiode'} 
+                dataList={usedEnergyPerPeriod}
+                infoText="Info: Der normierte Verbrauchswert bezieht sich jeweils auf den Zeitraum zwischen zwei Ablesezeitpunkten."
+                xAxis={{
+                    dataKey: 'date', 
+                    label: 'Datum'
+                }}
+                yAxis={{
+                    dataKey: ['energyDifferenceNorm'], 
+                    label: 'kWh/Tag', 
+                    unit: 'kWh/Tag',
+                    dataStyleProps: [{legendName: 'Verbrauch', color: 'var(--color-primary-hover)'}]
+                }}
+            />
                 <LineDiagram
-                    title={'Gesamtkosten über den Abrechnungszeitraum'} 
+                    title={'Durchschnittlicher Tagesverbrauch im Abrechnungszeitraum'} 
                     dataList={calcService.calcData}
+                    infoText={infoTextLineChartCalcData}
                     xAxis={{dataKey: 'periodEnd', label: 'Datum'}}
                     yAxis={
-                        { dataKey: ['totalCostsPeriod', 'paidAmountPeriod'], label: 'EUR', unit: '€',
-                        dataStyleProps: [{legendName: 'Fällige Gesamtkosten', color: 'var(--color-warning)'}, {legendName: 'Einzahlungen', color: 'var(--color-primary-hover)'}]
+                        { dataKey: ['usedEnergyPerDay'], label: 'kWh', unit: 'kWh/Tag',
+                          dataStyleProps: [
+                            {legendName: 'Energieverbrauch', color: 'var(--color-primary-hover)'}
+                          ]
                         }
                     }
                 />
-
-                <BarDiagram
-                    title={'Saldo'} 
+                <LineDiagram
+                    title={'Gesamtkosten im Abrechnungszeitraum nach Tarif'} 
                     dataList={calcService.calcData}
-                    infoText="Positiver Wert = Guthaben; Negativer Wert = Nachzahlung"
+                    xAxis={{dataKey: 'periodEnd', label: 'Datum'}}
+                    yAxis={
+                        { dataKey: ['totalCostsPeriod', 'paidAmountPeriod'], label: 'EUR', unit: '€', 
+                          dataStyleProps: [
+                            {legendName: 'Fällige Gesamtkosten', color: 'var(--color-warning)'}, 
+                            {legendName: 'Einzahlungen', color: 'var(--color-primary-hover)'}
+                          ]
+                        }
+                    }
+                />
+                <BarDiagram
+                    title={'Saldo im Abrechnungszeitraum'} 
+                    dataList={calcService.calcData}
                     xAxis={{dataKey: 'periodEnd', label: 'Datum'}}
                     yAxis={{dataKey: 'costDiffPeriod', label: 'EUR', unit: '€'}}
                 />
@@ -90,7 +116,7 @@ export default function CalculationView() {
                 <div className={styles.calculationButtonContainer}>
                     <CustomButton
                         iconProps={{iconSrc: '/play_icon_light.svg', size: 22, alt: 'Icon - Analysen anzeigen', ariaLabel: 'Icon - Analysen anzeigen'}}
-                        title="Berechnung starten" 
+                        title='Berechnung starten' 
                         type="button"
                         onClickCallback={runCalculation} 
                         isDisabled={calcService.isLoading}

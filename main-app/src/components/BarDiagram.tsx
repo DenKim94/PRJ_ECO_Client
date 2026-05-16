@@ -27,7 +27,7 @@ export const BarDiagram = <T,>({
     return (
             <div className={styles.trackedEnergyCard}>
                 {dataList.length === 0 ? 
-                (<div className={styles.noData}>{'Keine Daten zur Visualisierung vorhanden.'}</div>) : (
+                (<div className={styles.noData}>{'Keine Daten vorhanden.'}</div>) : (
                     <>
                         <h3 className={styles.chartTitle}>{title}</h3>
                         <ResponsiveContainer 
@@ -90,7 +90,7 @@ export const BarDiagram = <T,>({
                                         if (value === undefined) return ['NaN', 'Datenpunkt'];
                                         
                                         // Reguläre Formatierung des Zahlenwertes
-                                        return [`${value.toLocaleString('de-DE')} ${yAxisUnit}`, 'Datenpunkt'];
+                                        return [`${value.toLocaleString('de-DE')} ${yAxisUnit}`, value < 0 ? 'Nachzahlung' : 'Guthaben'];
                                     }}
                                 />  
                                 <Bar 

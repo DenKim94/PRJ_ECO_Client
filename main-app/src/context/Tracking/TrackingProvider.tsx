@@ -1,14 +1,17 @@
 import { ReactNode, useCallback, useRef, useState } from "react";
 import { Logger } from "../../utils/logger";
 import { TrackingContext } from "./TrackingContext";
-import { TrackingEntityRequest, TrackingEntityResponse } from "../../types/TrackingTypes";
+import { EnergyDifferenceData, TrackingEntityRequest, TrackingEntityResponse } from "../../types/TrackingTypes";
 import { useApiCall } from "../../hooks/useApiCall";
 import { ResponseMessage } from "../../types/AuthTypes";
 import { ApiMessageMap } from '../../types/AuthTypes';
 import { MessageContainerProps } from "../../components/MessageContainer";
+import { HelperClass } from "../../utils/helper";
 
 const logger = new Logger('TrackingProvider');
 const API_BASE_URL = import.meta.env.VITE_API_URL;
+
+
 
 /**
  * @file TrackingProvider.tsx
@@ -29,6 +32,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL;
  * * getNewestEntry: () => Promise<TrackingEntityResponse | null>;
  * * updateEntryById: (id: number, request: TrackingEntityRequest) => Promise<TrackingEntityResponse>;
  * * deleteEntryById: (id: number) => Promise<Map<string, string>>;
+ * * getUsedEnergyPerPeriod: () => EnergyDifferenceData[];
  * * deleteAllEntries: () => Promise<Map<string, string>>;
  */
 export const TrackingProvider = ({ children }: { children: ReactNode }) => {
@@ -148,6 +152,45 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
 
     },[deleteData]);
 
+    const getUsedEnergyPerPeriod = useCallback((): EnergyDifferenceData[] => {
+        
+        if (!entryList || entryList.length === 0) {
+            return [];
+        }
+
+        // Sortierte Einträge (nach Datum aufsteigend)
+        const sortedEntries = [...entryList].sort((a, b) => {
+            return HelperClass.parseDateToMs(a.timestamp) - HelperClass.parseDateToMs(b.timestamp);
+        });
+
+        // Geht jeden Eintrag im Array durch und erzeugt ein neues, erweitertes Array
+        const usedEnergyDifference = sortedEntries.map((currentEntry, index, array) => {
+            let diff = 0;
+            let days = 0;
+
+            if (index > 0) { // Wir können index === 0 überspringen, da es eh abgeschnitten wird
+                const prevEntry = array[index - 1];
+                // Tage-Differenz berechnen
+                const currentMs = HelperClass.parseDateToMs(currentEntry.timestamp);
+                const prevMs = HelperClass.parseDateToMs(prevEntry.timestamp);
+                                
+                // Differenz in Millisekunden durch die Millisekunden eines Tages teilen
+                days = Math.round((currentMs - prevMs) / (1000 * 60 * 60 * 24));
+
+                // Energie-Differenz berechnen
+                diff = (currentEntry.readingValue - prevEntry.readingValue)/days;
+            }
+
+            return {
+                date: currentEntry.timestamp, 
+                periodDays: days,                     
+                energyDifferenceNorm: Number(diff.toFixed(3))
+            };
+        });
+
+        return usedEnergyDifference.slice(1);
+    }, [entryList])
+
     return (
         <TrackingContext.Provider value={{ 
             entryList, 
@@ -159,6 +202,7 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
             getAllEntries,
             getNewestEntry,
             addEntry,
+            getUsedEnergyPerPeriod,
             updateEntryById,
             deleteEntryById,
             deleteAllEntries

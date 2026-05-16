@@ -39,4 +39,10 @@ export class HelperClass {
 
         return `${year}-${month}-${day}`;
     };
+
+
+    static parseDateToMs (dateStr: string) {
+        const [day, month, year] = dateStr.split('.');
+        return new Date(`${year}-${month}-${day}`).getTime();
+    };
 }

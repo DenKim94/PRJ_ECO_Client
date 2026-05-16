@@ -1,5 +1,5 @@
 import { createContext, RefObject } from 'react';
-import { TrackingEntityRequest, TrackingEntityResponse } from "../../types/TrackingTypes";
+import { EnergyDifferenceData, TrackingEntityRequest, TrackingEntityResponse } from "../../types/TrackingTypes";
 import { ResponseMessage } from '../../types/AuthTypes';
 import { ApiMessageMap } from '../../types/AuthTypes';
 import { MessageContainerProps } from '../../components/MessageContainer';
@@ -30,6 +30,7 @@ export interface TrackingContextType {
     addEntry: (request: TrackingEntityRequest) => Promise<TrackingEntityResponse | null>;
     updateEntryById: (id: number, request: TrackingEntityRequest) => Promise<TrackingEntityResponse | null>;
     deleteEntryById: (id: number) => Promise<ApiMessageMap | null>;
+    getUsedEnergyPerPeriod: () => EnergyDifferenceData[];
     deleteAllEntries: () => Promise<ApiMessageMap>;
 }
 

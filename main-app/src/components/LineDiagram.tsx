@@ -31,11 +31,12 @@ export const LineDiagram = <T,>({
     minHeightPx=280 
     }: LineDiagramProps<T>) => {
     const yAxisUnit = yAxis.unit ? ` ${yAxis.unit}` : '';
+    const lineChartStyleProps = yAxis.dataKey.length > 1 ? { top: 5, right: 20, left: 20, bottom: 80 } : { top: 20, right: 20, left: 20, bottom: 40 };    
 
     return (
             <div className={styles.trackedEnergyCard}>
                 {dataList.length === 0 ? 
-                (<div className={styles.noData}>{'Keine Daten zur Visualisierung vorhanden.'}</div>) : (
+                (<div className={styles.noData}>{'Keine Daten vorhanden.'}</div>) : (
                     <>
                         <h3 className={styles.chartTitle}>{title}</h3>
                         <ResponsiveContainer 
@@ -45,7 +46,7 @@ export const LineDiagram = <T,>({
                         >
                             <LineChart 
                                 data={dataList} 
-                                margin={{ top: 30, right: 20, left: 20, bottom: 40 }}
+                                margin={lineChartStyleProps}
                             >
                                 {/* Rasterlinien für bessere Lesbarkeit */}
                                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
@@ -102,7 +103,17 @@ export const LineDiagram = <T,>({
                                
                             {/* Legende: Wird nur gerendert, wenn mehr als eine Linie vorhanden ist */}
                             {yAxis.dataKey.length > 1 && (
-                                <Legend verticalAlign="top" height={36} iconType="circle" />
+                                <Legend 
+                                    verticalAlign="top" 
+                                    height={30} 
+                                    iconType="circle"
+                                        wrapperStyle={{ 
+                                        position: 'relative', // Holt die Legende in den normalen Flow zurück, statt absolut über dem Chart zu kleben
+                                        width: '100%',         // Zwingt die Legende, den verfügbaren Platz der Card zu nutzen
+                                        display: 'flex',       // Aktiviert Flexbox für die Legenden-Items
+                                        justifyContent: 'center', // Zentriert die Einträge
+                                        flexWrap: 'wrap',}}  
+                                />
                             )}
                             
                             {yAxis.dataKey.map((key, index) => {
