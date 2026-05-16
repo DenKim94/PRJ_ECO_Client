@@ -88,7 +88,7 @@ export default function CalculationView() {
                     yAxis={
                         { dataKey: ['usedEnergyPerDay'], label: 'kWh', unit: 'kWh/Tag',
                           dataStyleProps: [
-                            {legendName: 'Energieverbrauch', color: 'var(--color-primary-hover)'}
+                            {legendName: 'Verbrauch', color: 'var(--color-primary-hover)'}
                           ]
                         }
                     }

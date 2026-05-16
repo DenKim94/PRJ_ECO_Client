@@ -78,7 +78,7 @@ export default function Dataview() {
 
     return (
         <div className={styles.dataviewContainer}>
-            <InfoBox message={'Hier kannst du deine Zählerdaten einsehen und bearbeiten.'} sx={{ marginBottom: '20px' }} />
+            <InfoBox message={'Hier kannst du deine Zählerdaten ergänzen und bearbeiten.'} sx={{ marginBottom: '20px' }} />
             <table className={styles.dataTable}>
                 <thead>
                     <tr>

@@ -46,7 +46,7 @@ export default function AddData() {
 
     return (
         <div className={styles.addDataContainer}>
-            <InfoBox message={'Hier können neue Energieverbrauchsdaten hinzugefügt werden.'}
+            <InfoBox message={'Hier können neue Verbrauchsdaten hinzugefügt werden.'}
                 sx={{ margin: '0px 20px' }}
             />
             <form onSubmit={(e) => void onSubmit(e)} className={styles.formContainer}>
