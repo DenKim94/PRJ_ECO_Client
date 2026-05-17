@@ -66,20 +66,20 @@ export default function CalculationView() {
             {!openDialog ? (
             <>
                 <LineDiagram
-                title={'Durchschnittlicher Tagesverbrauch je Messperiode'} 
-                dataList={usedEnergyPerPeriod}
-                infoText="Info: Der normierte Verbrauchswert bezieht sich jeweils auf den Zeitraum zwischen zwei Ablesezeitpunkten."
-                xAxis={{
-                    dataKey: 'date', 
-                    label: 'Datum'
-                }}
-                yAxis={{
-                    dataKey: ['energyDifferenceNorm'], 
-                    label: 'kWh/Tag', 
-                    unit: 'kWh/Tag',
-                    dataStyleProps: [{legendName: 'Verbrauch', color: 'var(--color-primary-hover)'}]
-                }}
-            />
+                    title={'Durchschnittlicher Tagesverbrauch je Messperiode'} 
+                    dataList={usedEnergyPerPeriod}
+                    infoText="Info: Der normierte Verbrauchswert bezieht sich jeweils auf den Zeitraum zwischen zwei Ablesezeitpunkten."
+                    xAxis={{
+                        dataKey: 'date', 
+                        label: 'Datum'
+                    }}
+                    yAxis={{
+                        dataKey: ['energyDifferenceNorm'], 
+                        label: 'kWh/Tag', 
+                        unit: 'kWh/Tag',
+                        dataStyleProps: [{legendName: 'Verbrauch', color: 'var(--color-primary-hover)'}]
+                    }}
+                />
                 <LineDiagram
                     title={'Durchschnittlicher Tagesverbrauch im Abrechnungszeitraum'} 
                     dataList={calcService.calcData}
@@ -107,7 +107,7 @@ export default function CalculationView() {
                     }
                 />
                 <BarDiagram
-                    title={'Saldo im Abrechnungszeitraum'} 
+                    title={'Saldo im Abrechnungszeitraum'}
                     dataList={calcService.calcData}
                     xAxis={{dataKey: 'periodEnd', label: 'Datum'}}
                     yAxis={{dataKey: 'costDiffPeriod', label: 'EUR', unit: '€'}}

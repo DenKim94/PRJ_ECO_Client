@@ -22,3 +22,26 @@
 
     @include mixin.custom-scrollbar;
 }
+
+.infoCardsContainer {
+    display: grid;
+    // Definiert 2 gleich große Spalten (1fr = 1 fraction of available space)
+    grid-template-columns: repeat(2, 1fr);
+    
+    // Abstand zwischen den Cards (sowohl horizontal als auch vertikal)
+    gap: var.$spacing-md 0;
+    
+    // Nimmt die volle Breite des Eltern-Containers ein
+    width: 100%;
+    
+    // Zentriert das Grid selbst im Eltern-Container (falls nötig)
+    justify-content: center; 
+    
+    // Zentriert die Items innerhalb ihrer Grid-Zelle (optional, meist reicht das align im Kind-Element)
+    align-items: stretch; 
+
+    // Mobil: Nur 1 Spalte, die Cards stapeln sich untereinander
+    @media (max-width: var.$breakpoint-xl) {
+        grid-template-columns: 1fr;
+    }
+}

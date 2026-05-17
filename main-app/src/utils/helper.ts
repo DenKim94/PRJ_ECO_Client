@@ -45,4 +45,20 @@ export class HelperClass {
         const [day, month, year] = dateStr.split('.');
         return new Date(`${year}-${month}-${day}`).getTime();
     };
+
+    /**
+     * Formatiert eine Zahl in das deutsche Format (z.B. 1.407,70)
+     * 
+     * @param value Die zu formatierende Zahl
+     * @param minDecimals Minimale Anzahl an Nachkommastellen (Standard: 2)
+     * @param maxDecimals Maximale Anzahl an Nachkommastellen (Standard: 2)
+     */
+    static formatNumberDE = (value: number | undefined | null, minDecimals = 2, maxDecimals = 2): string => {
+        if (value === undefined || value === null || isNaN(value)) return "0,00";
+
+        return value.toLocaleString('de-DE', {
+            minimumFractionDigits: minDecimals, // Erzwingt z.B. die ,70 am Ende
+            maximumFractionDigits: maxDecimals  // Begrenzt die maximale Länge
+        });
+    };
 }

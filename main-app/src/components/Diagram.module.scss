@@ -67,10 +67,12 @@
     min-height: 50px;
     font-size: var.$font-size-sm;
     font-weight: var.$font-weight-light;
+    margin: 5px;
 
     // Smartphone (standard)
     @media (min-width: var.$breakpoint-xs) and (max-width: var.$breakpoint-sm)  {
+        margin: 0px;
         padding-left: var.$spacing-sm;
-        margin-top: 0px;
+        margin-bottom: 5px;
     }
 }

@@ -65,9 +65,34 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
 
     },[trackingDataList]);
 
+    function getLatestEntry(entryList: TrackingEntityResponse[]) : TrackingEntityResponse | null {
+        if (!entryList || entryList.length === 0) {
+            return null;
+        }
+        return entryList.reduce((latest, current) => {
+            const [d1, m1, y1] = latest.timestamp.split(".");
+            const [d2, m2, y2] = current.timestamp.split(".");
+            const latestDate = new Date(+y1, +m1 - 1, +d1);
+            const currentDate = new Date(+y2, +m2 - 1, +d2);
+            return currentDate > latestDate ? current : latest;
+        });
+    }
+
     const getNewestEntry = useCallback(async (): Promise<TrackingEntityResponse | null> => {
-        logger.debug('Lade den neuesten Eintrag vom Server ...');
-        const response = await trackingData.fetchData({ method: 'GET', url: `${API_BASE_URL}/api/tracking/get-newest`});
+        let response: TrackingEntityResponse | null = null;
+
+        if (entryList && entryList.length > 0) {
+            logger.debug('Neuesten Eintrag laden ...');
+            response = getLatestEntry(entryList);
+        } 
+        else {
+            logger.debug('Lade den neuesten Eintrag vom Server ...');
+            response = await trackingData.fetchData({ 
+                method: 'GET', 
+                url: `${API_BASE_URL}/api/tracking/get-newest`
+            });
+        }
+
         if (!response) { 
             errorMsgRef.current = trackingData.errorMsg.current;
             setResponseMsg({message: errorMsgRef.current?.message ?? 'Fehler beim Laden des neuesten Eintrags.', type: 'error'}); 
@@ -78,7 +103,7 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
         errorMsgRef.current = undefined;
         return response;
 
-    },[trackingData]);
+    },[trackingData, entryList]);
 
     const addEntry = useCallback(async (request: TrackingEntityRequest): Promise<TrackingEntityResponse | null> => {
         logger.debug('Füge neuen Eintrag hinzu ...', request);

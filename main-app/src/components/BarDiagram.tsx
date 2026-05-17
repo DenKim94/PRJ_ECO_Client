@@ -90,7 +90,14 @@ export const BarDiagram = <T,>({
                                         if (value === undefined) return ['NaN', 'Datenpunkt'];
                                         
                                         // Reguläre Formatierung des Zahlenwertes
-                                        return [`${value.toLocaleString('de-DE')} ${yAxisUnit}`, value < 0 ? 'Nachzahlung' : 'Guthaben'];
+                                        if (yAxisUnit.includes('€')){
+                                           return [`${value.toLocaleString('de-DE')} ${yAxisUnit}`, value < 0 ? 'Nachzahlung' : 'Guthaben'];
+                                        } 
+                                        if (yAxisUnit.includes('kWh')){
+                                           return [`${value.toLocaleString('de-DE')} ${yAxisUnit}`, 'Energiemenge'];
+                                        } else {
+                                            return [`${value.toLocaleString('de-DE')} ${yAxisUnit}`, 'Datenpunkt'];
+                                        }    
                                     }}
                                 />  
                                 <Bar 

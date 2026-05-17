@@ -1,0 +1,67 @@
+@use '../styles/abstracts/variables' as var;
+
+.cardContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    gap: var.$spacing-sm;
+    min-width: 120px;
+    max-width: 410px;
+    width: 100%;
+    max-height: fit-content;
+    height: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: var.$radius-md;
+    padding: var.$spacing-sm var.$spacing-md;
+    background-image: var(--app-background-image);
+    background-color: var.$color-surface-light;
+    box-shadow: var(--shadow-border-glow);
+
+    // Mobil: Nur 1 Spalte, die Cards stapeln sich untereinander
+    @media (min-width: var.$breakpoint-md) and (max-width: var.$breakpoint-lg) {
+        max-width: 420px;
+    }
+
+    // Smartphone
+    @media (max-width: var.$breakpoint-sm) {
+        max-width: 325px;
+    }
+}
+
+.label{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: var.$spacing-sm;
+    width: 100%;
+    font-weight: var.$font-weight-bold;
+}
+
+.infoContent {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: var.$spacing-md;
+    width: 100%;
+    height: 60px;
+    font-family: inherit;
+}
+
+.valueContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: var.$spacing-sm;
+    max-width: 200px;
+    width: 100%;
+
+    // Smartphone
+    @media (max-width: var.$breakpoint-sm) {
+        max-width: 120px;
+    }
+}
