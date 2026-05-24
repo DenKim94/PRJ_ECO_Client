@@ -60,9 +60,9 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    text-align: center;
+    text-align: left;
     white-space: pre-line;
-    padding-left: var.$spacing-lg;
+    padding-left: var.$spacing-sm;
     width: 100%;
     min-height: 50px;
     font-size: var.$font-size-sm;
@@ -74,5 +74,15 @@
         margin: 0px;
         padding-left: var.$spacing-sm;
         margin-bottom: 5px;
+    }
+
+    // Smartphone (max - horizontal)
+    @media (min-width: var.$breakpoint-sm) and (max-width: var.$breakpoint-lg) and (max-height: var.$breakpoint-height-sm) {
+        padding-left: var.$spacing-xs;
+    }
+
+    // Tablet (standard - vertikal)
+    @media (max-width: var.$breakpoint-xl) and (min-width: var.$breakpoint-md) {
+        padding-left: var.$spacing-xs;
     }
 }

@@ -9,9 +9,10 @@ import { CustomButton } from "./CustomButton";
 import { MessageContainer, MessageContainerProps } from "./MessageContainer";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../hooks/useTheme";
+import { InfoBox } from "./InfoBox";
 
 export default function Register() {
-    const auth = useAuth();
+    const authService = useAuth();
     const navigate = useNavigate();
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
@@ -35,20 +36,23 @@ export default function Register() {
         setSubmitting(true);
         try {
             const request: RegisterRequest = { username: trimmedName, password, email: eMail };
-            const result = await auth.register(request);
+            const result = await authService.register(request);
 
-            if (!result && auth.errorMsgRef.current?.message) {
-                setMessage({ message: `Registrierung fehlgeschlagen: ${auth.errorMsgRef.current.message}`, type: "error" });
-                logger.error(`Registrierung fehlgeschlagen: ${auth.errorMsgRef.current.message} für User: ${trimmedName}`);
+            if (!result && authService.errorMsgRef.current?.message) {
+                setMessage({ message: `Registrierung fehlgeschlagen: ${authService.errorMsgRef.current.message}`, type: "error" });
+                logger.error(`Registrierung fehlgeschlagen: ${authService.errorMsgRef.current.message} für User: ${trimmedName}`);
                 return;
             }
 
             // Formular leeren und zur Login-Seite navigieren
+            setMessage({ message: "Registrierung erfolgreich! Du wirst zum Login weitergeleitet.", type: "success" });
             setName("");
             setPassword("");
             setEMail("");
             setAcceptedPrivacy(false);
-            void navigate("/login", { replace: true });
+            setTimeout(() => {
+                void navigate("/login", { replace: true });
+            }, 2000);  
 
         } catch (err) {
             setMessage({ message: "Ein Fehler ist aufgetreten.", type: "error" });
@@ -63,6 +67,8 @@ export default function Register() {
    return (
         <div className={styles.pageContainer}>
             <AppLogo src="/eco_app_v2.png" alt="ECO App Logo" size="xl"/>
+            <InfoBox message={'Bitte fülle das Formular zur Registrierung aus. Du wirst anschließend zum Login weitergeleitet.'} 
+                sx={{ alignItems: 'flex-start'}}/>
             
             <form onSubmit={(e) => void onSubmit(e)} className={styles.formContainer}>
                 <input

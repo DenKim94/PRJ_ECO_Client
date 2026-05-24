@@ -6,7 +6,7 @@
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    min-height: 35vh;
+    min-height: 420px;
     min-width: calc(var.$breakpoint-sm - (2.65 * var.$spacing-lg));
     max-width: 100%;
     border: 1px solid var(--color-border);
@@ -20,7 +20,7 @@
 
     // Smartphone (vertikal)
     @media (min-width: var.$breakpoint-xs) and (max-width: var.$breakpoint-sm) and (min-height: 700px) {
-        height: 60%;
+        height: 80%;
     }
 
     // Smartphone Mini (vertikal)

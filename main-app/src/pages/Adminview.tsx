@@ -73,7 +73,7 @@ export default function Adminview() {
 
     return (
         <div ref={menuRef} className={styles.pageContainer}>
-            <InfoBox message={'Hier ist der Adminbereich. Hier können alle registerierten User verwaltet werden.'} sx={{ marginBottom: '20px' }} />
+            <InfoBox message={'Hier können alle registerierten Nutzer verwaltet werden.'} sx={{ marginBottom: '20px' }} />
             <table className={styles.dataTable}>
                 <thead>
                     <tr>

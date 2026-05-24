@@ -8,7 +8,7 @@
     margin: 0 auto;
     gap: var.$spacing-sm;
     min-width: 120px;
-    max-width: 410px;
+    max-width: 420px;
     width: 100%;
     max-height: fit-content;
     height: 100%;
@@ -19,14 +19,44 @@
     background-color: var.$color-surface-light;
     box-shadow: var(--shadow-border-glow);
 
-    // Mobil: Nur 1 Spalte, die Cards stapeln sich untereinander
-    @media (min-width: var.$breakpoint-md) and (max-width: var.$breakpoint-lg) {
-        max-width: 420px;
+    // Smartphone (mini - vertikal)
+    @media (max-width: var.$breakpoint-sm) and (max-height: 680px) {
+        max-width: 320px;
     }
 
-    // Smartphone
-    @media (max-width: var.$breakpoint-sm) {
-        max-width: 325px;
+    // Smartphone (standard - vertikal)
+    @media (max-width: var.$breakpoint-sm) and (min-height: 700px) {
+        max-width: 330px;
+    }
+    
+    // Smartphone (max - vertikal)
+    @media (max-width: var.$breakpoint-sm) and (min-width: 400px) and (min-height: 800px) {
+        max-width: 340px;
+    }
+
+    // Smartphone (max - horizontal)
+    @media (min-width: var.$breakpoint-sm) and (max-width: var.$breakpoint-lg) and (max-height: var.$breakpoint-height-sm) {
+        max-width: 440px;
+    }
+
+    // Tablet (standard - vertikal)
+    @media (min-width: var.$breakpoint-md) and (min-height: 1024px) {
+        max-width: 510px;
+    }
+    
+    // Tablet (mini - vertikal)
+    @media (min-width: var.$breakpoint-md) and (max-height: 1024px) {
+        max-width: 440px;
+    }
+
+    // Tablet (max - vertikal)
+    @media (min-width: 1024px) and (min-height: 1024px) {
+        max-width: 650px;
+    }
+
+    // Tablet (Desktop)
+    @media (min-width: var.$breakpoint-xl) {
+        max-width: 400px;
     }
 }
 

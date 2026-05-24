@@ -458,7 +458,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // --- Admin-Funktionen ---
     const adminDeleteUserById = useCallback(async (userId: number): Promise<ApiMessageMap> => {
         logger.debug(`[Admin] - Benutzer mit ID ${userId} löschen ...`);
-        const response = await accountApi.fetchData({ method: 'DELETE', url: `${API_BASE_URL}/api/admin/users/{id}/remove"` });
+        const response = await accountApi.fetchData({ method: 'DELETE', url: `${API_BASE_URL}/api/admin/users/${userId}/remove` });
         if (!response) { 
             errorMsgRef.current = accountApi.errorMsg.current; 
             setResponseMsg({message: errorMsgRef.current?.message ?? 'Anfrage zum Löschen des Benutzers ist fehlgeschlagen.', type: 'error'});
@@ -484,17 +484,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, [accountApi]);
 
     const adminGetAllUsers = useCallback(async (): Promise<boolean> => {
-        logger.debug(`[Admin] - Alle Benutzerdaten abrufen ...`);
-        const response = await adminUserApi.fetchData({ method: 'GET', url: `${API_BASE_URL}/api/admin/get-users` });
-        if (!response) { 
-            errorMsgRef.current = adminUserApi.errorMsg.current; 
-            return false;
+
+        if (adminUserData.length === 0) {
+            logger.debug(`[Admin] - Alle Benutzerdaten vom Server abrufen ...`);
+            const response = await adminUserApi.fetchData({ method: 'GET', url: `${API_BASE_URL}/api/admin/get-users` });
+            if (!response) { 
+                errorMsgRef.current = adminUserApi.errorMsg.current; 
+                return false;
+            }
+            logger.debug(`[Admin] - Alle Benutzerdaten erfolgreich abgerufen.`, response);
+            setAdminUserData(response);
         }
-        logger.debug(`[Admin] - Alle Benutzerdaten erfolgreich abgerufen.`, response);
-        setAdminUserData(response);
+        
         errorMsgRef.current = undefined;
         return true;
-    }, [adminUserApi]);
+
+    }, [adminUserApi, adminUserData]);
 
     const adminUpdatePassword = useCallback(async (newPassword: string): Promise<ApiMessageMap> => {
         logger.debug(`[Admin] - Passwort aktualisieren ...`);

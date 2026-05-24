@@ -20,6 +20,11 @@
         max-width: 480px;
     }
 
+    // Tablet Mini
+    @media (max-width: var.$breakpoint-md) and (min-width: var.$breakpoint-sm) {
+        max-width: 460px;
+    }
+
     @include mixin.custom-scrollbar;
 }
 
