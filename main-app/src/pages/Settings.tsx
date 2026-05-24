@@ -111,6 +111,8 @@ export default function Settings() {
     useEffect(() => {
         trackingService.resetResponseMsg();
         calcService.resetResponseMsg();
+        authService.resetResponseMsg();
+        
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
         

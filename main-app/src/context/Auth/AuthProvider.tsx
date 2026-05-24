@@ -5,6 +5,7 @@ import { AuthContext } from './AuthContext';
 import { ApiMessageMap, ApiResponseMap, UserNameUpdateRequest } from '../../types/AuthTypes';
 import { useApiCall } from '../../hooks/useApiCall';
 import { LogInRequest, RegisterRequest, PasswordResetRequest, AuthResponseModel, User, UserRoles, UserDataResponseModel, ResponseMessage, AllUserDataResponse } from '../../types/AuthTypes'; 
+import { MessageContainerProps } from '../../components/MessageContainer';
 
 
 export interface CustomJwtPayload extends JwtPayload {
@@ -68,10 +69,12 @@ const getInitialAuthData = (): { token: string | null; user: User | null; remain
  * * isLoading: boolean;
  * * deleteAccountRequested: boolean;
  * * errorMsgRef: RefObject<ResponseMessage | undefined>;
+ * * responseMsg: MessageContainerProps | null;
  *
  * Der Provider implementiert folgende Funktionen:
  * * login: (request: LogInRequest) => Promise<AuthResponseModel | null>;
  * * logout: () => Promise<ApiMessageMap>;
+ * * resetResponseMsg: () => void;
  * * register: (request: RegisterRequest) => Promise<ApiResponseMap | null>;
  * * getUserData: () => Promise<UserDataResponseModel | null>;
  * * refreshToken: () => Promise<boolean>;
@@ -84,7 +87,7 @@ const getInitialAuthData = (): { token: string | null; user: User | null; remain
  * * resetPassword: (request: PasswordResetRequest) => Promise<ApiMessageMap>;
  * * adminDeleteUserById: (userId: number) => Promise<ApiMessageMap>;
  * * adminSetUserStatusById: (userId: number, isEnabled: boolean) => Promise<ApiMessageMap>;
- * * adminGetAllUsers: () => Promise<AllUserDataResponse[]>;
+ * * adminGetAllUsers: () => Promise<boolean>;
  * * adminUpdatePassword: (newPassword: string) => Promise<ApiMessageMap>;
  */
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -115,6 +118,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const sessionTimeRemaining = useRef<number>(initialAuthData.remainingTimeMs ?? 0);
     const countdownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const errorMsgRef = useRef<ResponseMessage | undefined>(undefined);
+    const [responseMsg, setResponseMsg] = useState<MessageContainerProps | null>(null);
 
     // --- API Hooks für jede Aktion ---
     const authApi = useApiCall<AuthResponseModel>(); // Für Login und Token Refresh
@@ -143,6 +147,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setToken(null);
         setUser(null);
         setShowSessionWarning(false);
+        setResponseMsg(null);
         logger.debug('Aktuelle Session wurde zurückgesetzt.');
         errorMsgRef.current = undefined;
 
@@ -265,6 +270,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const response = await authApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/login`, data: request });
         if (!response) {
             errorMsgRef.current = authApi.errorMsg.current;
+            setResponseMsg({message: errorMsgRef.current?.message ?? 'Unbekannter Fehler beim Anmelden.', type: 'error'});
             return null;
         }
         setJWT(response.token, response.expiresIn);
@@ -272,7 +278,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         logger.debug('Login erfolgreich.', 
             { userName: response.userName, role: response.role, hasValidStatus: response.hasValidStatus });
-
+ 
         errorMsgRef.current = undefined;
         return response;
     }, [authApi, setJWT]);
@@ -282,6 +288,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const response = await registerApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/register`, data: request });
        if (!response) { 
             errorMsgRef.current = registerApi.errorMsg.current;
+            setResponseMsg({message: errorMsgRef.current?.message ?? 'Unbekannter Fehler bei der Registrierung.', type: 'error'});
             return null;
        }
        logger.debug('Registrierung erfolgreich.');
@@ -311,6 +318,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const response = await accountApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/logout` });
         if (!response) { 
             errorMsgRef.current = accountApi.errorMsg.current; 
+            setResponseMsg({message: errorMsgRef.current?.message ?? 'Logout ist fehlgeschlagen.', type: 'error'});
             return { message: accountApi.errorMsg.current?.message  ?? 'Logout ist fehlgeschlagen.' };
         }
         clearSession();
@@ -322,6 +330,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const response = await emailApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/user-password/request`, data: request });
         if (!response) { 
             errorMsgRef.current = emailApi.errorMsg.current; 
+            setResponseMsg({message: errorMsgRef.current?.message ?? 'Anfrage ist fehlgeschlagen.', type: 'error'});
             return { message: emailApi.errorMsg.current?.message  ?? 'Anfrage ist fehlgeschlagen.' };
         }
         errorMsgRef.current = undefined;
@@ -333,6 +342,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const response = await accountApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/user-password/reset`, data: request });
         if (!response) { 
             errorMsgRef.current = accountApi.errorMsg.current; 
+            setResponseMsg({message: errorMsgRef.current?.message ?? 'Anfrage ist fehlgeschlagen.', type: 'error'});
             return { message: accountApi.errorMsg.current?.message  ?? 'Anfrage ist fehlgeschlagen.' };
         }
         logger.debug('Passwort erfolgreich zurückgesetzt.');
@@ -345,11 +355,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const response = await accountApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/user/update-name`, data: request });
         if (!response) { 
             errorMsgRef.current = accountApi.errorMsg.current; 
+            setResponseMsg({message: errorMsgRef.current?.message ?? 'Anfrage ist fehlgeschlagen.', type: 'error'});
             return { message: accountApi.errorMsg.current?.message  ?? 'Anfrage ist fehlgeschlagen.' };
         }
         logger.debug('Benutzername erfolgreich geändert.');
         errorMsgRef.current = undefined;
-        
+        setResponseMsg({message: 'Benutzername erfolgreich geändert.', type: 'success'});
+
         setTimeout(() => {
                 void clearSession();
         }, 1500);
@@ -361,7 +373,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         logger.debug('Token aktualisieren ...');
         const response = await authApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/refresh-token` });
         if (!response) { 
-            errorMsgRef.current = authApi.errorMsg.current; 
+            errorMsgRef.current = authApi.errorMsg.current;
+            setResponseMsg({message: errorMsgRef.current?.message ?? 'Anfrage ist fehlgeschlagen.', type: 'error'}); 
             return false;
         }
         setJWT(response.token, response.expiresIn);
@@ -376,6 +389,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const response = await accountApi.fetchData({ method: 'DELETE', url: `${API_BASE_URL}/api/auth/delete-account` });
         if (!response) { 
             errorMsgRef.current = accountApi.errorMsg.current; 
+            setResponseMsg({message: errorMsgRef.current?.message ?? 'Anfrage ist fehlgeschlagen.', type: 'error'});
             return { message: accountApi.errorMsg.current?.message  ?? 'Anfrage ist fehlgeschlagen.' };
         }
         clearSession();
@@ -389,6 +403,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const response = await accountApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/verify-email`, data: { code } });
         if (!response) { 
             errorMsgRef.current = accountApi.errorMsg.current; 
+            setResponseMsg({message: errorMsgRef.current?.message ?? 'Anfrage ist fehlgeschlagen.', type: 'error'});
             return { message: accountApi.errorMsg.current?.message  ?? 'Anfrage ist fehlgeschlagen.' };
         }
         setUserDetailedData(prev => {
@@ -409,6 +424,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const response = await emailApi.fetchData({ method: 'POST', url: `${API_BASE_URL}/api/auth/resend-email` });
         if (!response) { 
             errorMsgRef.current = emailApi.errorMsg.current; 
+            setResponseMsg({message: errorMsgRef.current?.message ?? 'Anfrage ist fehlgeschlagen.', type: 'error'});
             return { message: emailApi.errorMsg.current?.message  ?? 'Anfrage ist fehlgeschlagen.' };
         }
         logger.debug(`${response.message}`);
@@ -445,7 +461,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const response = await accountApi.fetchData({ method: 'DELETE', url: `${API_BASE_URL}/api/admin/users/{id}/remove"` });
         if (!response) { 
             errorMsgRef.current = accountApi.errorMsg.current; 
-            return { message: accountApi.errorMsg.current?.message  ?? `Anfrage zum Löschen des Benutzers mit ID ${userId} ist fehlgeschlagen.` };
+            setResponseMsg({message: errorMsgRef.current?.message ?? 'Anfrage zum Löschen des Benutzers ist fehlgeschlagen.', type: 'error'});
+            return { message: accountApi.errorMsg.current?.message  ?? 'Anfrage zum Löschen des Benutzers ist fehlgeschlagen.' };
         }
         errorMsgRef.current = undefined;
         logger.debug(`[Admin] - Benutzer mit ID ${userId} erfolgreich gelöscht.`);
@@ -457,24 +474,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const response = await accountApi.fetchData({ method: 'PATCH', url: `${API_BASE_URL}/api/admin/users/${userId}/set-status`, data: { isEnabled } });
         if (!response) { 
             errorMsgRef.current = accountApi.errorMsg.current; 
-            return { message: accountApi.errorMsg.current?.message  ?? `Anfrage zum Setzen des Status des Benutzers mit ID ${userId} ist fehlgeschlagen.` };
+            setResponseMsg({message: errorMsgRef.current?.message ?? 'Anfrage zum Setzen des Status des Benutzers ist fehlgeschlagen.', type: 'error'});
+            return { message: accountApi.errorMsg.current?.message  ?? 'Anfrage zum Setzen des Status des Benutzers ist fehlgeschlagen.' };
         }
         logger.debug(`[Admin] - Benutzer mit ID ${userId} wurde erfolgreich ${isEnabled ? 'aktiviert' : 'deaktiviert'}.`);
+        setResponseMsg({message: `Benutzer wurde erfolgreich ${isEnabled ? 'aktiviert' : 'deaktiviert'}.`, type: 'success'});
         errorMsgRef.current = undefined;
         return response;
     }, [accountApi]);
 
-    const adminGetAllUsers = useCallback(async (): Promise<AllUserDataResponse[]> => {
+    const adminGetAllUsers = useCallback(async (): Promise<boolean> => {
         logger.debug(`[Admin] - Alle Benutzerdaten abrufen ...`);
         const response = await adminUserApi.fetchData({ method: 'GET', url: `${API_BASE_URL}/api/admin/get-users` });
         if (!response) { 
             errorMsgRef.current = adminUserApi.errorMsg.current; 
-            return [];
+            return false;
         }
         logger.debug(`[Admin] - Alle Benutzerdaten erfolgreich abgerufen.`, response);
         setAdminUserData(response);
         errorMsgRef.current = undefined;
-        return response;
+        return true;
     }, [adminUserApi]);
 
     const adminUpdatePassword = useCallback(async (newPassword: string): Promise<ApiMessageMap> => {
@@ -482,7 +501,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const response = await accountApi.fetchData({ method: 'PUT', url: `${API_BASE_URL}/api/admin/update-password`, data: { newPassword } });
         if (!response) { 
             errorMsgRef.current = accountApi.errorMsg.current; 
-            return { message: accountApi.errorMsg.current?.message  ?? `Anfrage zum Aktualisieren des Passworts ist fehlgeschlagen.` };
+            setResponseMsg({message: errorMsgRef.current?.message ?? 'Anfrage zum Aktualisieren des Passworts ist fehlgeschlagen.', type: 'error'});
+            return { message: accountApi.errorMsg.current?.message  ?? 'Anfrage zum Aktualisieren des Passworts ist fehlgeschlagen.' };
         }
         logger.debug(`[Admin] - Passwort erfolgreich aktualisiert.`);
         errorMsgRef.current = undefined;
@@ -500,6 +520,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             isLoading: isLoadingSevice,
             deleteAccountRequested,
             errorMsgRef, 
+            responseMsg,
+            resetResponseMsg: () => setResponseMsg(null),
             isTokenValid,
             login,
             logout,

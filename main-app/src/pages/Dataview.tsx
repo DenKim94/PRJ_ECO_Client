@@ -35,7 +35,8 @@ export default function Dataview() {
     useEffect(() => {
         configService.resetSaveResult();
         calcService.resetResponseMsg();
-        logger.debug('Tracking-Daten: ', trackingService.entryList);
+        authService.resetResponseMsg();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
         

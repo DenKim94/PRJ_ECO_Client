@@ -5,6 +5,7 @@ import { LogInRequest, RegisterRequest,
   ResponseMessage, AllUserDataResponse, 
   ApiMessageMap, ApiResponseMap, 
   UserNameUpdateRequest} from '../../types/AuthTypes'; 
+import { MessageContainerProps } from '../../components/MessageContainer';
 
 
 export interface AuthContextType {
@@ -17,7 +18,9 @@ export interface AuthContextType {
   isLoading: boolean;
   deleteAccountRequested: boolean;
   errorMsgRef: RefObject<ResponseMessage | undefined>;
+  responseMsg: MessageContainerProps | null;
   isTokenValid: () => boolean;
+  resetResponseMsg: () => void;
   login: (request: LogInRequest) => Promise<AuthResponseModel | null>;
   logout: () => Promise<ApiMessageMap>;
   register: (request: RegisterRequest) => Promise<ApiResponseMap | null>;
@@ -32,7 +35,7 @@ export interface AuthContextType {
   resetPassword: (request: PasswordResetRequest) => Promise<ApiMessageMap>;
   adminDeleteUserById: (userId: number) => Promise<ApiMessageMap>;
   adminSetUserStatusById: (userId: number, isEnabled: boolean) => Promise<ApiMessageMap>;
-  adminGetAllUsers: () => Promise<AllUserDataResponse[]>;
+  adminGetAllUsers: () => Promise<boolean>;
   adminUpdatePassword: (newPassword: string) => Promise<ApiMessageMap>;
 }
 

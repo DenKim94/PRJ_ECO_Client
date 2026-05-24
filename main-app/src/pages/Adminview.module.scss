@@ -1,0 +1,138 @@
+@use '../styles/abstracts/variables' as var;
+@use '../styles/abstracts/mixins' as mixin;
+
+.pageContainer {
+
+    @include mixin.responsive-view-container;
+
+    // Smartphone (standard)
+    @media (max-width: var.$breakpoint-sm) {
+        max-width: 370px;
+    }
+    
+    // Smartphone (max)
+    @media (min-width: 400px) and (max-width: var.$breakpoint-sm) {
+        max-width: 380px;
+    }
+
+    // Smartphone (horizontal)
+    @media (min-width: var.$breakpoint-sm) and (max-width: var.$breakpoint-lg) and (max-height: var.$breakpoint-height-sm) {
+        max-width: 480px;
+    }
+
+    @include mixin.custom-scrollbar;
+}
+
+.dataTable {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse; 
+    background-color: var(--color-surface);
+
+    th {
+        border: 1px solid var(--color-border);
+        padding: var.$spacing-sm var.$spacing-md;
+        text-align: left;
+        font-weight: var.$font-weight-bold;
+        background-color: rgba(0, 0, 0, 0.05); 
+    }
+
+    td {
+        border: 1px solid var(--color-border);
+        padding: var.$spacing-sm var.$spacing-md;
+        text-align: left;
+    }
+
+    tr {
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+            background-color: var(--color-primary-hover);
+        }
+    }
+
+    // --- NEU: Responsive Card Layout für mobile Geräte ---
+    @media (max-width: var.$breakpoint-lg) {
+        table-layout: auto;
+        border: none;
+        background-color: transparent;
+
+        thead {
+            display: none; // Spaltenköpfe auf Mobile ausblenden
+        }
+
+        tbody {
+            display: flex;
+            flex-direction: column;
+            gap: var.$spacing-md; // Abstand zwischen den User-Karten
+        }
+
+        tr {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--color-border);
+            border-radius: var.$radius-md;
+            padding: var.$spacing-sm var.$spacing-md;
+            background-color: var(--color-surface);
+            box-shadow: var(--shadow-border-glow); // Optional, nutzt dein Theme
+        }
+
+        td {
+            display: flex;
+            justify-content: space-between; // Label links, Wert rechts
+            align-items: center;
+            border: none;
+            border-bottom: 1px dashed var(--color-border); // Leichte Trennlinie zwischen den Werten
+            padding: var.$spacing-sm 0;
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            // Holt sich den Text aus dem data-label Attribut im HTML
+            &::before {
+                content: attr(data-label);
+                font-weight: var.$font-weight-bold;
+                color: var(--color-text-muted);
+                margin-right: var.$spacing-md;
+                min-width: 40%; // Sorgt dafür, dass die Labels auf einer Linie untereinander stehen
+            }
+        }
+    }
+}
+
+.editingRow {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.editingLabel{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    height: '100%'; 
+    gap: var.$spacing-sm;
+}
+
+.inputField{
+    cursor: pointer;
+}
+
+.actionCell {
+    display: flex;
+    gap: var.$spacing-sm;
+    flex-direction: row;
+    align-items: center; 
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: flex-start;
+    border: none;
+
+    // Smartphone Anpassung
+    @media (max-width: var.$breakpoint-sm) {
+        justify-content: flex-end; // Buttons in der Mobile-Karte rechts ausrichten
+    }
+}

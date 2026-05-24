@@ -69,6 +69,7 @@ export default function Overview() {
         trackingService.resetResponseMsg();
         configService.resetSaveResult();
         calcService.resetResponseMsg();
+        authService.resetResponseMsg();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

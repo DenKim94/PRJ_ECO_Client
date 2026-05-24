@@ -30,8 +30,7 @@ export default function CalculationView() {
     useEffect(() => {
         trackingService.resetResponseMsg();
         configService.resetSaveResult();
-        console.log('calcService.calcData: ', calcService.calcData);
-        console.log('usedEnergyPerPeriod: ', usedEnergyPerPeriod);
+        authService.resetResponseMsg();
         
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -47,6 +46,7 @@ export default function CalculationView() {
             logger.error(`${calcService.errorMsgRef.current?.message ?? 'Unbekannter Fehler bei der Berechnung.'}`);
             return;
         }
+        logger.debug('Berechnung abgeschlossen: ', results);
     };
 
     const handleDeleteAll = async() => {
