@@ -2,6 +2,7 @@ import { createContext, RefObject } from 'react';
 import { CalcultationRequest, CalculationDataResponse } from '../../types/CalculationTypes';
 import { ApiMessageMap, ResponseMessage } from '../../types/AuthTypes';
 import { MessageContainerProps } from '../../components/MessageContainer';
+import { TimeRange } from '../../utils/helper';
 
 
 export interface CalculationContextType {
@@ -11,6 +12,7 @@ export interface CalculationContextType {
     responseMsg: MessageContainerProps | null;
     resetResponseMsg: () => void;
     executeCalculation: (request: CalcultationRequest) => Promise<CalculationDataResponse[]>;
+    filterCalcDataByTimeRange: (range: TimeRange, maxDataPoints?: number) => CalculationDataResponse[];
     loadResults: () => Promise<CalculationDataResponse[]>;
     deleteAllResults: () => Promise<ApiMessageMap>;
 }

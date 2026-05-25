@@ -3,6 +3,7 @@ import { EnergyDifferenceData, TrackingEntityRequest, TrackingEntityResponse } f
 import { ResponseMessage } from '../../types/AuthTypes';
 import { ApiMessageMap } from '../../types/AuthTypes';
 import { MessageContainerProps } from '../../components/MessageContainer';
+import { TimeRange } from '../../utils/helper';
 
 /**
  * * newestEntry: TrackingEntityResponse | null;
@@ -11,11 +12,13 @@ import { MessageContainerProps } from '../../components/MessageContainer';
  * * responseMsg: MessageContainerProps | null;
  * * isLoading: boolean;
  * * resetResponseMsg: () => void;
+ * * filterTrackingDataByTimeRange: (range: TimeRange, maxDataPoints?: number) => TrackingEntityResponse[];
  * * getAllEntries: () => Promise<TrackingEntityResponse[]>;
  * * addEntry: (request: TrackingEntityRequest) => Promise<TrackingEntityResponse>;
  * * getNewestEntry: () => Promise<TrackingEntityResponse | null>;
  * * updateEntryById: (id: number, request: TrackingEntityRequest) => Promise<TrackingEntityResponse>;
  * * deleteEntryById: (id: number) => Promise<ApiMessageMap>;
+ * * getUsedEnergyPerPeriod: (data: TrackingEntityResponse[]) => EnergyDifferenceData[];
  * * deleteAllEntries: () => Promise<ApiMessageMap>;
 */
 export interface TrackingContextType {
@@ -25,12 +28,13 @@ export interface TrackingContextType {
     responseMsg: MessageContainerProps | null;
     isLoading: boolean;
     resetResponseMsg: () => void;
+    filterTrackingDataByTimeRange: (range: TimeRange, maxDataPoints?: number) => TrackingEntityResponse[];
     getAllEntries: () => Promise<TrackingEntityResponse[]>;
     getNewestEntry: () => Promise<TrackingEntityResponse | null>;
     addEntry: (request: TrackingEntityRequest) => Promise<TrackingEntityResponse | null>;
     updateEntryById: (id: number, request: TrackingEntityRequest) => Promise<TrackingEntityResponse | null>;
     deleteEntryById: (id: number) => Promise<ApiMessageMap | null>;
-    getUsedEnergyPerPeriod: () => EnergyDifferenceData[];
+    getUsedEnergyPerPeriod: (data: TrackingEntityResponse[]) => EnergyDifferenceData[];
     deleteAllEntries: () => Promise<ApiMessageMap>;
 }
 

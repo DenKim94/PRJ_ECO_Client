@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import styles from "./Overview.module.scss";
 import { useAuth } from "../hooks/useAuth";
 import { useTracking } from "../hooks/useTracking";
@@ -8,7 +8,8 @@ import { LineDiagram } from "../components/LineDiagram";
 import { useCalculation } from "../hooks/useCalculation";
 import { InfoCard, InfoProps } from "../components/InfoCard";
 import { BarDiagram } from "../components/BarDiagram";
-import { HelperClass } from "../utils/helper";
+import { HelperClass, TimeRange } from "../utils/helper";
+import DataTimeRangeSetter from "../components/DataTimeRangeSetter";
 
 
 export default function Overview() {
@@ -16,7 +17,8 @@ export default function Overview() {
     const configService = useConfig();
     const calcService = useCalculation();
     const trackingService = useTracking();
-    const usedEnergyPerPeriod = trackingService.getUsedEnergyPerPeriod();
+    const [selectedRange, setSelectedRange] = useState<TimeRange>('2Y');
+    const usedEnergyPerPeriod = trackingService.getUsedEnergyPerPeriod(trackingService.filterTrackingDataByTimeRange(selectedRange));
     const calcDataLatest = (calcService.calcData && calcService.calcData.length > 0) 
         ? (calcService.calcData[calcService.calcData.length - 1]) 
         : null;
@@ -29,7 +31,6 @@ export default function Overview() {
         : false;
 
     const trendingIconSrc = trendUsedEnergyPerDayPositive ? '/trending_down_green_icon.svg' : '/trending_up_red_icon.svg';
-
     const infoSaldoList : InfoProps <string | number> [] = [
         { 
             label: 'Abrechnungszeitraum', 
@@ -64,7 +65,7 @@ export default function Overview() {
             } 
         },
     ];
-
+    
     useEffect(() => {
         trackingService.resetResponseMsg();
         configService.resetSaveResult();
@@ -89,6 +90,7 @@ export default function Overview() {
                     infoProps={infoUsedEnergyList}
                 />           
             </div>
+            <DataTimeRangeSetter setTimeRangeCallback={setSelectedRange} />
             <LineDiagram
                 title={'Normierter Stromverbrauch je Messperiode'}
                 heightPx={280} 

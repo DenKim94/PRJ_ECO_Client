@@ -6,12 +6,10 @@ import { useApiCall } from "../../hooks/useApiCall";
 import { ResponseMessage } from "../../types/AuthTypes";
 import { ApiMessageMap } from '../../types/AuthTypes';
 import { MessageContainerProps } from "../../components/MessageContainer";
-import { HelperClass } from "../../utils/helper";
+import { HelperClass, TimeRange } from "../../utils/helper";
 
 const logger = new Logger('TrackingProvider');
 const API_BASE_URL = import.meta.env.VITE_API_URL;
-
-
 
 /**
  * @file TrackingProvider.tsx
@@ -31,6 +29,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL;
  * * addEntry: (request: TrackingEntityRequest) => Promise<TrackingEntityResponse>;
  * * getNewestEntry: () => Promise<TrackingEntityResponse | null>;
  * * updateEntryById: (id: number, request: TrackingEntityRequest) => Promise<TrackingEntityResponse>;
+ * * filterTrackingDataByTimeRange: (range: TimeRange, maxDataPoints?: number) => TrackingEntityResponse[];
  * * deleteEntryById: (id: number) => Promise<Map<string, string>>;
  * * getUsedEnergyPerPeriod: () => EnergyDifferenceData[];
  * * deleteAllEntries: () => Promise<Map<string, string>>;
@@ -77,6 +76,53 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
             return currentDate > latestDate ? current : latest;
         });
     }
+
+    const filterTrackingDataByTimeRange = useCallback((range: TimeRange, maxDataPoints = 16): TrackingEntityResponse[] => {
+        if (!entryList || entryList.length === 0) return [];
+
+        // Daten chronologisch aufsteigend sortieren
+        const sortedData = [...entryList].sort((a, b) => 
+            HelperClass.parseGermanDate(a.timestamp).getTime() - HelperClass.parseGermanDate(b.timestamp).getTime()
+        );
+
+        // Zieldatum ausgehend vom ersten (ältesten) Eintrag berechnen
+        const startDate = HelperClass.parseGermanDate(sortedData[0].timestamp);
+        const targetEndDate = new Date(startDate);
+
+        if (range === '6M') {
+            targetEndDate.setMonth(targetEndDate.getMonth() + 6);
+        } else if (range === '1Y') {
+            targetEndDate.setFullYear(targetEndDate.getFullYear() + 1);
+        } else if (range === '2Y') {
+            targetEndDate.setFullYear(targetEndDate.getFullYear() + 2);
+        }
+
+        // Zeitraum filtern (alles abschneiden, was nach dem targetEndDate liegt)
+        const filteredData = sortedData.filter(entry => {
+            const entryDate = HelperClass.parseGermanDate(entry.timestamp);
+            return entryDate.getTime() <= targetEndDate.getTime();
+        });
+
+        // Downsampling (Auflösung verringern), falls > maxDataPoints
+        if (filteredData.length <= maxDataPoints) {
+            logger.debug(`Daten für Zeitraum ${range} gefiltert.`);
+            return filteredData;
+        }
+
+        const downsampled: TrackingEntityResponse[] = [];
+        // Berechnet die Schrittweite, um exakt maxDataPoints aus dem Array zu entnehmen
+        const step = (filteredData.length - 1) / (maxDataPoints - 1);
+        
+        for (let i = 0; i < maxDataPoints; i++) {
+            // Durch Math.round wird auf den nächsten passenden Array-Index gerundet
+            const index = Math.round(i * step);
+            downsampled.push(filteredData[index]);
+        }
+
+        logger.debug(`Daten für Zeitraum ${range} gefiltert: `, downsampled);
+        return downsampled;
+
+    }, [entryList]);
 
     const getNewestEntry = useCallback(async (): Promise<TrackingEntityResponse | null> => {
         let response: TrackingEntityResponse | null = null;
@@ -177,14 +223,14 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
 
     },[deleteData]);
 
-    const getUsedEnergyPerPeriod = useCallback((): EnergyDifferenceData[] => {
+    const getUsedEnergyPerPeriod = useCallback((data: TrackingEntityResponse[]): EnergyDifferenceData[] => {
         
-        if (!entryList || entryList.length === 0) {
+        if (!data || data.length === 0) {
             return [];
         }
 
         // Sortierte Einträge (nach Datum aufsteigend)
-        const sortedEntries = [...entryList].sort((a, b) => {
+        const sortedEntries = [...data].sort((a, b) => {
             return HelperClass.parseDateToMs(a.timestamp) - HelperClass.parseDateToMs(b.timestamp);
         });
 
@@ -214,7 +260,8 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
         });
 
         return usedEnergyDifference.slice(1);
-    }, [entryList])
+
+    }, []);
 
     return (
         <TrackingContext.Provider value={{ 
@@ -224,6 +271,7 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
             responseMsg,
             isLoading,
             resetResponseMsg,
+            filterTrackingDataByTimeRange,
             getAllEntries,
             getNewestEntry,
             addEntry,

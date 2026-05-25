@@ -12,7 +12,8 @@ import { MessageContainer } from "../components/MessageContainer";
 import { BarDiagram } from "../components/BarDiagram";
 import { LineDiagram } from "../components/LineDiagram";
 import { ConfirmDialog } from "../components/ConfirmDialog";
-import { HelperClass } from "../utils/helper";
+import { HelperClass, TimeRange } from "../utils/helper";
+import DataTimeRangeSetter from "../components/DataTimeRangeSetter";
 
 export default function CalculationView() {
     const authService = useAuth();
@@ -21,7 +22,9 @@ export default function CalculationView() {
     const calcService = useCalculation();
     const logger = new Logger('CalculationView');
     const [openDialog, setOpenDialog] = useState(false);
-    const usedEnergyPerPeriod = trackingService.getUsedEnergyPerPeriod();
+    const [selectedRange, setSelectedRange] = useState<TimeRange>('2Y');
+    const usedEnergyPerPeriod = trackingService.getUsedEnergyPerPeriod(trackingService.filterTrackingDataByTimeRange(selectedRange));
+    const chartData = calcService.filterCalcDataByTimeRange(selectedRange);
 
     const infoTextLineChartCalcData = configService.configs?.referenceDate ? 
     'Info: Der normierte Verbrauchswert bezieht sich jeweils auf das eingestellte Referenzdatum (' + HelperClass.formatDateForServer(configService.configs.referenceDate) + ').'
@@ -65,6 +68,7 @@ export default function CalculationView() {
             <InfoBox message={'Berechung und Analyse der Stromkosten anhand der erfassten Zählerdaten und Kofigurationen. Alle Geldbeträge sind als brutto angegeben.'}/>
             {!openDialog ? (
             <>
+                <DataTimeRangeSetter setTimeRangeCallback={setSelectedRange} />
                 <LineDiagram
                     title={'Durchschnittlicher Tagesverbrauch je Messperiode'} 
                     dataList={usedEnergyPerPeriod}
@@ -82,7 +86,7 @@ export default function CalculationView() {
                 />
                 <LineDiagram
                     title={'Durchschnittlicher Tagesverbrauch im Abrechnungszeitraum'} 
-                    dataList={calcService.calcData}
+                    dataList={chartData}
                     infoText={infoTextLineChartCalcData}
                     xAxis={{dataKey: 'periodEnd', label: 'Datum'}}
                     yAxis={
@@ -95,7 +99,7 @@ export default function CalculationView() {
                 />
                 <LineDiagram
                     title={'Gesamtkosten im Abrechnungszeitraum nach Tarif'} 
-                    dataList={calcService.calcData}
+                    dataList={chartData}
                     xAxis={{dataKey: 'periodEnd', label: 'Datum'}}
                     yAxis={
                         { dataKey: ['totalCostsPeriod', 'paidAmountPeriod'], label: 'EUR', unit: '€', 
@@ -108,7 +112,7 @@ export default function CalculationView() {
                 />
                 <BarDiagram
                     title={'Saldo im Abrechnungszeitraum'}
-                    dataList={calcService.calcData}
+                    dataList={chartData}
                     xAxis={{dataKey: 'periodEnd', label: 'Datum'}}
                     yAxis={{dataKey: 'costDiffPeriod', label: 'EUR', unit: '€'}}
                 />

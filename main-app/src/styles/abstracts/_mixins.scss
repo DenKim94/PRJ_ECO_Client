@@ -67,9 +67,9 @@
     // Tablet Mini
     @media (max-width: var.$breakpoint-md) and (min-width: var.$breakpoint-sm) {
         padding: var.$spacing-sm;
-        min-width: var.$breakpoint-md;
-        max-width: var.$breakpoint-lg;
-        width: 90%; 
+        min-width: var.$breakpoint-sm;
+        max-width: var.$breakpoint-md;
+        width: 95%; 
     }
 
     // Tablet (horizontal)

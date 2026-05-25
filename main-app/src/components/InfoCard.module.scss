@@ -57,7 +57,7 @@
 
     // Tablet (mini - vertikal)
     @media (max-width: var.$breakpoint-md) and (min-height: 1023px) {
-        max-width: 440px;
+        max-width: 470px;
     }
 
     // Tablet (mini - horizontal)
@@ -109,6 +109,7 @@
     justify-content: flex-start;
     align-items: center;
     gap: var.$spacing-sm;
+    max-width: 200px;
     width: 100%;
     font-weight: var.$font-weight-bold;
 }
@@ -135,15 +136,18 @@
     justify-content: flex-start;
     align-items: center;
     gap: var.$spacing-sm;
+    min-width: 160px;
     max-width: 200px;
     width: 100%;
 
     // Smartphone
     @media (max-width: var.$breakpoint-sm) {
+        min-width: 80px;
         max-width: 120px;
     }
     // Tablet (max - vertikal)
     @media (min-width: 1024px) {
+        min-width: 80px;
         max-width: 130px;
     }
 }

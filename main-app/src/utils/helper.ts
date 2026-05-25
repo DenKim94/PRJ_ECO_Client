@@ -1,3 +1,6 @@
+
+export type TimeRange = '6M' | '1Y' | '2Y';
+
 export class HelperClass {
     
     static isValidEmail(email: string): boolean {
@@ -61,4 +64,62 @@ export class HelperClass {
             maximumFractionDigits: maxDecimals  // Begrenzt die maximale Länge
         });
     };
+
+    /**
+     * Hilfsfunktion zum Parsen von "DD.MM.YYYY" in ein JS-Date-Objekt
+     */
+    static parseGermanDate = (dateStr: string): Date => {
+        const [day, month, year] = dateStr.split('.');
+        return new Date(Number(year), Number(month) - 1, Number(day));
+    };
+
+    /**
+     * Filtert eine Liste basierend auf einem Zeitraum und limitiert die Anzahl der Punkte
+     * 
+     * @param sortedData Datenarray als Input, muss bereits chronologisch aufsteigend sortiert sein (älteste Daten zuerst)
+     * @param range Der gewünschte Zeitraum ('6M', '1Y', '2Y')
+     * @param maxPoints Maximale Anzahl an Datenpunkten (Standard: 16)
+     */
+    static filterAndDownsampleData = <T extends { periodEnd: string }>(
+        sortedData: T[],
+        periodEnd: string, 
+        range: TimeRange, 
+        maxPoints = 16
+    ): T[] => {
+        if (!sortedData || sortedData.length === 0) return [];
+
+        // Zieldatum ausgehend vom ersten (ältesten) Eintrag berechnen
+        const targetEndDate = new Date(this.parseGermanDate(periodEnd));
+
+        if (range === '6M') {
+            targetEndDate.setMonth(targetEndDate.getMonth() + 6);
+        } else if (range === '1Y') {
+            targetEndDate.setFullYear(targetEndDate.getFullYear() + 1);
+        } else if (range === '2Y') {
+            targetEndDate.setFullYear(targetEndDate.getFullYear() + 2);
+        }
+
+        // Zeitraum filtern (alles abschneiden, was nach dem targetEndDate liegt)
+        const filteredData = sortedData.filter(entry => {
+            const entryDate = this.parseGermanDate(entry.periodEnd);
+            return entryDate.getTime() <= targetEndDate.getTime();
+        });
+
+        // Downsampling (Auflösung verringern), falls > 16 Punkte
+        if (filteredData.length <= maxPoints) {
+            return filteredData; // Nichts zu tun, alle Punkte anzeigen
+        }
+
+        const downsampled: T[] = [];
+        // Berechnet die Schrittweite, um exakt maxPoints aus dem Array zu entnehmen
+        const step = (filteredData.length - 1) / (maxPoints - 1);
+        
+        for (let i = 0; i < maxPoints; i++) {
+            // Durch Math.round wird auf den nächsten passenden Array-Index gerundet
+            const index = Math.round(i * step);
+            downsampled.push(filteredData[index]);
+        }
+
+        return downsampled;
+    };    
 }
