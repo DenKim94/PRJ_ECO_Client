@@ -2,17 +2,9 @@
 @use '../styles/abstracts/mixins' as mixin;
 
 .settingsContainer {
-    // display: flex;
-    // flex-direction: column;
-    // justify-content: flex-start;
-    // align-items: center;
-    // gap: var.$spacing-lg;
-    // height: 100%;
-    // width: 100%;
-    // overflow-y: auto;
-    // overflow-x: hidden;
-
+    
     @include mixin.responsive-view-container;
+    @include mixin.custom-scrollbar;
 
     // Smartphone (standard)
     @media (max-width: var.$breakpoint-sm) {

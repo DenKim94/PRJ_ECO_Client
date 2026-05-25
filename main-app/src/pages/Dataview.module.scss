@@ -8,6 +8,8 @@
     gap: var.$spacing-sm;
     overflow-x: auto;    
     padding-bottom: 20px;
+
+    @include mixin.custom-scrollbar;
 }
 
 .dataTable {

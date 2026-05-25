@@ -41,7 +41,7 @@
     align-items: stretch; 
 
     // Mobil: Nur 1 Spalte, die Cards stapeln sich untereinander
-    @media (max-width: var.$breakpoint-xl) {
+    @media (max-width: 1023px) {
         grid-template-columns: 1fr;
     }
 }
