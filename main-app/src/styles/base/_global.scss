@@ -1,8 +1,9 @@
 @use '../abstracts/variables' as var;
 
-html,
-body {
-  height: 100%;
+html {
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0;
 }
 
 // Definition der globalen CSS Custom Properties (Light Mode als Default)
@@ -70,17 +71,22 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   
-  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;  /* Fallback */
+  min-height: 100dvh; /* Moderne Browser */
   display: flex;
   flex-direction: column;
   margin: 0;
-  overflow-y: auto;
+  // overflow-y: auto;
+  overflow-x: hidden;
 }
 
 #root {
   display: flex;
   flex-direction: column;
   flex: 1;
-  min-height: 100%;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   margin: 0;
 }
