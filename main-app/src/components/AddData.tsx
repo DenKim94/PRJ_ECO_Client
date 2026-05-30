@@ -66,9 +66,8 @@ export default function AddData() {
                     <label htmlFor="entry" className={styles.label}>{'Zählerstand (kWh)'}</label>
                     <input 
                         type="number" 
-                        step="0.1"
                         aria-label="Zählerstand (kWh)"
-                        value={newEntry ?? 0} 
+                        value={newEntry ?? ''} 
                         onChange={(e) => setNewEntry(Number(e.target.value))}
                         required={true}
                         disabled={submitting}
