@@ -1,18 +1,22 @@
 /**
  * Log-Level für die Log-Ausgaben definieren:
- * INFO: 1000
- * DEBUG: 2000
- * WARNING: 3000
- * ERROR: 4000
- * ALL: 5000
+ * 
+ * INFO: 1000;
+ * DEBUG: 2000;
+ * WARNING: 3000;
+ * ERROR: 4000;
+ * ALL: 5000;
  * 
  */
 const LOG_LEVEL = import.meta.env.VITE_LOG_LEVEL ? Number(import.meta.env.VITE_LOG_LEVEL) : 1000;
 
 
 /**
- * Standard-Logger für konsistentes und typsicheres Logging.
- * Usage: const logger = new Logger('MyComponent');
+ * Standard-Logger für konsistentes Logging.
+ * 
+ * Aufruf: const logger = new Logger('MyComponent');
+ * 
+ * Log-Ausgaben: z.B. logger.debug('Debug-Nachricht', logObjekt);
  */
 export class Logger {
   private readonly componentName: string;

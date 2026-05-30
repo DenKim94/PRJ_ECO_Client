@@ -42,13 +42,7 @@ export default function Login() {
         setSubmitting(true);
         try {
             const request: LogInRequest = { username: trimmedName, password };
-            const result = await auth.login(request);
-
-            if (!result) {
-                setMessage({ message: "Login ist fehlgeschlagen. Bitte prüfe deine Eingaben.", type: "error" });
-                logger.error(`Login ist fehlgeschlagen für User: ${trimmedName}`);
-                return;
-            }
+            await auth.login(request);
 
             if (auth.errorMsgRef.current?.message) {
                 setMessage({ message: `Login fehlgeschlagen: ${auth.errorMsgRef.current.message}`, type: "error" });

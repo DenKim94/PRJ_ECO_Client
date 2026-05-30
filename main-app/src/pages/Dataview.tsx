@@ -80,6 +80,16 @@ export default function Dataview() {
     return (
         <div className={styles.dataviewContainer}>
             <InfoBox message={'Hier kannst du deine Zählerdaten ergänzen und bearbeiten.'} sx={{ marginBottom: '20px' }} />
+            { !isMobile && 
+                <CustomButton
+                    title="Datenpunkt hinzufügen" 
+                    type="button"
+                    onClickCallback={handleAddData} 
+                    aria-label="Neuen Datenpunkt aufnehmen"
+                    isDisabled={authService.isLoading || configService.isLoading || trackingService.isLoading}
+                    sx={{width: '250px', marginTop: '0px'}} 
+                /> 
+            }
             <table className={styles.dataTable}>
                 <thead>
                     <tr>
@@ -161,17 +171,6 @@ export default function Dataview() {
                 </tbody>
             </table>
             <MessageContainer message={trackingService.responseMsg?.message ?? ""} type={trackingService.responseMsg?.type} isVisible={trackingService.responseMsg !== null} />
-            
-            { !isMobile && 
-                <CustomButton
-                    title="Datenpunkt hinzufügen" 
-                    type="button"
-                    onClickCallback={handleAddData} 
-                    aria-label="Neuen Datenpunkt aufnehmen"
-                    isDisabled={authService.isLoading || configService.isLoading || trackingService.isLoading}
-                    sx={{width: '250px', marginTop: '20px'}} 
-                /> 
-            }
         </div>
     );
 }
