@@ -1,0 +1,2 @@
+# Leitet alle Anfragen intern auf die index.html um (Statuscode 200)
+/* /index.html 200
