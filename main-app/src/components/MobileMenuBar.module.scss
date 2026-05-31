@@ -53,6 +53,7 @@
     transform: translateY(-20px); // Lässt den Button nach oben aus der Leiste ragen
     box-shadow: var(--shadow-border-glow);
     transition: transform 0.2s ease, background-color 0.2s ease;
+    padding-bottom: 5px;
 
     &:hover {
         background-color: var(--color-primary-hover);
