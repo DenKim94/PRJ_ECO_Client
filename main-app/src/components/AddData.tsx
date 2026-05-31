@@ -14,7 +14,7 @@ export default function AddData() {
     const authService = useAuth();
     const trackingService = useTracking();
     const [submitting, setSubmitting] = useState(false);
-    const [newEntry, setNewEntry] = useState<number | null>(null);
+    const [newEntry, setNewEntry] = useState<string>('');
     const [newDate, setNewDate] = useState<string>(HelperClass.formatDateForClient(new Date().toISOString()));
         
     if(!authService.userDetailedData?.isValidatedEmail) {
@@ -25,20 +25,37 @@ export default function AddData() {
         e.preventDefault();
         setSubmitting(true);
         trackingService.resetResponseMsg();
+
         try {
-            const request: TrackingEntityRequest = { value_kWh: newEntry ?? 0, date: HelperClass.formatDateForServer(newDate) };
+            // Wert parsen
+            const parsedValue = newEntry ? parseFloat(newEntry) : 0;
+
+            // Check zur gültigen Zahl
+            if (isNaN(parsedValue)) {
+                logger.error('Bitte gib eine gültige Zahl für den Zählerstand ein.');
+                setSubmitting(false);
+                return;
+            }
+
+            const request: TrackingEntityRequest = { 
+                value_kWh: parsedValue, 
+                date: HelperClass.formatDateForServer(newDate) 
+            };
+            
             const result = await trackingService.addEntry(request);
+            
             if (!result) {
                 logger.error(trackingService.errorMsgRef.current?.message ?? 'Unbekannter Fehler beim Hinzufügen des Eintrags.');
                 return;
             }
-            setNewEntry(null);
+            
+            // Nach Erfolg zurücksetzen
+            setNewEntry('');
             setNewDate(HelperClass.formatDateForClient(new Date().toISOString()));
 
         } catch (err) {
             logger.error(err instanceof Error ? err.message : 'Unbekannter Fehler beim Hinzufügen des Eintrags.');
             return;
-
         } finally {
             setSubmitting(false);
         }
@@ -65,10 +82,16 @@ export default function AddData() {
                 <div className={styles.inputRow}>
                     <label htmlFor="entry" className={styles.label}>{'Zählerstand (kWh)'}</label>
                     <input 
-                        type="number" 
+                        type="text" 
+                        inputMode="decimal"
                         aria-label="Zählerstand (kWh)"
-                        value={newEntry ?? ''} 
-                        onChange={(e) => setNewEntry(Number(e.target.value))}
+                        value={newEntry}
+                        onChange={(e) => {
+                            const val = e.target.value.replace(',', '.');
+                            if (/^\d*\.?\d*$/.test(val)) {
+                                setNewEntry(val);
+                            }
+                        }}
                         required={true}
                         disabled={submitting}
                         className={styles.inputField}
