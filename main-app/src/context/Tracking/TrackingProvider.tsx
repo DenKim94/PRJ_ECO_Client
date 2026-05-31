@@ -29,7 +29,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL;
  * * addEntry: (request: TrackingEntityRequest) => Promise<TrackingEntityResponse>;
  * * getNewestEntry: () => Promise<TrackingEntityResponse | null>;
  * * updateEntryById: (id: number, request: TrackingEntityRequest) => Promise<TrackingEntityResponse>;
- * * filterTrackingDataByTimeRange: (range: TimeRange, maxDataPoints?: number) => TrackingEntityResponse[];
+ * * filterTrackingDataByTimeRange: (range: TimeRange, startDate?: string | null, maxDataPoints?: number) => TrackingEntityResponse[];
  * * deleteEntryById: (id: number) => Promise<Map<string, string>>;
  * * getUsedEnergyPerPeriod: () => EnergyDifferenceData[];
  * * deleteAllEntries: () => Promise<Map<string, string>>;
@@ -77,18 +77,34 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
         });
     }
 
-    const filterTrackingDataByTimeRange = useCallback((range: TimeRange, maxDataPoints = 16): TrackingEntityResponse[] => {
+    const filterTrackingDataByTimeRange = useCallback((range: TimeRange, startDate?: string | null, maxDataPoints = 16): TrackingEntityResponse[] => {
         if (!entryList || entryList.length === 0) return [];
+        logger.debug(`Filtere Tracking-Daten für ${range} und ${startDate} ...`);
 
         // Daten chronologisch aufsteigend sortieren
         const sortedData = [...entryList].sort((a, b) => 
             HelperClass.parseGermanDate(a.timestamp).getTime() - HelperClass.parseGermanDate(b.timestamp).getTime()
         );
 
-        // Zieldatum ausgehend vom ersten (ältesten) Eintrag berechnen
-        const startDate = HelperClass.parseGermanDate(sortedData[0].timestamp);
-        const targetEndDate = new Date(startDate);
+        // Zieldatum ausgehend vom Startdatum berechnen
+        let parsedStartDate: Date;
+        
+        if (startDate) {
+            if (startDate.includes('T') || startDate.includes('-')) {
+                parsedStartDate = new Date(startDate);
+            } else {
+                parsedStartDate = HelperClass.parseGermanDate(startDate);
+            }
+        } else {
+            parsedStartDate = HelperClass.parseGermanDate(sortedData[0].timestamp);
+        }
 
+        // Startdatum auf 00:00:00 Uhr setzen
+        parsedStartDate.setHours(0, 0, 0, 0);
+
+        const targetEndDate = new Date(parsedStartDate);
+
+        // Zeitraum auf das Enddatum addieren
         if (range === '6M') {
             targetEndDate.setMonth(targetEndDate.getMonth() + 6);
         } else if (range === '1Y') {
@@ -97,32 +113,37 @@ export const TrackingProvider = ({ children }: { children: ReactNode }) => {
             targetEndDate.setFullYear(targetEndDate.getFullYear() + 2);
         }
 
-        // Zeitraum filtern (alles abschneiden, was nach dem targetEndDate liegt)
+        // Enddatum auf 23:59:59 Uhr setzen
+        targetEndDate.setHours(23, 59, 59, 999);
+
+        logger.debug(`Zeitraum zugeschnitten: ${parsedStartDate.toLocaleString('de-DE')} bis ${targetEndDate.toLocaleString('de-DE')}`);
+
+        // Zeitraum filtern: Alles zwischen Start (00:00) und Ende (23:59)
         const filteredData = sortedData.filter(entry => {
             const entryDate = HelperClass.parseGermanDate(entry.timestamp);
-            return entryDate.getTime() <= targetEndDate.getTime();
+            return entryDate.getTime() >= parsedStartDate.getTime() && 
+                entryDate.getTime() <= targetEndDate.getTime();
         });
-
-        // Downsampling (Auflösung verringern), falls > maxDataPoints
+        
+        // Downsampling
         if (filteredData.length <= maxDataPoints) {
             logger.debug(`Daten für Zeitraum ${range} gefiltert.`);
             return filteredData;
         }
 
         const downsampled: TrackingEntityResponse[] = [];
-        // Berechnet die Schrittweite, um exakt maxDataPoints aus dem Array zu entnehmen
         const step = (filteredData.length - 1) / (maxDataPoints - 1);
         
         for (let i = 0; i < maxDataPoints; i++) {
-            // Durch Math.round wird auf den nächsten passenden Array-Index gerundet
             const index = Math.round(i * step);
             downsampled.push(filteredData[index]);
         }
 
-        logger.debug(`Daten für Zeitraum ${range} gefiltert: `, downsampled);
+        logger.debug(`Anzahl der Datenpunkte für Zeitraum ${range} angepasst: `, downsampled);
         return downsampled;
 
     }, [entryList]);
+
 
     const getNewestEntry = useCallback(async (): Promise<TrackingEntityResponse | null> => {
         let response: TrackingEntityResponse | null = null;

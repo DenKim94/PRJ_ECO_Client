@@ -18,7 +18,7 @@ export default function Overview() {
     const calcService = useCalculation();
     const trackingService = useTracking();
     const [selectedRange, setSelectedRange] = useState<TimeRange>('2Y');
-    const usedEnergyPerPeriod = trackingService.getUsedEnergyPerPeriod(trackingService.filterTrackingDataByTimeRange(selectedRange));
+    const usedEnergyPerPeriod = trackingService.getUsedEnergyPerPeriod(trackingService.filterTrackingDataByTimeRange(selectedRange, configService.configs?.referenceDate));
     const calcDataLatest = (calcService.calcData && calcService.calcData.length > 0) 
         ? (calcService.calcData[calcService.calcData.length - 1]) 
         : null;
@@ -90,7 +90,7 @@ export default function Overview() {
                     infoProps={infoUsedEnergyList}
                 />           
             </div>
-            <DataTimeRangeSetter setTimeRangeCallback={setSelectedRange} />
+            <DataTimeRangeSetter currentTimeRange={selectedRange} setTimeRangeCallback={setSelectedRange} />
             <LineDiagram
                 title={'Normierter Stromverbrauch je Messperiode'}
                 heightPx={280} 

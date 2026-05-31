@@ -12,7 +12,7 @@ import { TimeRange } from '../../utils/helper';
  * * responseMsg: MessageContainerProps | null;
  * * isLoading: boolean;
  * * resetResponseMsg: () => void;
- * * filterTrackingDataByTimeRange: (range: TimeRange, maxDataPoints?: number) => TrackingEntityResponse[];
+ * * filterTrackingDataByTimeRange: (range: TimeRange, startDate?: string, maxDataPoints?: number) => TrackingEntityResponse[];
  * * getAllEntries: () => Promise<TrackingEntityResponse[]>;
  * * addEntry: (request: TrackingEntityRequest) => Promise<TrackingEntityResponse>;
  * * getNewestEntry: () => Promise<TrackingEntityResponse | null>;
@@ -28,7 +28,7 @@ export interface TrackingContextType {
     responseMsg: MessageContainerProps | null;
     isLoading: boolean;
     resetResponseMsg: () => void;
-    filterTrackingDataByTimeRange: (range: TimeRange, maxDataPoints?: number) => TrackingEntityResponse[];
+    filterTrackingDataByTimeRange: (range: TimeRange, startDate?: string | null, maxDataPoints?: number) => TrackingEntityResponse[];
     getAllEntries: () => Promise<TrackingEntityResponse[]>;
     getNewestEntry: () => Promise<TrackingEntityResponse | null>;
     addEntry: (request: TrackingEntityRequest) => Promise<TrackingEntityResponse | null>;

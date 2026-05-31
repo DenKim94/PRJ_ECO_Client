@@ -23,7 +23,7 @@ export default function CalculationView() {
     const logger = new Logger('CalculationView');
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedRange, setSelectedRange] = useState<TimeRange>('2Y');
-    const usedEnergyPerPeriod = trackingService.getUsedEnergyPerPeriod(trackingService.filterTrackingDataByTimeRange(selectedRange));
+    const usedEnergyPerPeriod = trackingService.getUsedEnergyPerPeriod(trackingService.filterTrackingDataByTimeRange(selectedRange, configService.configs?.referenceDate));
     const chartData = calcService.filterCalcDataByTimeRange(selectedRange);
 
     const infoTextLineChartCalcData = configService.configs?.referenceDate ? 
@@ -65,10 +65,10 @@ export default function CalculationView() {
 
     return (
         <div className={styles.pageContainer}>
-            <InfoBox message={'Berechung und Analyse der Stromkosten anhand der erfassten Zählerdaten und Kofigurationen. Alle Geldbeträge sind als brutto angegeben.'}/>
+            <InfoBox message={'Berechung und Analyse der Stromkosten anhand der erfassten Zählerdaten und Kofigurationen. Bei Änderungen der Konfigurationen muss die Berechnung erneut durchgeführt werden.'}/>
             {!openDialog ? (
             <>
-                <DataTimeRangeSetter setTimeRangeCallback={setSelectedRange} />
+                <DataTimeRangeSetter currentTimeRange={selectedRange} setTimeRangeCallback={setSelectedRange} />
                 <LineDiagram
                     title={'Durchschnittlicher Tagesverbrauch je Messperiode'} 
                     dataList={usedEnergyPerPeriod}
@@ -113,6 +113,7 @@ export default function CalculationView() {
                 <BarDiagram
                     title={'Saldo im Abrechnungszeitraum'}
                     dataList={chartData}
+                    infoText="Info: Die angezeigten Geldbeträge sind jeweils als brutto angegeben."
                     xAxis={{dataKey: 'periodEnd', label: 'Datum'}}
                     yAxis={{dataKey: 'costDiffPeriod', label: 'EUR', unit: '€'}}
                 />
