@@ -26,7 +26,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL;
  * * resetResponseMsg: () => void;
  * * executeCalculation: (request: CalcultationRequest) => Promise<CalculationDataResponse[]>;
  * * deleteAllResults: () => Promise<ApiMessageMap>;
- * * filterCalcDataByTimeRange: (range: TimeRange, maxDataPoints?: number) => CalculationDataResponse[];
+ * * filterCalcDataByTimeRange: (range: TimeRange, startDate?: string | null, maxDataPoints?: number) => CalculationDataResponse[];
  */
 export const CalculationProvider = ({ children }: { children: ReactNode }) => {
     const calcApi = useApiCall<CalculationDataResponse[]>();
@@ -105,17 +105,35 @@ export const CalculationProvider = ({ children }: { children: ReactNode }) => {
         return response;
     }, [deleteApi, setCalcData]);
 
-    const filterCalcDataByTimeRange = useCallback((range: TimeRange, maxDataPoints = 16): CalculationDataResponse[] => {
+    const filterCalcDataByTimeRange = useCallback((range: TimeRange, startDate?: string | null, maxDataPoints = 16): CalculationDataResponse[] => {
         if (!calcData || calcData.length === 0) return [];
+        logger.debug(`Filtere Berechnungsdaten für ${range} und ${startDate} ...`);
 
         // Daten chronologisch aufsteigend sortieren
         const sortedData = [...calcData].sort((a, b) => 
             HelperClass.parseGermanDate(a.periodEnd).getTime() - HelperClass.parseGermanDate(b.periodEnd).getTime()
         );
 
-        // Zieldatum ausgehend vom ersten (ältesten) Eintrag berechnen
-        const targetEndDate = new Date(HelperClass.parseGermanDate(sortedData[0].periodEnd));
+        // Zieldatum ausgehend vom Startdatum berechnen
+        let parsedStartDate: Date;
+        
+        if (startDate) {
+            if (startDate.includes('T') || startDate.includes('-')) {
+                parsedStartDate = new Date(startDate);
+            } else {
+                parsedStartDate = HelperClass.parseGermanDate(startDate);
+            }
+        } else {
+            parsedStartDate = HelperClass.parseGermanDate(sortedData[0].periodEnd);
+        }
 
+        // Startdatum auf 00:00:00 Uhr setzen
+        parsedStartDate.setHours(0, 0, 0, 0);
+
+        // Zieldatum berechnen
+        const targetEndDate = new Date(parsedStartDate);
+
+        // Zeitraum auf das Enddatum addieren
         if (range === '6M') {
             targetEndDate.setMonth(targetEndDate.getMonth() + 6);
         } else if (range === '1Y') {
@@ -124,10 +142,16 @@ export const CalculationProvider = ({ children }: { children: ReactNode }) => {
             targetEndDate.setFullYear(targetEndDate.getFullYear() + 2);
         }
 
-        // Zeitraum filtern (alles abschneiden, was nach dem targetEndDate liegt)
+        // Enddatum auf 23:59:59 Uhr setzen
+        targetEndDate.setHours(23, 59, 59, 999);
+
+        logger.debug(`Zeitraum zugeschnitten: ${parsedStartDate.toLocaleString('de-DE')} bis ${targetEndDate.toLocaleString('de-DE')}`);
+
+        // Zeitraum filtern: Alles zwischen Start (00:00) und Ende (23:59)
         const filteredData = sortedData.filter(entry => {
             const entryDate = HelperClass.parseGermanDate(entry.periodEnd);
-            return entryDate.getTime() <= targetEndDate.getTime();
+            return entryDate.getTime() >= parsedStartDate.getTime() && 
+                entryDate.getTime() <= targetEndDate.getTime();
         });
 
         // Downsampling (Auflösung verringern), falls > maxDataPoints
@@ -146,7 +170,7 @@ export const CalculationProvider = ({ children }: { children: ReactNode }) => {
             downsampled.push(filteredData[index]);
         }
 
-        logger.debug(`Daten für Zeitraum ${range} gefiltert: `, downsampled);
+        logger.debug(`Anzahl der Datenpunkte für Zeitraum ${range} angepasst: `, downsampled);
         return downsampled;
         
     }, [calcData]);

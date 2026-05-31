@@ -24,7 +24,7 @@ export default function CalculationView() {
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedRange, setSelectedRange] = useState<TimeRange>('2Y');
     const usedEnergyPerPeriod = trackingService.getUsedEnergyPerPeriod(trackingService.filterTrackingDataByTimeRange(selectedRange, configService.configs?.referenceDate));
-    const chartData = calcService.filterCalcDataByTimeRange(selectedRange);
+    const chartData = calcService.filterCalcDataByTimeRange(selectedRange, configService.configs?.referenceDate);
 
     const infoTextLineChartCalcData = configService.configs?.referenceDate ? 
     'Info: Der normierte Verbrauchswert bezieht sich jeweils auf das eingestellte Referenzdatum (' + HelperClass.formatDateForServer(configService.configs.referenceDate) + ').'

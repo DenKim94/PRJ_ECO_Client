@@ -12,7 +12,7 @@ export interface CalculationContextType {
     responseMsg: MessageContainerProps | null;
     resetResponseMsg: () => void;
     executeCalculation: (request: CalcultationRequest) => Promise<CalculationDataResponse[]>;
-    filterCalcDataByTimeRange: (range: TimeRange, maxDataPoints?: number) => CalculationDataResponse[];
+    filterCalcDataByTimeRange: (range: TimeRange, startDate?: string | null, maxDataPoints?: number) => CalculationDataResponse[];
     loadResults: () => Promise<CalculationDataResponse[]>;
     deleteAllResults: () => Promise<ApiMessageMap>;
 }

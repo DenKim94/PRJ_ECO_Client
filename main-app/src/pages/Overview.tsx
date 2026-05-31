@@ -19,6 +19,8 @@ export default function Overview() {
     const trackingService = useTracking();
     const [selectedRange, setSelectedRange] = useState<TimeRange>('2Y');
     const usedEnergyPerPeriod = trackingService.getUsedEnergyPerPeriod(trackingService.filterTrackingDataByTimeRange(selectedRange, configService.configs?.referenceDate));
+    const chartData = calcService.filterCalcDataByTimeRange(selectedRange, configService.configs?.referenceDate);
+
     const calcDataLatest = (calcService.calcData && calcService.calcData.length > 0) 
         ? (calcService.calcData[calcService.calcData.length - 1]) 
         : null;
@@ -111,7 +113,7 @@ export default function Overview() {
                 title={'Stromverbrauch im Abrechnungszeitraum'} 
                 heightPx={280} 
                 infoText="Info: Die angegebenen Absolutwerte bilden jeweils die Summe aus der verbrauchten Energiemenge zwischen den Ablesezeitpunkten."
-                dataList={calcService.calcData}
+                dataList={chartData}
                 xAxis={{dataKey: 'periodEnd', label: 'Datum'}}
                 yAxis={{dataKey: 'sumUsedEnergy', label: 'kWh', unit: 'kWh'}}
             />        
