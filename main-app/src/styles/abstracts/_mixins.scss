@@ -25,11 +25,12 @@
 }
 
 @mixin responsive-page-container {
+
     // Smartphone (standard)
     @media (max-width: var.$breakpoint-sm) {
         padding: 0 var.$spacing-xs;
         padding-bottom: calc(var.$height-mobile-menu-bar);
-        margin-bottom: 10px;
+        margin-bottom: 0px;
         min-width: var.$min-width-input;
         max-width: 370px;
         width: 100%; 
