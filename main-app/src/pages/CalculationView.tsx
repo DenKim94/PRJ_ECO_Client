@@ -22,7 +22,7 @@ export default function CalculationView() {
     const calcService = useCalculation();
     const logger = new Logger('CalculationView');
     const [openDialog, setOpenDialog] = useState(false);
-    const [selectedRange, setSelectedRange] = useState<TimeRange>('2Y');
+    const [selectedRange, setSelectedRange] = useState<TimeRange>('1Y');
     const usedEnergyPerPeriod = trackingService.getUsedEnergyPerPeriod(trackingService.filterTrackingDataByTimeRange(selectedRange, configService.configs?.referenceDate));
     const chartData = calcService.filterCalcDataByTimeRange(selectedRange, configService.configs?.referenceDate);
 
