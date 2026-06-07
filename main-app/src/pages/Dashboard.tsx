@@ -91,9 +91,6 @@ export default function Dashboard() {
         else if (calcService.errorMsgRef.current?.code === 404){
             updatePopUpProps(true, "In der Datenbank liegen bisher keine Berechnungsdaten vor.", 'warning');
         }
-        else if (authService.errorMsgRef.current || configService.errorMsgRef.current || trackingService.errorMsgRef.current || calcService.errorMsgRef.current){
-            updatePopUpProps(true, "Ein Fehler bei Laden der Daten ist aufgetreten. Bitte versuche die Seite erneut zu laden.", 'error');
-        };
 
     }, [authService.userDetailedData,
         authService.sessionTimeRemaining,
