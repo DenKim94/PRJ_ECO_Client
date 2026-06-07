@@ -26,7 +26,7 @@ export default function Dataview() {
     const navigate = useNavigate(); 
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editDate, setEditDate] = useState("");
-    const [editKWhValue, setEditKWhValue] = useState<number | null>(null);
+    const [editKWhValue, setEditKWhValue] = useState<string>('');
 
     const saveIconSrc = (themeObject.theme === 'light') ?  "/check_circle_icon_dark.svg" : "/check_circle_icon_light.svg";
     const deleteIconSrc = (themeObject.theme === 'light') ?  "/delete_icon_dark.svg" : "/delete_icon_light.svg";
@@ -48,7 +48,7 @@ export default function Dataview() {
         trackingService.resetResponseMsg();
         setEditingId(entry.id);
         setEditDate(HelperClass.formatDateForClient(entry.timestamp));
-        setEditKWhValue(entry.readingValue);
+        setEditKWhValue(entry.readingValue.toString());
     };
 
     const handleSave = async (id: number) => {
@@ -108,16 +108,21 @@ export default function Dataview() {
                                             type="date" 
                                             value={editDate} 
                                             placeholder={`${entry.timestamp}`}
-                                            onChange={(e) => setEditDate(HelperClass.formatDateForClient(e.target.value))} 
+                                            onChange={(e) => setEditDate(e.target.value)} 
                                             onClick={(e) => e.stopPropagation()} // Verhindert das Schließen durch Zeilen-Klick
                                         />
                                     </td>
                                     <td className={styles.editingCell}>
                                         <input 
-                                            type="number" 
-                                            step="0.1"
-                                            value={editKWhValue ?? 0} 
-                                            onChange={(e) => setEditKWhValue(Number(e.target.value))}
+                                            type="text" 
+                                            step="decimal"
+                                            value={editKWhValue ?? ''} 
+                                            onChange={(e) => {
+                                                const val = e.target.value.replace(',', '.');
+                                                if (/^\d*\.?\d*$/.test(val)) {
+                                                    setEditKWhValue(val);
+                                                }
+                                            }}
                                             onClick={(e) => e.stopPropagation()}
                                         />
                                     </td>
