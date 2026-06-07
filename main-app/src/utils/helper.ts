@@ -3,15 +3,38 @@ export type TimeRange = '6M' | '1Y' | '2Y';
 
 export class HelperClass {
     
+    /**
+     * Prüft, ob eine Zeichenkette einer einfachen E-Mail-Struktur entspricht
+     * (Zeichen vor und nach dem @ sowie eine Domain mit Punkt).
+     *
+     * @param email Die zu prüfende E-Mail-Adresse
+     * @returns true, wenn das Format gültig ist, sonst false
+     */
     static isValidEmail(email: string): boolean {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     }
 
+    /**
+     * Vergleicht zwei Passwörter auf exakte Gleichheit (z.B. zur Bestätigung
+     * bei der Registrierung).
+     *
+     * @param password Das eingegebene Passwort
+     * @param approvePassword Die Wiederholung des Passworts
+     * @returns true, wenn beide Werte identisch sind, sonst false
+     */
     static isEqualPasswords(password: string, approvePassword: string): boolean {
         return password === approvePassword;
     }
 
+    /**
+     * Wandelt ein Datum vom ISO-Format (YYYY-MM-DD, optional mit T-Zeitanteil)
+     * in das deutsche Anzeigeformat DD.MM.YYYY um, wie es der Server erwartet.
+     * Leere oder unvollständige Eingaben werden unverändert zurückgegeben (Fallback).
+     *
+     * @param dateStr Datum im Format YYYY-MM-DD oder YYYY-MM-DDTHH:mm:ss
+     * @returns Datum im Format DD.MM.YYYY oder die unveränderte Eingabe als Fallback
+     */
     static formatDateForServer (dateStr: string): string {
         if (!dateStr) return dateStr ?? '';
         
@@ -25,25 +48,40 @@ export class HelperClass {
         return `${day}.${month}.${year}`;
     };
 
-    static formatDateForClient (dateStr: string): string {
+    /**
+     * Bereitet ein Datum für die Anzeige im Client auf, 
+     * der das Datum im ISO-Format YYYY-MM-DD erwartet.
+     * Ein optionaler T-Zeitanteil wird abgeschnitten. Leere oder unvollständige
+     * Eingaben werden unverändert zurückgegeben (Fallback).
+     *
+     * @param dateStr Datum im Format YYYY-MM-DD bzw. YYYY-MM-DDTHH:mm:ss
+     * @returns Datum im Format YYYY-MM-DD oder die unveränderte Eingabe als Fallback
+     */
+    static formatDateForClient(dateStr: string): string {
         if (!dateStr) return '';
-        
-        // Prüfen, ob das Format bereits DD.MM.YYYY ist
-        if (dateStr.includes('.')) return dateStr;
 
-        // Wenn ein T enthalten ist (z.B. "2026-04-26T14:30:00"), dann nur den das Datum verwenden
+        // DD.MM.YYYY → YYYY-MM-DD
+        if (dateStr.includes('.')) {
+            const [day, month, year] = dateStr.split('.');
+            if (!day || !month || !year) return dateStr;
+            return `${year}-${month}-${day}`;
+        }
+
+        // YYYY-MM-DD (ggf. mit T-Zeitanteil) → unverändert lassen
         const datePart = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
-
-        // Umwandeln von YYYY-MM-DD zu DD.MM.YYYY
         const [year, month, day] = datePart.split('-');
-        
-        // Fallback
         if (!year || !month || !day) return dateStr;
 
         return `${year}-${month}-${day}`;
-    };
+    }
 
-
+    /**
+     * Wandelt ein Datum im deutschen Format DD.MM.YYYY in einen
+     * Unix-Zeitstempel in Millisekunden um (z.B. für Sortierungen oder Vergleiche).
+     *
+     * @param dateStr Datum im Format DD.MM.YYYY
+     * @returns Zeitstempel in Millisekunden
+     */
     static parseDateToMs (dateStr: string) {
         const [day, month, year] = dateStr.split('.');
         return new Date(`${year}-${month}-${day}`).getTime();
@@ -66,7 +104,11 @@ export class HelperClass {
     };
 
     /**
-     * Hilfsfunktion zum Parsen von "DD.MM.YYYY" in ein JS-Date-Objekt
+     * Hilfsfunktion zum Parsen von "DD.MM.YYYY" in ein JS-Date-Objekt.
+     * Die Komponenten werden lokal interpretiert (kein UTC).
+     *
+     * @param dateStr Datum im Format DD.MM.YYYY
+     * @returns Ein Date-Objekt, das dem übergebenen Datum entspricht
      */
     static parseGermanDate = (dateStr: string): Date => {
         const [day, month, year] = dateStr.split('.');
@@ -79,6 +121,7 @@ export class HelperClass {
      * @param sortedData Datenarray als Input, muss bereits chronologisch aufsteigend sortiert sein (älteste Daten zuerst)
      * @param range Der gewünschte Zeitraum ('6M', '1Y', '2Y')
      * @param maxPoints Maximale Anzahl an Datenpunkten (Standard: 16)
+     * @returns Gefiltertes und ggf. heruntergerechnetes Array mit höchstens maxPoints Einträgen
      */
     static filterAndDownsampleData = <T extends { periodEnd: string }>(
         sortedData: T[],
