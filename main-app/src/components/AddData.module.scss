@@ -76,6 +76,12 @@
     font-family: var.$font-family-base;
     background-color: var(--color-surface);
     color: var(--color-text-main);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    min-height: 48px;
+    line-height: 1.2;  
 
     &::-webkit-calendar-picker-indicator {
         display: none;
@@ -89,6 +95,8 @@
     }
 
     &[type="date"] {
+        display: flex;
+        align-items: center;
         // Text rechtsbündig halten (wie bei den Zahlen)
         text-align: left;
         // Sorgt dafür, dass der Text im Feld gut aussieht, wenn kein Value gesetzt ist
