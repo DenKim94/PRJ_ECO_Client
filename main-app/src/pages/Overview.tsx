@@ -17,7 +17,7 @@ export default function Overview() {
     const configService = useConfig();
     const calcService = useCalculation();
     const trackingService = useTracking();
-    const [selectedRange, setSelectedRange] = useState<TimeRange>('2Y');
+    const [selectedRange, setSelectedRange] = useState<TimeRange>('1Y');
     const usedEnergyPerPeriod = trackingService.getUsedEnergyPerPeriod(trackingService.filterTrackingDataByTimeRange(selectedRange, configService.configs?.referenceDate));
     const chartData = calcService.filterCalcDataByTimeRange(selectedRange, configService.configs?.referenceDate);
 
