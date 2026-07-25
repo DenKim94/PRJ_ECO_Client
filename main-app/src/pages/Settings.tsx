@@ -61,7 +61,7 @@ const configFields: ConfigFieldDef[] = [
         label: 'Fälligkeitstag (optional)', 
         type: 'number', 
         step: '1', 
-        infoText: 'Der Tag im Monat (1-31), an dem der Abschlag fällig wird. Relevant für präzisesere Vorausberechnung.' 
+        infoText: 'Der Tag im Monat (1-31), an dem der Abschlag fällig wird. Relevant für präzisere Vorausberechnung.' 
     },
     { 
         name: 'additionalCredit', 
@@ -70,13 +70,6 @@ const configFields: ConfigFieldDef[] = [
         step: '0.01', 
         infoText: 'Boni (z.B. Neukundenbonus) oder offenes Guthaben aus Vorjahren, die am Vertragsende verrechnet werden sollen.' 
     },
-    // { 
-    //     name: 'sepaProcessingDays', 
-    //     label: 'SEPA-Verarbeitungstage (optional)', 
-    //     type: 'number', 
-    //     step: '1', 
-    //     infoText: 'Verzögerung (in Tagen), bis die Abbuchung tatsächlich auf dem Bankkonto sichtbar ist. Relevant für präzisesere Vorausberechnung.' 
-    // },
     { 
         name: 'meterIdentifier', 
         label: 'Zählernummer (optional)', 
